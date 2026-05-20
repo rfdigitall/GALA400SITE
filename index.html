@@ -5,14 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Idraulico Verona 349 420 8551 | Pronto Intervento 24/7</title>
   <meta name="description" content="Idraulico Verona ☎ 349 420 8551. Pronto intervento h24, arrivo in 20 minuti. Perdite acqua, caldaie, WC intasati, spurghi. Chiama subito!">
+  <meta name="keywords" content="idraulico verona, pronto intervento idraulico verona, idraulico urgente verona, perdite acqua verona, spurgo verona, caldaie verona">
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:none">
+  <meta name="googlebot" content="index, follow, max-snippet:-1">
   <meta name="geo.region" content="IT-VR">
   <meta name="geo.placename" content="Verona">
   <meta name="geo.position" content="45.4384;10.9916">
   <meta name="ICBM" content="45.4384, 10.9916">
+  <meta name="geo.country" content="IT">
   <meta name="language" content="Italian">
   <meta name="format-detection" content="telephone=yes">
   <link rel="canonical" href="https://gala400.it/">
+  <link rel="alternate" hreflang="it-IT" href="https://gala400.it/">
+  <link rel="alternate" hreflang="x-default" href="https://gala400.it/">
   <meta property="og:url" content="https://gala400.it/">
   <meta property="og:locale" content="it_IT">
   <meta property="og:type" content="website">
@@ -24,6 +29,8 @@
   <meta name="twitter:description" content="Pronto intervento idraulico 24/7 a Verona. Chiama subito.">
   <meta name="theme-color" content="#0f2744">
   <link rel="preconnect" href="https://www.google.com" crossorigin>
+  <link rel="preconnect" href="https://wa.me">
+  <!-- Google Ads: inserisci qui il tag gtag.js con il tuo ID AW-XXXXXXX -->
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -166,25 +173,27 @@
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Plumber",
+        "@type": ["Plumber", "LocalBusiness"],
         "@id": "https://gala400.it/#business",
         "name": "Gala 400 Srls — Idraulico Verona",
-        "alternateName": ["Gala400", "Idraulico Verona"],
-        "taxID": "05180000233",
-        "identifier": "VR476830",
+        "alternateName": ["Gala400", "Idraulico Verona", "Gala 400"],
         "legalName": "Gala 400 Srls",
+        "taxID": "05180000233",
+        "vatID": "IT05180000233",
+        "identifier": "VR476830",
         "description": "Idraulico a Verona: pronto intervento 24 ore su 24, arrivo in circa 20 minuti. Perdite acqua, caldaie, spurghi, ricerca perdite.",
         "url": "https://gala400.it/",
         "telephone": "+393494208551",
         "priceRange": "€€",
-        "image": "https://gala400.it/",
-        "sameAs": [
-          "https://share.google/IhkhBfXpcJHccJPsL"
-        ],
+        "currenciesAccepted": "EUR",
+        "paymentAccepted": "Cash, Credit Card, Bank Transfer",
+        "sameAs": ["https://share.google/IhkhBfXpcJHccJPsL"],
+        "hasMap": "https://www.google.com/maps/place/Verona,+VR",
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "Verona",
           "addressLocality": "Verona",
-          "addressRegion": "VR",
+          "addressRegion": "Veneto",
           "postalCode": "37100",
           "addressCountry": "IT"
         },
@@ -195,22 +204,41 @@
         },
         "areaServed": [
           {"@type": "City", "name": "Verona"},
-          {"@type": "AdministrativeArea", "name": "Provincia di Verona"}
+          {"@type": "AdministrativeArea", "name": "Provincia di Verona"},
+          {"@type": "State", "name": "Veneto"}
         ],
-        "openingHoursSpecification": {
+        "contactPoint": [{
+          "@type": "ContactPoint",
+          "telephone": "+393494208551",
+          "contactType": "customer service",
+          "areaServed": "IT-VR",
+          "availableLanguage": ["it", "Italian"],
+          "hoursAvailable": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+            "opens": "00:00",
+            "closes": "23:59"
+          }
+        }],
+        "openingHoursSpecification": [{
           "@type": "OpeningHoursSpecification",
           "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
           "opens": "00:00",
           "closes": "23:59"
+        }],
+        "potentialAction": {
+          "@type": "CommunicateAction",
+          "name": "Chiama Idraulico Verona",
+          "target": "tel:+393494208551"
         },
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
           "name": "Servizi idraulici Verona",
           "itemListElement": [
-            {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Pronto intervento idraulico Verona"}},
-            {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Riparazione perdite acqua"}},
-            {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Spurgo e disostruzione"}},
-            {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Installazione e riparazione caldaie"}}
+            {"@type": "Offer", "position": 1, "itemOffered": {"@type": "Service", "name": "Pronto intervento idraulico Verona", "areaServed": "Verona"}},
+            {"@type": "Offer", "position": 2, "itemOffered": {"@type": "Service", "name": "Riparazione perdite acqua Verona"}},
+            {"@type": "Offer", "position": 3, "itemOffered": {"@type": "Service", "name": "Spurgo e disostruzione Verona"}},
+            {"@type": "Offer", "position": 4, "itemOffered": {"@type": "Service", "name": "Installazione e riparazione caldaie Verona"}}
           ]
         }
       },
@@ -218,9 +246,14 @@
         "@type": "WebSite",
         "@id": "https://gala400.it/#website",
         "url": "https://gala400.it/",
-        "name": "Idraulico Verona",
+        "name": "Idraulico Verona — Gala 400",
         "inLanguage": "it-IT",
-        "publisher": {"@id": "https://gala400.it/#business"}
+        "publisher": {"@id": "https://gala400.it/#business"},
+        "potentialAction": {
+          "@type": "CallAction",
+          "target": "tel:+393494208551",
+          "name": "Chiama 349 420 8551"
+        }
       },
       {
         "@type": "WebPage",
@@ -231,7 +264,17 @@
         "inLanguage": "it-IT",
         "isPartOf": {"@id": "https://gala400.it/#website"},
         "about": {"@id": "https://gala400.it/#business"},
-        "primaryImageOfPage": {"@id": "https://gala400.it/#business"}
+        "breadcrumb": {"@id": "https://gala400.it/#breadcrumb"}
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://gala400.it/#breadcrumb",
+        "itemListElement": [{
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Idraulico Verona",
+          "item": "https://gala400.it/"
+        }]
       },
       {
         "@type": "FAQPage",
@@ -527,7 +570,13 @@
 
   <footer class="navy-dk">
     <p style="color:#fff;font-weight:700;margin-bottom:.25rem">Idraulico Verona — Pronto Intervento 24/7</p>
-    <p>Verona (VR) · <a href="tel:+393494208551">349 420 8551</a></p>
+    <p itemscope itemtype="https://schema.org/LocalBusiness">
+      <span itemprop="name">Gala 400 Srls — Idraulico Verona</span><br>
+      <span itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+        <span itemprop="addressLocality">Verona</span> (<span itemprop="addressRegion">VR</span>), <span itemprop="addressCountry">Italia</span>
+      </span><br>
+      Tel. <a href="tel:+393494208551" itemprop="telephone">349 420 8551</a>
+    </p>
     <p class="footer-legal">Gala 400 Srls · P.IVA: 05180000233 · REA: VR476830 · Cap. Soc.: 10.000,00 €</p>
     <nav class="footer-links" aria-label="Link legali">
       <a href="privacy-policy.html">Privacy Policy</a>
