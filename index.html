@@ -54,16 +54,13 @@
     .sub{font-size:1.1rem;color:#cbd5e1;max-width:32rem;margin:0 auto 1.75rem}
     .sub strong{color:#fff}
     .note{margin-top:1.25rem;font-size:.8rem;color:#94a3b8}
-    .countdown-bar{background:linear-gradient(90deg,#ea580c,#f97316);color:#fff;text-align:center;padding:.85rem 1rem}
-    .countdown-bar .wrap{max-width:42rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem 1rem}
-    .countdown-text{font-size:.8rem;font-weight:600;line-height:1.3}
-    .countdown-text strong{display:block;font-size:.95rem}
-    .countdown-timer{display:flex;align-items:center;gap:.25rem;font-variant-numeric:tabular-nums}
-    .cd-box{background:rgba(0,0,0,.2);min-width:2.5rem;padding:.35rem .5rem;border-radius:.4rem;font-size:1.35rem;font-weight:800;line-height:1}
-    .cd-sep{font-size:1.25rem;font-weight:800;opacity:.9}
-    .cd-lbl{font-size:.65rem;font-weight:600;opacity:.85;text-transform:uppercase;letter-spacing:.04em}
-    .countdown-call{background:#0f2744;color:#fff;font-size:.75rem;font-weight:800;padding:.5rem 1rem;border-radius:.5rem;text-transform:uppercase}
-    .countdown-call:hover{background:#1a3a5c}
+    .stats-bar{background:linear-gradient(90deg,#0f2744,#1a3a5c);color:#fff;padding:1rem}
+    .stats-bar .wrap{max-width:48rem;display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem 1rem}
+    @media(min-width:520px){.stats-bar .wrap{grid-template-columns:repeat(4,1fr)}}
+    .stat-item{text-align:center;padding:.5rem .25rem}
+    .stat-num{display:block;font-size:1.5rem;font-weight:800;line-height:1.1;color:#f97316}
+    .stat-num span{font-size:.9rem;font-weight:700}
+    .stat-lbl{font-size:.68rem;font-weight:600;color:#cbd5e1;line-height:1.25;margin-top:.2rem;text-transform:uppercase;letter-spacing:.03em}
     .brand-strip{background:#fff;border-top:1px solid #e2e8f0;padding:1.5rem 1rem 2rem;text-align:center;margin-top:0}
     .brand-strip .wrap{max-width:42rem}
     .brand-logo{font-size:1.15rem;font-weight:800;color:#0f2744;letter-spacing:-.02em}
@@ -294,24 +291,24 @@
   </header>
 
   <main id="contenuto">
-    <div class="countdown-bar" aria-live="polite" aria-label="Tempo stimato di arrivo">
+    <div class="stats-bar" aria-label="Esperienza Gala 400 — Idraulico Verona">
       <div class="wrap">
-        <p class="countdown-text">
-          <span>Idraulico Verona — tecnico in zona</span>
-          <strong>Arrivo stimato tra:</strong>
-        </p>
-        <div class="countdown-timer">
-          <div>
-            <span class="cd-box" id="cd-min">20</span>
-            <div class="cd-lbl">min</div>
-          </div>
-          <span class="cd-sep">:</span>
-          <div>
-            <span class="cd-box" id="cd-sec">00</span>
-            <div class="cd-lbl">sec</div>
-          </div>
+        <div class="stat-item">
+          <span class="stat-num">15<span>+</span></span>
+          <span class="stat-lbl">Anni di esperienza</span>
         </div>
-        <a href="tel:+393494208551" class="countdown-call" data-cta="countdown">Chiama ora</a>
+        <div class="stat-item">
+          <span class="stat-num">5.000<span>+</span></span>
+          <span class="stat-lbl">Interventi completati</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">24<span>/7</span></span>
+          <span class="stat-lbl">Pronto intervento h24</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">20<span> min</span></span>
+          <span class="stat-lbl">Tempo medio di arrivo</span>
+        </div>
       </div>
     </div>
 
@@ -548,24 +545,6 @@
   </div>
 
   <script>
-    (function () {
-      var sec = 20 * 60;
-      var minEl = document.getElementById('cd-min');
-      var secEl = document.getElementById('cd-sec');
-      function pad(n) { return n < 10 ? '0' + n : String(n); }
-      function tick() {
-        if (sec <= 0) sec = 20 * 60;
-        var m = Math.floor(sec / 60);
-        var s = sec % 60;
-        if (minEl) minEl.textContent = pad(m);
-        if (secEl) secEl.textContent = pad(s);
-        sec--;
-      }
-      if (minEl && secEl) {
-        tick();
-        setInterval(tick, 1000);
-      }
-    })();
     (function () {
       var banner = document.getElementById('cookie-banner');
       var btn = document.getElementById('cookie-accept');
