@@ -54,13 +54,15 @@
     .sub{font-size:1.1rem;color:#cbd5e1;max-width:32rem;margin:0 auto 1.75rem}
     .sub strong{color:#fff}
     .note{margin-top:1.25rem;font-size:.8rem;color:#94a3b8}
-    .stats-bar{background:linear-gradient(90deg,#0f2744,#1a3a5c);color:#fff;padding:1rem}
-    .stats-bar .wrap{max-width:48rem;display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem 1rem}
-    @media(min-width:520px){.stats-bar .wrap{grid-template-columns:repeat(4,1fr)}}
-    .stat-item{text-align:center;padding:.5rem .25rem}
-    .stat-num{display:block;font-size:1.5rem;font-weight:800;line-height:1.1;color:#f97316}
-    .stat-num span{font-size:.9rem;font-weight:700}
-    .stat-lbl{font-size:.68rem;font-weight:600;color:#cbd5e1;line-height:1.25;margin-top:.2rem;text-transform:uppercase;letter-spacing:.03em}
+    .stats-bar{background:linear-gradient(90deg,#0f2744,#1a3a5c);color:#fff;padding:1rem 0;overflow:hidden}
+    .stats-marquee{display:flex;width:max-content;animation:stats-scroll 22s linear infinite}
+    .stats-marquee:hover{animation-play-state:paused}
+    .stat-slide{flex:0 0 auto;text-align:center;padding:.25rem 2.5rem;white-space:nowrap}
+    .stat-num{display:block;font-size:1.6rem;font-weight:800;line-height:1.1;color:#f97316}
+    .stat-num span{font-size:.95rem;font-weight:700}
+    .stat-lbl{font-size:.7rem;font-weight:600;color:#cbd5e1;line-height:1.25;margin-top:.3rem;text-transform:uppercase;letter-spacing:.04em}
+    @keyframes stats-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    @media(prefers-reduced-motion:reduce){.stats-marquee{animation:none;flex-wrap:wrap;justify-content:center;width:100%;max-width:48rem;margin:0 auto}}
     .brand-strip{background:#fff;border-top:1px solid #e2e8f0;padding:1.5rem 1rem 2rem;text-align:center;margin-top:0}
     .brand-strip .wrap{max-width:42rem}
     .brand-logo{font-size:1.15rem;font-weight:800;color:#0f2744;letter-spacing:-.02em}
@@ -311,20 +313,36 @@
     </section>
 
     <div class="stats-bar" aria-label="Esperienza Gala 400 — Idraulico Verona">
-      <div class="wrap">
-        <div class="stat-item">
+      <div class="stats-marquee" id="stats-marquee">
+        <div class="stat-slide">
           <span class="stat-num">15<span>+</span></span>
           <span class="stat-lbl">Anni di esperienza</span>
         </div>
-        <div class="stat-item">
+        <div class="stat-slide">
           <span class="stat-num">5.000<span>+</span></span>
           <span class="stat-lbl">Interventi completati</span>
         </div>
-        <div class="stat-item">
+        <div class="stat-slide">
           <span class="stat-num">24<span>/7</span></span>
           <span class="stat-lbl">Pronto intervento h24</span>
         </div>
-        <div class="stat-item">
+        <div class="stat-slide">
+          <span class="stat-num">20<span> min</span></span>
+          <span class="stat-lbl">Tempo medio di arrivo</span>
+        </div>
+        <div class="stat-slide" aria-hidden="true">
+          <span class="stat-num">15<span>+</span></span>
+          <span class="stat-lbl">Anni di esperienza</span>
+        </div>
+        <div class="stat-slide" aria-hidden="true">
+          <span class="stat-num">5.000<span>+</span></span>
+          <span class="stat-lbl">Interventi completati</span>
+        </div>
+        <div class="stat-slide" aria-hidden="true">
+          <span class="stat-num">24<span>/7</span></span>
+          <span class="stat-lbl">Pronto intervento h24</span>
+        </div>
+        <div class="stat-slide" aria-hidden="true">
           <span class="stat-num">20<span> min</span></span>
           <span class="stat-lbl">Tempo medio di arrivo</span>
         </div>
