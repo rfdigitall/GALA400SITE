@@ -27,6 +27,20 @@
     gtag('js', new Date());
     gtag('config', 'AW-18106797178');
   </script>
+  <script>
+    function gtag_report_conversion(url) {
+      var callback = function () {
+        if (typeof url !== 'undefined') {
+          window.location.href = url;
+        }
+      };
+      gtag('event', 'conversion', {
+        send_to: 'AW-18106797178/gj3KCPXd27EcEPqY_7lD',
+        event_callback: callback
+      });
+      return false;
+    }
+  </script>
   <script src="/js/phone-conversion.js" defer></script>
 </head>
 <body>

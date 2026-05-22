@@ -37,6 +37,21 @@
     gtag('js', new Date());
     gtag('config', 'AW-18106797178');
   </script>
+  <!-- Event snippet: Click telefono sito (AW-18106797178/gj3KCPXd27EcEPqY_7lD) -->
+  <script>
+    function gtag_report_conversion(url) {
+      var callback = function () {
+        if (typeof url !== 'undefined') {
+          window.location.href = url;
+        }
+      };
+      gtag('event', 'conversion', {
+        send_to: 'AW-18106797178/gj3KCPXd27EcEPqY_7lD',
+        event_callback: callback
+      });
+      return false;
+    }
+  </script>
   <script src="/js/phone-conversion.js" defer></script>
   <style>
     :root{--accent:#c2410c;--accent-light:#fb923c;--green:#166534;--green-mid:#15803d;--wa:#0f766e;--wa-hover:#115e59}
