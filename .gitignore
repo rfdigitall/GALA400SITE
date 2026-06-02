@@ -1,3 +1,7 @@
+# Dependențe / sistem (nu urca pe GitHub)
+node_modules/
 .DS_Store
 Thumbs.db
 desktop.ini
+*.log
+.npm/

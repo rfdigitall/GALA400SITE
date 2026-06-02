@@ -1,0 +1,9 @@
+{
+  "name": "gala400-site",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/generate-pages.mjs",
+    "generate": "node scripts/generate-pages.mjs",
+    "ads": "node scripts/generate-google-ads.mjs"
+  }
+}
