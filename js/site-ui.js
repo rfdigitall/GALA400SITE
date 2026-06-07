@@ -15,22 +15,50 @@
     });
   }
 
+  var called = false;
+  document.addEventListener(
+    'click',
+    function (e) {
+      if (e.target.closest('a[href^="tel:"]')) called = true;
+    },
+    true
+  );
+
   var gate = document.getElementById('call-gate');
   var gateClose = document.getElementById('call-gate-close');
-  if (gate && gateClose && window.matchMedia('(max-width: 767px)').matches) {
+  var isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+  function fromAds() {
     try {
-      if (sessionStorage.getItem('gala400_callgate') === '1') {
-        gate.classList.add('is-hidden');
-      } else {
-        setTimeout(function () {
-          if (cookieBanner && !cookieBanner.classList.contains('is-hidden')) return;
-          try {
-            sessionStorage.setItem('gala400_callgate', '1');
-          } catch (e) {}
-          gate.classList.remove('is-hidden');
-        }, 4000);
-      }
+      var q = new URLSearchParams(window.location.search);
+      return q.has('gclid') || q.has('gbraid') || q.has('wbraid') || q.get('utm_medium') === 'cpc';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function showGate() {
+    if (!gate || called) return;
+    try {
+      if (sessionStorage.getItem('gala400_callgate') === '1') return;
+      sessionStorage.setItem('gala400_callgate', '1');
     } catch (e) {}
+    gate.classList.remove('is-hidden');
+  }
+
+  if (gate && gateClose && isMobile) {
+    var delay = fromAds() ? 500 : 1200;
+    setTimeout(function () {
+      if (called) return;
+      if (cookieBanner && !cookieBanner.classList.contains('is-hidden')) {
+        cookieBtn && cookieBtn.addEventListener('click', function () {
+          setTimeout(showGate, 400);
+        }, { once: true });
+        return;
+      }
+      showGate();
+    }, delay);
+
     gateClose.addEventListener('click', function () {
       gate.classList.add('is-hidden');
     });

@@ -25,11 +25,11 @@ git add .
 git status
 git commit -m "Sursa site Gala 400 — pagini generate pe Netlify"
 git branch -M main
-git remote add origin https://github.com/TU_USER/GALA400SITE.git
-git push -u origin main
+git remote add origin https://github.com/rusescunfabian-svg/GALA400SITE.git
+git push -u origin master
 ```
 
-Înlocuiește `TU_USER/GALA400SITE` cu repo-ul tău.
+Repo GitHub: **https://github.com/rusescunfabian-svg/GALA400SITE** (proiect Gala 400 / gala400.it)
 
 ## Netlify
 

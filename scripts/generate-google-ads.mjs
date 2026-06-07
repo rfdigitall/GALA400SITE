@@ -58,6 +58,38 @@ function toTsv(rows) {
   return rows.map((row) => row.map(csvEscape).join('\t')).join('\r\n');
 }
 
+const CUSTOMER_ID_FILE = path.join(OUT, 'customer-id.txt');
+
+function readCustomerId() {
+  const fromSite = String(SITE.googleAdsCustomerId || '').replace(/\D/g, '');
+  if (fromSite.length >= 10) return fromSite;
+  if (!fs.existsSync(CUSTOMER_ID_FILE)) return '';
+  const line = fs
+    .readFileSync(CUSTOMER_ID_FILE, 'utf8')
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .find((l) => l && !l.startsWith('#'));
+  if (!line) return '';
+  const id = line.replace(/\D/g, '');
+  return id.length >= 10 ? id : '';
+}
+
+/** Coloana obligatorie dacă ești pe cont Manager (MCC) în Editor */
+function withCustomerId(header, rows) {
+  const cid = readCustomerId();
+  if (!cid) return { header, rows, hasId: false };
+  return {
+    header: ['Customer ID', ...header],
+    rows: rows.map((r) => [cid, ...r]),
+    hasId: true,
+  };
+}
+
+function toTsvWithAccount(header, rows) {
+  const { header: h, rows: r } = withCustomerId(header, rows);
+  return toTsv([h, ...r]);
+}
+
 function writeUnicodeText(filePath, content) {
   const buf = Buffer.from('\ufeff' + content, 'utf16le');
   fs.writeFileSync(filePath, buf);
@@ -388,7 +420,9 @@ function buildCombinedImportRows() {
 }
 
 function buildCombinedImportTsv() {
-  return toTsv(buildCombinedImportRows());
+  const rows = buildCombinedImportRows();
+  const { header, rows: data } = withCustomerId(rows[0], rows.slice(1));
+  return toTsv([header, ...data]);
 }
 
 function buildManualGuideRo() {
@@ -878,45 +912,111 @@ function buildLeanRsaRows() {
 writeUnicodeText(path.join(OUT_LEAN, 'IMPORT-TUTTO.txt'), buildCombinedImportTsv());
 writeUnicodeText(
   path.join(OUT_LEAN, '01-campaigns.txt'),
-  toTsv([
+  toTsvWithAccount(
     ['Campaign', 'Campaign status', 'Campaign type', 'Networks', 'Campaign daily budget', 'Bid strategy type'],
-    ...LEAN_CAMPAIGNS.map((c) => [c.name, 'Enabled', 'Search', 'Google search', c.budget, 'Manual CPC']),
-  ])
+    LEAN_CAMPAIGNS.map((c) => [c.name, 'Enabled', 'Search', 'Google search', c.budget, 'Manual CPC'])
+  )
 );
 writeUnicodeText(
   path.join(OUT_LEAN, '02-ad-groups.txt'),
-  toTsv([
+  toTsvWithAccount(
     ['Campaign', 'Ad group', 'Ad group status', 'Max CPC'],
-    ...leanAdGroupNames().map((g) => [g.campaign, g.name, 'Enabled', '2.80']),
-  ])
+    leanAdGroupNames().map((g) => [g.campaign, g.name, 'Enabled', '2.80'])
+  )
 );
 writeUnicodeText(
   path.join(OUT_LEAN, '03-keywords.txt'),
-  toTsv([
+  toTsvWithAccount(
     ['Campaign', 'Ad group', 'Keyword', 'Criterion type', 'Final URL', 'Keyword status'],
-    ...leanKeywordRows().map(([camp, ag, kw, url]) => [camp, ag, kw, 'Exact', url, 'Enabled']),
-  ])
+    leanKeywordRows().map(([camp, ag, kw, url]) => [camp, ag, kw, 'Exact', url, 'Enabled'])
+  )
 );
-writeUnicodeText(path.join(OUT_LEAN, '04-ads-rsa.txt'), toTsv(buildLeanRsaRows()));
+writeUnicodeText(
+  path.join(OUT_LEAN, '04-ads-rsa.txt'),
+  toTsvWithAccount(buildLeanRsaRows()[0], buildLeanRsaRows().slice(1))
+);
 writeUnicodeText(
   path.join(OUT_LEAN, '05-negative-keywords.txt'),
-  toTsv([['Campaign', 'Negative keyword', 'Criterion type'], ...buildLeanNegativesRows()])
+  toTsvWithAccount(['Campaign', 'Negative keyword', 'Criterion type'], buildLeanNegativesRows())
 );
 writeCsvFile(path.join(OUT_LEAN, 'IMPORT-RO.md'), buildImportGuideRo());
 writeCsvFile(path.join(OUT_LEAN, 'MANUAL-5MIN.md'), buildManualGuideRo());
+function buildFixIdClienteMd() {
+  return `# Fix: «Manca una colonna dell'account obbligatoria»
+
+## Cauza
+
+Sei connesso a un **Centro clienti (MCC)** in Google Ads Editor, oppure importi da cont Manager.
+Serve la colonna **Customer ID** (in italiano: **ID cliente**) su ogni riga.
+
+## Soluzione rapida (2 minuti)
+
+### 1. Trova il tuo ID cliente (10 cifre)
+
+- Apri **https://ads.google.com**
+- In alto a destra, sotto il nome account → vedi **123-456-7890**
+- Scrivi solo cifre: \`1234567890\` (senza trattini)
+
+Oppure in **Google Ads Editor** → seleziona l'account Gala 400 → l'ID compare nella barra.
+
+### 2. Inseriscilo nel progetto
+
+Apri il file \`google-ads/customer-id.txt\` e metti **una sola riga** con il numero, es.:
+
+\`\`\`
+1234567890
+\`\`\`
+
+### 3. Rigenera i file
+
+\`\`\`bash
+npm run ads
+\`\`\`
+
+### 4. Importa di nuovo
+
+\`google-ads/budget-40euro/IMPORT-TUTTO.txt\` (UTF-16, prima colonna **Customer ID**)
+
+---
+
+## Alternativa SENZA ID nel file
+
+1. In Google Ads Editor, nella lista account a **sinistra**
+2. **Doppio click** sul cont **Gala 400** (non sul MCC / Centro clienti)
+3. Aspetta il download
+4. Poi **Cont → Importa** — a volte non serve più la colonna ID
+
+---
+
+## All'import: mappa colonne
+
+Se Editor chiede mappatura:
+- \`Customer ID\` → **ID cliente** / **ID dell'account cliente**
+- \`Campaign\` → **Campagna**
+- \`Ad group\` → **Gruppo di annunci**
+`;
+}
+
+writeCsvFile(path.join(OUT, 'customer-id.example.txt'), `# Copia come customer-id.txt e inserisci il tuo ID (solo cifre)
+# Dove trovarlo: ads.google.com → in alto sotto nome account (es. 123-456-7890)
+1234567890
+`);
+if (!fs.existsSync(CUSTOMER_ID_FILE)) {
+  writeCsvFile(CUSTOMER_ID_FILE, '# Inserisci qui il tuo ID cliente Google Ads (10 cifre)\n# Esempio: 1234567890\n\n');
+}
+writeCsvFile(path.join(OUT_LEAN, 'FIX-ID-CLIENTE.md'), buildFixIdClienteMd());
 writeCsvFile(
   path.join(OUT_LEAN, 'LEGGIMI-IMPORT.txt'),
-  `GOOGLE ADS EDITOR — CITESTE ASTA
-================================
-Eroare "Nessuna riga di intestazione" = fisier CSV UTF-8 gresit.
+  `GOOGLE ADS EDITOR
+=================
+1) Inserisci ID in: google-ads/customer-id.txt  (vedi FIX-ID-CLIENTE.md)
+2) npm run ads
+3) Importa: budget-40euro/IMPORT-TUTTO.txt  (UTF-16)
 
-FOLOSESTE:
-  >>> IMPORT-TUTTO.txt <<<  (UTF-16, format Google oficial)
-
-Sau: MANUAL-5MIN.md (fara import, 5 minute in Editor)
-
-NU folosi .csv daca Editor da eroare la toate.
-Cont -> Importa -> Da file -> IMPORT-TUTTO.txt
+Erori:
+- "Nessuna riga intestazione" → usa .txt non .csv
+- "Colonna account obbligatoria" → customer-id.txt + npm run ads
+- Altrimenti: MANUAL-5MIN.md o START-AICI-BROWSER.md
 `
 );
 /* CSV UTF-8 (backup) */
@@ -932,6 +1032,13 @@ console.log(`  - keywords-quartieri.csv (${QUARTIERI.length} zone)`);
 console.log(`  - rsa-quartieri.csv (${QUARTIERI.length} annunci RSA)`);
 console.log(`  - negative-keywords.csv`);
 console.log(`  - README.md + impostazioni-campagna.txt`);
+const cid = readCustomerId();
 console.log(`Creato in google-ads/budget-40euro/:`);
 console.log(`  >>> IMPORT-TUTTO.txt (UTF-16 — FOLOSESTE ASTA)`);
 console.log(`  - 01..05 *.txt Unicode + MANUAL-5MIN.md`);
+if (cid) {
+  console.log(`  Customer ID incluso nei file: ${cid}`);
+} else {
+  console.log(`  ATTENZIONE: inserisci ID in google-ads/customer-id.txt poi npm run ads`);
+  console.log(`  (fix "Manca una colonna dell'account obbligatoria")`);
+}

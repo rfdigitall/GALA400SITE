@@ -2,8 +2,16 @@
   "name": "gala400-site",
   "private": true,
   "scripts": {
-    "build": "node scripts/generate-pages.mjs",
+    "build": "node scripts/generate-favicons.mjs && node scripts/generate-pages.mjs",
+    "icons": "node scripts/generate-favicons.mjs",
     "generate": "node scripts/generate-pages.mjs",
-    "ads": "node scripts/generate-google-ads.mjs"
+    "ads": "node scripts/generate-google-ads.mjs",
+    "ads:editor": "node scripts/export-ads-editor-it.mjs",
+    "ads:it": "node scripts/export-ads-editor-it.mjs",
+    "ads:sheets": "node scripts/export-ads-google-sheets.mjs"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.2",
+    "xlsx": "^0.18.5"
   }
 }

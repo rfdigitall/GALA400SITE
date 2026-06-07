@@ -43,10 +43,10 @@ function genServizio(svc) {
   const file = `servizi/${svc.slug}-verona.html`;
   const url = pageUrl([file]);
   const title = svc.urgent
-    ? `${svc.name} Urgente Verona ☎ ${SITE.phone} | H24`
+    ? `Idraulico vicino a te Verona ☎ ${SITE.phone} | Pronto intervento h24`
     : `${svc.name} Verona | ${SITE.phone} | Gala 400`;
   const desc = svc.urgent
-    ? `${svc.name} urgente a Verona ☎ ${SITE.phone}. ${svc.short} Arrivo ~${SITE.arrivalMin} min, h24. Chiama ora!`
+    ? `Idraulico vicino a te a Verona ☎ ${SITE.phone}. ${svc.short} Arrivo ~${SITE.arrivalMin} min. Gala 400 Srls — chiama ora.`
     : `${svc.name} a Verona: ${svc.short} Chiama ${SITE.phone} — preventivo chiaro.`;
 
   const schema = L.schemaGraph([
@@ -92,17 +92,20 @@ function genServizio(svc) {
   }));
 
   const body = `
-<section class="hero${svc.urgent ? ' hero-urgent' : ''}">
-  <div class="container hero-grid">
+<section class="hero${svc.urgent ? ' hero-urgent hero-convert' : ''}">
+  <div class="container">
+    ${svc.urgent ? L.heroPhonePrimary('hero') : ''}
+    <div class="hero-grid${svc.urgent ? ' hero-grid-compact' : ''}">
     <div class="hero-copy">
       ${L.heroEyebrow(svc.urgent)}
-      <h1>${L.esc(svc.name)} <span class="text-accent">Verona</span></h1>
-      <p class="hero-lead">${L.esc(svc.short)}</p>
+      <h1>${svc.urgent ? `Idraulico vicino a te — ${L.esc(svc.name)}` : `${L.esc(svc.name)}`} <span class="text-accent">Verona</span></h1>
+      <p class="hero-lead">${L.esc(svc.short)}${svc.urgent ? ' Chiama il numero in alto per intervento immediato.' : ''}</p>
       ${L.checkList(content.servizioBullets(svc))}
     </div>
     <div class="hero-aside">
-      ${L.heroVisual(I.heroEmojiForServizio(svc.slug), svc.name)}
+      ${svc.urgent ? L.heroProof() : L.heroVisual(I.iconServizio(svc.slug), svc.name)}
       ${L.ctaBlock(svc.name.toLowerCase(), 'hero')}
+    </div>
     </div>
   </div>
 </section>
@@ -110,7 +113,7 @@ ${L.trustBar()}
 ${svc.urgent ? L.midCta(`Serve ${svc.name.toLowerCase()} adesso?`) : ''}
 <section class="section">
   <div class="container prose">
-    ${L.sectionTitle(`${svc.name} a Verona: come lavoriamo`, I.iconServizio(svc.slug), true)}
+    ${L.sectionTitle(`${svc.name} a Verona: come lavoriamo`, I.ICON.services, true)}
     ${content.servizioBody(svc)}
     ${L.stepsRow()}
   </div>
@@ -130,6 +133,7 @@ ${svc.category === 'caldaie' ? `<section class="section"><div class="container">
   <p class="text-center mt"><a class="link-more" href="../marche/index.html">Vedi tutte le marche →</a></p>
 </div></section>` : ''}
 ${content.faqServizio(svc).length ? L.faqSection(content.faqServizio(svc)) : ''}
+${L.callbackForm(1, svc.slug)}
 <section class="section cta-section"><div class="container container-narrow">
   <h2 class="section-title">Richiedi intervento</h2>
   <p class="section-intro">Per ${L.esc(svc.name.toLowerCase())} a Verona siamo disponibili h24.</p>
@@ -211,17 +215,19 @@ function genQuartiere(q) {
     }));
 
   const body = `
-<section class="hero hero-urgent hero-local">
-  <div class="container hero-grid">
+<section class="hero hero-urgent hero-convert">
+  <div class="container">
+    ${L.heroPhonePrimary('hero')}
+    <div class="hero-grid hero-grid-compact">
     <div class="hero-copy">
       ${L.heroEyebrow(true)}
       <p class="eyebrow-zone">${label} · ${L.esc(q.name)}</p>
       <h1>Idraulico urgente <span class="text-accent">${L.esc(q.name)}</span></h1>
-      <p class="hero-lead">Servizio idraulico e termico in ${L.esc(q.highlight)}. Emergenze e manutenzione con tecnici qualificati.</p>
+      <p class="hero-lead">Servizio idraulico e termico in ${L.esc(q.highlight)}. Per urgenze chiama il numero in alto.</p>
     </div>
     <div class="hero-aside">
-      ${L.heroVisual(I.heroEmojiForQuartiere(q.slug, q.type), q.name)}
       ${L.ctaBlock(`idraulico ${q.name}`, 'hero')}
+    </div>
     </div>
   </div>
 </section>
@@ -229,11 +235,11 @@ ${L.trustBar()}
 ${L.midCta(`Idraulico urgente a ${q.name}?`)}
 <section class="section">
   <div class="container prose">
-    ${L.sectionTitle(`Idraulico a ${q.name}`, I.iconQuartiere(q.slug, q.type), true)}
+    ${L.sectionTitle(`Idraulico a ${q.name}`, I.ICON.location, true)}
     ${content.quartiereIntro(q)}
     ${content.quartiereLocal(q)}
-    <h3>${I.ICON.services} Servizi disponibili in zona</h3>
-    ${L.inlineTags(['Perdite acqua', 'Caldaie', 'Spurghi', 'Gas', 'Condomini', 'Scaldabagni'].map((label) => ({ label, icon: I.iconTag(label) })))}
+    <h3>Servizi disponibili in zona</h3>
+    ${L.inlineTags(['Perdite acqua', 'Caldaie', 'Spurghi', 'Gas', 'Condomini', 'Scaldabagni'])}
   </div>
 </section>
 <section class="section section-alt">
@@ -258,6 +264,7 @@ ${L.midCta(`Idraulico urgente a ${q.name}?`)}
   </div>
 </section>
 ${L.faqSection(content.faqQuartiere(q))}
+${L.callbackForm(1, q.slug)}
 <section class="section cta-section"><div class="container container-narrow">
   <h2 class="section-title">Chiama l'idraulico a ${L.esc(q.name)}</h2>
   ${L.ctaBlock(`idraulico ${q.name}`, 'footer')}
@@ -316,7 +323,7 @@ function genMarca(m) {
   const tipoBlocks = CALDAIA_TIPI.map(
     (tipo) => `
 <article class="service-block">
-  <h3><span class="block-ico" aria-hidden="true">${I.iconCaldaiaTipo(tipo.slug)}</span> ${L.esc(tipo.name)} caldaie ${L.esc(m.name)}</h3>
+  <h3><span class="block-mono" aria-hidden="true">${I.iconCaldaiaTipo(tipo.slug)}</span> ${L.esc(tipo.name)} caldaie ${L.esc(m.name)}</h3>
   <p>${content.marcaServizioBlock(m, tipo)}</p>
   <a class="link-arrow" href="../servizi/${tipo.verb}-caldaia-verona.html">${L.esc(tipo.name)} caldaie Verona →</a>
 </article>`
@@ -332,17 +339,19 @@ function genMarca(m) {
     }));
 
   const body = `
-<section class="hero hero-urgent">
-  <div class="container hero-grid">
+<section class="hero hero-urgent hero-convert">
+  <div class="container">
+    ${L.heroPhonePrimary('hero')}
+    <div class="hero-grid hero-grid-compact">
     <div class="hero-copy">
       ${L.heroEyebrow(true)}
       <p class="eyebrow-zone">Caldaie ${L.esc(m.name)}</p>
       <h1>Assistenza <span class="text-accent">${L.esc(m.name)}</span> Verona</h1>
-      <p class="hero-lead">Manutenzione, assistenza urgente e riparazione con tecnici esperti su impianti ${L.esc(m.name)}.</p>
+      <p class="hero-lead">Manutenzione, assistenza urgente e riparazione su impianti ${L.esc(m.name)}.</p>
     </div>
     <div class="hero-aside">
-      ${L.heroVisual(I.heroEmojiForMarca(m.slug), `Caldaie ${m.name}`)}
       ${L.ctaBlock(`caldaia ${m.name}`, 'hero')}
+    </div>
     </div>
   </div>
 </section>
@@ -350,7 +359,7 @@ ${L.trustBar()}
 ${L.midCta(`Caldaia ${m.name} in blocco?`)}
 <section class="section">
   <div class="container prose">
-    ${L.sectionTitle(`Assistenza ${m.name} a Verona`, I.iconMarca(m.slug), true)}
+    ${L.sectionTitle(`Assistenza ${m.name} a Verona`, I.ICON.boiler, true)}
     ${content.marcaIntro(m)}
     <div class="service-blocks">${tipoBlocks}</div>
   </div>
@@ -363,6 +372,7 @@ ${L.midCta(`Caldaia ${m.name} in blocco?`)}
   </div>
 </section>
 ${L.faqSection(content.faqMarca(m))}
+${L.callbackForm(1, m.slug)}
 <section class="section cta-section"><div class="container container-narrow">
   <h2 class="section-title">Caldaia ${L.esc(m.name)} da controllare?</h2>
   ${L.ctaBlock(`assistenza ${m.name}`, 'footer')}
@@ -418,7 +428,8 @@ ${L.trustBar()}
   <div class="container">
     ${L.cardGrid(links, 3)}
   </div>
-</section>`;
+</section>
+${L.callbackForm(1, folder)}`;
 
   const url = pageUrl([folder, '']);
   const html = L.shell({
@@ -445,8 +456,8 @@ ${L.trustBar()}
 // ——— HOME ———
 function genHome() {
   const url = `${SITE.domain}/`;
-  const title = `Idraulico Urgente Verona ${SITE.phone} | Pronto Intervento H24`;
-  const desc = `Idraulico urgente Verona ☎ ${SITE.phone} — Pronto intervento h24, arrivo ~${SITE.arrivalMin} min. Perdite acqua, caldaie, gas, spurghi. Chiama ora!`;
+  const title = `Idraulico vicino a te Verona ${SITE.phone} | Pronto intervento h24`;
+  const desc = `Idraulico vicino a te a Verona ☎ ${SITE.phone}. Pronto intervento h24, arrivo ~${SITE.arrivalMin} min. ${SITE.legalName} P.IVA ${SITE.piva}. Chiama ora.`;
 
   const schema = L.schemaGraph([
     businessGeo({
@@ -502,60 +513,51 @@ function genHome() {
   }));
 
   const body = `
-<section class="hero hero-home hero-urgent">
-  <div class="container hero-grid">
-    <div class="hero-copy">
-      ${L.heroEyebrow(true)}
-      <h1>Idraulico urgente <span class="text-accent">Verona</span><br>Pronto intervento h24</h1>
-      <p class="hero-lead">Perdite d'acqua, caldaie spente, gas, spurghi e allagamenti. <strong>Chiama ora</strong> — arrivo medio in ${SITE.arrivalMin} minuti, preventivo prima di iniziare.</p>
-      ${L.checkList([
-        { icon: I.ICON.urgent, text: 'Disponibili ora — anche notte e festivi' },
-        { icon: I.ICON.water, text: 'Perdite acqua · Caldaie · Emergenza gas' },
-        { icon: I.ICON.location, text: 'Tutti i quartieri di Verona e provincia' },
-      ])}
-    </div>
-    <div class="hero-aside">
-      ${L.heroVisual('🚰', 'Pronto intervento Verona')}
-      ${L.ctaBlock('idraulico urgente Verona', 'hero')}
+<section class="hero hero-home hero-urgent hero-convert">
+  <div class="container">
+    ${L.heroPhonePrimary('hero')}
+    <div class="hero-grid hero-grid-convert">
+      <div class="hero-copy">
+        ${L.heroEyebrow(true)}
+        <h1>Idraulico a Verona<br><span class="text-accent">pronto intervento h24</span></h1>
+        <p class="hero-lead">Perdite d'acqua, caldaia spenta, gas o scarico intasato: <strong>chiama il numero sopra</strong>. Tecnico in zona, arrivo medio ~${SITE.arrivalMin} minuti.</p>
+        ${L.checkList([
+          'Intervento in tutta Verona e provincia',
+          'Preventivo comunicato prima di iniziare',
+          'Disponibili notte, domenica e festivi',
+        ])}
+      </div>
+      <div class="hero-aside">
+        ${L.heroProof()}
+        ${L.ctaBlock('idraulico urgente Verona', 'hero-sidebar')}
+      </div>
     </div>
   </div>
 </section>
 ${L.trustBar()}
-${L.featureStrip(HOME_FEATURES)}
-${L.midCta('Hai un\'emergenza idraulica adesso?')}
-<section class="section" id="servizi">
+${L.midCta('Emergenza adesso? Chiama subito')}
+<section class="section section-compact" id="servizi">
   <div class="container">
-    ${L.sectionTitle('Servizi idraulici e termici', I.ICON.services)}
-    <p class="section-intro">Soluzioni complete per casa, attività commerciali e condomini a Verona.</p>
-    ${L.cardGrid(serviziTop, 2)}
-    <p class="text-center mt"><a class="link-more" href="servizi/pronto-intervento-idraulico-verona.html">Pronto intervento urgente →</a> · <a class="link-more" href="servizi/index.html">Tutti i servizi</a></p>
+    ${L.sectionTitle('Cosa risolviamo più spesso', I.ICON.services)}
+    ${L.cardGrid(serviziTop.slice(0, 4), 2)}
+    <p class="text-center mt"><a class="link-more" href="servizi/pronto-intervento-idraulico-verona.html">Pronto intervento urgente →</a></p>
   </div>
 </section>
-${L.midCta('Perdita d\'acqua o caldaia spenta?')}
-<section class="section section-alt" id="zone">
+<section class="section section-alt section-compact" id="zone">
   <div class="container">
-    ${L.sectionTitle('Idraulico per quartiere e comune', I.ICON.zones)}
-    <p class="section-intro">Ogni zona di Verona ha una pagina dedicata con servizi e tempi di intervento.</p>
-    ${L.cardGrid(zoneTop, 3)}
-    <p class="text-center mt"><a class="link-more" href="quartieri/index.html">Tutte le ${QUARTIERI.length} zone →</a></p>
+    ${L.sectionTitle('Zone coperte a Verona', I.ICON.zones)}
+    ${L.cardGrid(zoneTop.slice(0, 4), 2)}
+    <p class="text-center mt"><a class="link-more" href="quartieri/index.html">Tutte le zone →</a></p>
   </div>
 </section>
-<section class="section" id="caldaie">
-  <div class="container">
-    ${L.sectionTitle('Caldaie — marche più diffuse in Italia', I.ICON.boiler)}
-    <p class="section-intro">Assistenza, manutenzione e riparazione su Vaillant, Baxi, Ariston, Beretta, Immergas e altre.</p>
-    ${L.cardGrid(marcheTop, 4)}
-    <p class="text-center mt"><a class="link-more" href="marche/index.html">Tutte le ${MARCHE.length} marche →</a></p>
-  </div>
-</section>
-${L.callbackForm(0)}
 ${L.homeFaq()}
-<section class="section gbp-row"><div class="container text-center">
-  <a class="gbp-link" href="${SITE.gbp}" rel="noopener" target="_blank">${I.ICON.google} ${I.ICON.star} Recensioni su Google — Gala 400</a>
+${L.callbackForm(0, 'home')}
+<section class="section gbp-row section-compact"><div class="container text-center">
+  <a class="gbp-link" href="${SITE.gbp}" rel="noopener" target="_blank">Recensioni Google — Gala 400 Verona</a>
 </section>
 <section class="section cta-section"><div class="container container-narrow">
-  <h2 class="section-title">Chiama l'idraulico urgente a Verona</h2>
-  <p class="section-intro">Siamo in linea adesso per emergenze acqua, gas e caldaie.</p>
+  <h2 class="section-title">Linea diretta idraulico Verona</h2>
+  <p class="section-intro">Nessun call center · ${SITE.legalName} · P.IVA ${SITE.piva}</p>
   ${L.ctaBlock('emergenza Verona', 'footer')}
 </div></section>`;
 

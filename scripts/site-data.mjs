@@ -11,10 +11,18 @@ export const SITE = {
   rea: 'VR476830',
   gbp: 'https://share.google/IhkhBfXpcJHccJPsL',
   gtag: 'AW-18106797178',
-  conversion: 'AW-18106797178/gj3KCPXd27EcEPqY_7lD',
+  conversion: 'AW-18106797178/tG61CLym4LocEPqY_7lD',
+  /** ID cliente Google Ads (10 cifre). Oppure file google-ads/customer-id.txt */
+  googleAdsCustomerId: '',
   promo: 'Promo -20% fino al 28/06',
   arrivalMin: 20,
+  yearsExperience: '15+',
+  sinceYear: '2010',
   geo: { lat: 45.4384, lng: 10.9916 },
+  webAgency: {
+    name: 'RF DIGITAL',
+    url: 'https://www.rfdigital.it',
+  },
 };
 
 /** Servizi idraulici e termici */

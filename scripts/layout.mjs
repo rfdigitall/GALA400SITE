@@ -1,5 +1,5 @@
 import { SITE } from './site-data.mjs';
-import { ICON, TRUST_ITEMS, NAV_ICONS, STEPS } from './icons.mjs';
+import { ICON, TRUST_ITEMS, STEPS } from './icons.mjs';
 
 export function esc(s) {
   return String(s)
@@ -41,44 +41,76 @@ export function head({ title, description, canonical, depth = 0 }) {
   <meta property="og:url" content="${esc(canonical)}">
   <meta property="og:site_name" content="${esc(SITE.businessName)}">
   <meta name="theme-color" content="#0c1f33">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="preload" href="${r}css/site.css" as="style">
+  <link rel="icon" href="${r}favicon.ico" sizes="32x32">
+  <link rel="icon" type="image/png" sizes="48x48" href="${r}assets/favicon-48.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="${r}assets/favicon-96.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="${r}assets/favicon-192.png">
   <link rel="icon" href="${r}assets/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="${r}assets/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="${r}assets/apple-touch-icon.png">
+  <link rel="manifest" href="${r}site.webmanifest">
   <link rel="stylesheet" href="${r}css/site.css">
+  <!-- Google tag (gtag.js) — AW-18106797178 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=${SITE.gtag}"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${SITE.gtag}',{'phone_conversion_number':'${SITE.phone}'});</script>
+  <script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());
+    gtag('config','${SITE.gtag}',{'phone_conversion_number':'${SITE.phone}'});
+  </script>
   <script src="${r}js/phone-conversion.js" defer></script>
   <script>
     function gtag_report_conversion(url){
       var cb=function(){if(typeof url!=='undefined')window.location.href=url;};
-      if(typeof gtag==='function')gtag('event','conversion',{send_to:'${SITE.conversion}',event_callback:cb});
+      gtag('event','conversion',{send_to:'${SITE.conversion}',event_callback:cb});
       return false;
     }
   </script>`;
 }
 
-/** Fascia urgenza — visibile, non invasiva */
+/** Fascia urgenza — tap diretto al telefono */
 export function urgencyStrip() {
-  return `<div class="urgency-strip" role="status">
+  return `<a href="tel:${SITE.phoneTel}" class="urgency-strip" role="status" data-cta="strip-call">
   <div class="container urgency-strip-inner">
     <span class="live-dot" aria-hidden="true"></span>
-    <span>${ICON.urgent} <strong>Pronto intervento attivo</strong> — Verona · ~${SITE.arrivalMin} min</span>
-    <a href="tel:${SITE.phoneTel}" class="urgency-strip-phone">${ICON.phone} ${SITE.phone}</a>
+    <span class="urgency-strip-text"><strong>Pronto intervento attivo</strong> — Verona · ~${SITE.arrivalMin} min</span>
+    <span class="urgency-strip-phone">${SITE.phone}</span>
   </div>
-</div>`;
+</a>`;
+}
+
+/** Blocco telefono hero — primo elemento su mobile */
+export function heroPhonePrimary(id = 'hero-top') {
+  return `<a href="tel:${SITE.phoneTel}" class="hero-phone-tap" data-cta="${id}-call">
+  <span class="hero-phone-status"><span class="live-dot"></span> Disponibile ora · Verona e provincia</span>
+  <span class="hero-phone-label">Emergenza idraulica — tocca per chiamare</span>
+  <span class="hero-phone-num">${SITE.phone}</span>
+  <span class="hero-phone-meta">${SITE.legalName} · P.IVA ${SITE.piva}</span>
+</a>`;
 }
 
 export function heroEyebrow(urgent = true) {
-  if (!urgent) return `<p class="eyebrow">Gala 400 · Verona e provincia</p>`;
-  return `<p class="eyebrow eyebrow-urgent"><span class="live-dot"></span> ${ICON.urgent} Disponibili ora · Pronto intervento h24</p>`;
+  if (!urgent) return `<p class="eyebrow">Gala 400 · Idraulici a Verona dal ${SITE.sinceYear}</p>`;
+  return `<p class="eyebrow eyebrow-urgent"><span class="live-dot"></span> Tecnico disponibile ora · Verona e provincia</p>`;
 }
 
-export function heroVisual(emoji, caption = 'Gala 400 · Verona') {
+export function heroProof() {
+  return `<div class="hero-proof" aria-label="Perché scegliere Gala 400">
+  <p class="hero-proof-kicker">Idraulico vicino a te · zona Verona VR</p>
+  <ul class="hero-proof-list">
+    <li><strong>~${SITE.arrivalMin} min</strong> arrivo medio in città</li>
+    <li><strong>${SITE.legalName}</strong> · P.IVA ${SITE.piva}</li>
+    <li><strong>H24</strong> perdite acqua, gas, caldaie, spurghi</li>
+  </ul>
+  <p class="hero-proof-note">Parli direttamente con un tecnico — niente centralino estero.</p>
+</div>`;
+}
+
+export function heroVisual(mono, caption = 'Gala 400 · Verona') {
+  const label = esc(String(mono || 'G4').slice(0, 3).toUpperCase());
   return `<div class="hero-visual" aria-hidden="true">
   <div class="hero-visual-frame">
-    <span class="hero-visual-emoji">${emoji}</span>
+    <span class="hero-visual-mono">${label}</span>
     <span class="hero-visual-cap">${esc(caption)}</span>
   </div>
 </div>`;
@@ -105,7 +137,6 @@ export function sectionTitle(text, icon = '', left = false) {
 export function stepsRow() {
   return `<div class="steps-row">${STEPS.map(
     (s, i) => `<div class="step-card">
-  <span class="step-ico" aria-hidden="true">${s.icon}</span>
   <span class="step-num">${i + 1}</span>
   <p>${esc(s.text)}</p>
 </div>`
@@ -117,7 +148,6 @@ export function featureStrip(items) {
   <div class="container feature-grid">${items
     .map(
       (f) => `<div class="feature-card">
-    <span class="feature-ico" aria-hidden="true">${f.icon}</span>
     <strong>${esc(f.title)}</strong>
     <span>${esc(f.desc)}</span>
   </div>`
@@ -182,7 +212,7 @@ export function header(depth) {
       </span>
     </a>
     <a class="topbar-phone" href="tel:${SITE.phoneTel}" data-cta="header-tel">
-      <span class="topbar-phone-label">${ICON.phone} Pronto intervento h24</span>
+      <span class="topbar-phone-label">Pronto intervento h24</span>
       <span class="topbar-phone-num">${SITE.phone}</span>
     </a>
   </div>
@@ -197,13 +227,15 @@ export function navMain(depth, active = '') {
     { href: `${r}quartieri/index.html`, label: 'Zone', id: 'quartieri' },
     { href: `${r}marche/index.html`, label: 'Caldaie', id: 'marche' },
   ];
+  const callHref = `tel:${SITE.phoneTel}`;
+  const callLink = `<a href="${callHref}" class="nav-call" data-cta="nav-call">${SITE.phone}</a>`;
   const links = items
     .map(
       (i) =>
-        `<a href="${i.href}"${active === i.id ? ' class="is-active"' : ''}><span class="nav-ico" aria-hidden="true">${NAV_ICONS[i.id] || ''}</span>${i.label}</a>`
+        `<a href="${i.href}"${active === i.id ? ' class="is-active"' : ''}>${i.label}</a>`
     )
     .join('');
-  return `<nav class="nav-main" aria-label="Menu principale"><div class="container">${links}</div></nav>`;
+  return `<nav class="nav-main" aria-label="Menu principale"><div class="container nav-inner">${links}${callLink}</div></nav>`;
 }
 
 export function breadcrumb(items) {
@@ -218,20 +250,21 @@ export function breadcrumb(items) {
 
 export function ctaBlock(context, id = 'cta') {
   return `<div class="cta-panel" id="${id}">
-  <a href="tel:${SITE.phoneTel}" class="btn btn-primary btn-block" data-cta="${id}-call">
-    <span class="btn-sub">${ICON.phone} Chiama ora — risposta immediata</span>
+  <a href="tel:${SITE.phoneTel}" class="btn btn-primary btn-block btn-call-hero btn-pulse" data-cta="${id}-call">
+    <span class="btn-sub">Emergenza? Tocca per chiamare</span>
     <span class="btn-phone">${SITE.phone}</span>
   </a>
-  <a href="${waLink(`Richiesta ${context} a Verona`)}" class="btn btn-secondary btn-block" rel="noopener" target="_blank" data-cta="${id}-wa"><span class="btn-wa-ico" aria-hidden="true">${ICON.whatsapp}</span> Scrivi su WhatsApp</a>
-  <p class="cta-meta">${ICON.promo} ${SITE.promo} · ${ICON.shield} Preventivo chiaro · Tecnici qualificati</p>
+  <p class="cta-trust">Risposta diretta · niente call center · preventivo prima dei lavori</p>
+  <a href="${waLink(`Richiesta ${context} a Verona`)}" class="btn btn-secondary btn-block btn-wa-quiet" rel="noopener" target="_blank" data-cta="${id}-wa">Scrivi su WhatsApp</a>
+  <p class="cta-meta">${SITE.promo} · ${SITE.legalName}</p>
 </div>`;
 }
 
 export function trustBar() {
-  const items = TRUST_ITEMS.map((t) => {
+  const items = TRUST_ITEMS.map((t, i) => {
     const strong = t.key === 'arrival' ? `${SITE.arrivalMin} min` : t.strong;
     return `<div class="trust-item">
-    <span class="trust-ico" aria-hidden="true">${t.icon}</span>
+    <span class="trust-num" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
     <strong>${strong}</strong><span>${t.span}</span>
   </div>`;
   });
@@ -256,7 +289,7 @@ export function cardGrid(links, cols = 3) {
   const items = links
     .map(
       (l) => `<a class="card-link" href="${l.href}">
-  ${l.icon ? `<span class="card-link-icon" aria-hidden="true">${l.icon}</span>` : ''}
+  ${l.icon ? `<span class="card-link-icon" aria-hidden="true"><span class="card-mono">${esc(String(l.icon))}</span></span>` : ''}
   <span class="card-link-body">
     <span class="card-link-title">${esc(l.title)}</span>
     ${l.desc ? `<span class="card-link-desc">${esc(l.desc)}</span>` : ''}
@@ -272,30 +305,31 @@ export function midCta(text = 'Emergenza idraulica a Verona?') {
   return `<section class="mid-cta">
   <div class="container mid-cta-inner">
     <div>
-      <p class="mid-cta-title">${ICON.urgent} ${esc(text)}</p>
-      <p class="mid-cta-sub">${ICON.clock} Tecnico in arrivo in ~${SITE.arrivalMin} minuti</p>
+      <p class="mid-cta-title">${esc(text)}</p>
+      <p class="mid-cta-sub">Tecnico in arrivo in ~${SITE.arrivalMin} minuti · Verona VR</p>
     </div>
-    <a href="tel:${SITE.phoneTel}" class="btn btn-primary btn-cta-inline" data-cta="mid-call">
-      <span class="btn-phone">${ICON.phone} ${SITE.phone}</span>
+    <a href="tel:${SITE.phoneTel}" class="btn btn-primary btn-cta-inline btn-pulse" data-cta="mid-call">
+      <span class="btn-phone">${SITE.phone}</span>
     </a>
   </div>
 </section>`;
 }
 
-export function callbackForm(depth) {
+export function callbackForm(depth, idSuffix = 'main') {
   const r = rel(depth);
+  const sid = esc(idSuffix);
   return `<section class="section section-callback" id="richiamata">
   <div class="container container-narrow">
     ${sectionTitle('Richiamata immediata', ICON.callback)}
-    <p class="section-intro">Lascia numero e zona: ti richiamiamo al più presto. Per urgenze ${ICON.phone} <a href="tel:${SITE.phoneTel}" class="link-accent">${SITE.phone}</a>.</p>
-    <form name="richiamata" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="${r}index.html?ok=1#richiamata" class="callback-form">
+    <p class="section-intro">Per urgenze chiama subito <a href="tel:${SITE.phoneTel}" class="link-accent link-tel" data-cta="richiamata-tel">${SITE.phone}</a>. Il form sotto è per richiamata non urgente.</p>
+    <form name="richiamata" method="POST" data-netlify="true" data-ads-track="richiamata" netlify-honeypot="bot-field" action="${r}index.html?ok=1#richiamata" class="callback-form">
       <input type="hidden" name="form-name" value="richiamata">
       <p class="sr-only"><label>Non compilare <input name="bot-field"></label></p>
-      <label class="field-label" for="tel-cb"><span aria-hidden="true">${ICON.phone}</span> Telefono</label>
-      <input id="tel-cb" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required placeholder="349 123 4567">
-      <label class="field-label" for="zona-cb"><span aria-hidden="true">${ICON.location}</span> Zona a Verona</label>
-      <input id="zona-cb" name="zona" type="text" required placeholder="Es. Borgo Trento">
-      <button type="submit">${ICON.callback} Richiedi richiamata</button>
+      <label class="field-label" for="tel-cb-${sid}">Telefono</label>
+      <input id="tel-cb-${sid}" name="telefono" type="tel" inputmode="tel" autocomplete="tel" required placeholder="349 123 4567">
+      <label class="field-label" for="zona-cb-${sid}">Zona a Verona</label>
+      <input id="zona-cb-${sid}" name="zona" type="text" required placeholder="Es. Borgo Trento">
+      <button type="submit" class="btn-callback" data-cta="richiamata-invio">Richiedi richiamata</button>
       <p id="richiamata-ok" class="form-ok" hidden>Grazie. Per urgenze chiama <a href="tel:${SITE.phoneTel}">${SITE.phone}</a>.</p>
     </form>
   </div>
@@ -304,22 +338,29 @@ export function callbackForm(depth) {
 
 export function stickyMobileCta() {
   return `<div class="sticky-mobile" role="complementary" aria-label="Chiama ora">
-  <a href="tel:${SITE.phoneTel}" class="sticky-call" data-cta="sticky-call">
-    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-    Chiama ${SITE.phone}
+  <a href="tel:${SITE.phoneTel}" class="sticky-call btn-pulse" data-cta="sticky-call">
+    <span class="sticky-call-label">Emergenza idraulica Verona</span>
+    <span class="sticky-call-num">${SITE.phone}</span>
   </a>
-  <a href="${waLink('Urgente idraulico Verona')}" class="sticky-wa" rel="noopener" target="_blank" data-cta="sticky-wa" aria-label="WhatsApp"><span aria-hidden="true">${ICON.whatsapp}</span> WA</a>
 </div>`;
+}
+
+export function floatCallDesktop() {
+  return `<a href="tel:${SITE.phoneTel}" class="float-call" data-cta="float-call" aria-label="Chiama ${SITE.phone}">
+  ${ICON.phone}
+  <span class="float-call-tip">Chiama ora</span>
+</a>`;
 }
 
 export function callGateModal() {
   return `<div id="call-gate" class="call-gate is-hidden" role="dialog" aria-modal="true" aria-label="Emergenza idraulica">
   <div class="call-gate-card">
-    <p class="call-gate-emoji" aria-hidden="true">${ICON.urgent}</p>
-    <p class="call-gate-title">Emergenza idraulica a Verona?</p>
-    <p class="call-gate-text">Siamo disponibili ora. Chiama per intervento immediato e preventivo chiaro.</p>
-    <a href="tel:${SITE.phoneTel}" class="call-gate-btn" data-cta="gate-call">${ICON.phone} Chiama ${SITE.phone}</a>
-    <button type="button" class="call-gate-dismiss" id="call-gate-close">Più tardi</button>
+    <p class="call-gate-kicker"><span class="live-dot"></span> Tecnico disponibile</p>
+    <p class="call-gate-title">Hai un'emergenza idraulica?</p>
+    <p class="call-gate-text">Perdita d'acqua, caldaia o scarico? Chiama ora — ${SITE.legalName}, Verona.</p>
+    <a href="tel:${SITE.phoneTel}" class="call-gate-btn btn-pulse" data-cta="gate-call">${SITE.phone}</a>
+    <p class="call-gate-sub">Tocca il numero · risposta diretta · preventivo prima dei lavori</p>
+    <button type="button" class="call-gate-dismiss" id="call-gate-close">No, continuo a guardare</button>
   </div>
 </div>`;
 }
@@ -337,8 +378,8 @@ export function footer(depth) {
   return `<footer class="site-footer">
   <div class="container footer-grid">
     <div>
-      <p class="footer-brand">${ICON.brand} ${SITE.businessName}</p>
-      <p class="footer-tel"><a href="tel:${SITE.phoneTel}">${ICON.phone} ${SITE.phone}</a></p>
+      <p class="footer-brand">${SITE.businessName}</p>
+      <p class="footer-tel"><a href="tel:${SITE.phoneTel}">${SITE.phone}</a></p>
       <p class="footer-legal">${SITE.legalName} · P.IVA ${SITE.piva} · REA ${SITE.rea}</p>
     </div>
     <nav class="footer-nav" aria-label="Footer">
@@ -349,8 +390,15 @@ export function footer(depth) {
       <a href="${r}cookie-policy.html">Cookie</a>
     </nav>
   </div>
-  <p class="footer-copy container">© ${new Date().getFullYear()} ${SITE.legalName}</p>
+  <div class="footer-bottom container">
+    <p class="footer-copy">© ${new Date().getFullYear()} ${SITE.legalName}</p>
+    <p class="footer-credit">
+      <span class="footer-credit-label">Sito realizzato da</span>
+      <a href="${SITE.webAgency.url}" class="footer-credit-brand" rel="noopener noreferrer" target="_blank">${SITE.webAgency.name}</a>
+    </p>
+  </div>
 </footer>
+${floatCallDesktop()}
 ${stickyMobileCta()}`;
 }
 
