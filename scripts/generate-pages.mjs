@@ -42,11 +42,10 @@ function businessGeo(extra = {}) {
 function genServizio(svc) {
   const file = `servizi/${svc.slug}-verona.html`;
   const url = pageUrl([file]);
-  const title = svc.urgent
-    ? `Idraulico vicino a te Verona ☎ ${SITE.phone} | Pronto intervento h24`
-    : `${svc.name} Verona | ${SITE.phone} | Gala 400`;
+  const seo = content.servizioSeo(svc);
+  const title = seo.title;
   const desc = svc.urgent
-    ? `Idraulico vicino a te a Verona ☎ ${SITE.phone}. ${svc.short} Arrivo ~${SITE.arrivalMin} min. Gala 400 Srls — chiama ora.`
+    ? `${seo.h1} a Verona ☎ ${SITE.phone}. ${svc.short} Arrivo ~${SITE.arrivalMin} min. Gala 400 Srls — chiama ora.`
     : `${svc.name} a Verona: ${svc.short} Chiama ${SITE.phone} — preventivo chiaro.`;
 
   const schema = L.schemaGraph([
@@ -98,8 +97,8 @@ function genServizio(svc) {
     <div class="hero-grid${svc.urgent ? ' hero-grid-compact' : ''}">
     <div class="hero-copy">
       ${L.heroEyebrow(svc.urgent)}
-      <h1>${svc.urgent ? `Idraulico vicino a te — ${L.esc(svc.name)}` : `${L.esc(svc.name)}`} <span class="text-accent">Verona</span></h1>
-      <p class="hero-lead">${L.esc(svc.short)}${svc.urgent ? ' Chiama il numero in alto per intervento immediato.' : ''}</p>
+      <h1>${L.esc(seo.h1)} <span class="text-accent">${L.esc(seo.accent)}</span></h1>
+      <p class="hero-lead">${seo.lead}</p>
       ${L.checkList(content.servizioBullets(svc))}
     </div>
     <div class="hero-aside">
@@ -110,33 +109,42 @@ function genServizio(svc) {
   </div>
 </section>
 ${L.trustBar()}
-${svc.urgent ? L.midCta(`Serve ${svc.name.toLowerCase()} adesso?`) : ''}
-<section class="section">
+${svc.urgent ? content.urgentIntentSection(svc) : ''}
+${svc.urgent ? L.midCta(`Emergenza a Verona? Chiama ${SITE.phone}`) : ''}
+<section class="section section-compact">
   <div class="container prose">
-    ${L.sectionTitle(`${svc.name} a Verona: come lavoriamo`, I.ICON.services, true)}
+    ${L.sectionTitle(`${seo.h1} a Verona`, I.ICON.services, true)}
     ${content.servizioBody(svc)}
     ${L.stepsRow()}
   </div>
 </section>
-<section class="section section-alt">
+${svc.urgent
+    ? `<section class="section section-alt section-compact">
+  <div class="container">
+    ${L.sectionTitle('Zone coperte — Verona', I.ICON.location)}
+    ${L.cardGrid(relatedZones.slice(0, 6), 2)}
+    <p class="text-center mt"><a class="link-more" href="../quartieri/index.html">Tutte le zone →</a></p>
+  </div>
+</section>`
+    : `<section class="section section-alt">
   <div class="container">
     ${L.sectionTitle('Zone servite', I.ICON.location)}
     <p class="section-intro">Interveniamo rapidamente nei principali quartieri di Verona e in provincia.</p>
     ${L.cardGrid(relatedZones, 3)}
     <p class="text-center mt"><a class="link-more" href="../quartieri/index.html">Tutte le zone di Verona →</a></p>
   </div>
-</section>
-${svc.category === 'caldaie' ? `<section class="section"><div class="container">
+</section>`}
+${svc.category === 'caldaie' && !svc.urgent ? `<section class="section"><div class="container">
   ${L.sectionTitle('Marche caldaie assistite', I.ICON.boiler)}
   <p class="section-intro">Assistenza, manutenzione e riparazione sulle principali marche installate in Italia.</p>
   ${L.cardGrid(marcheLinks, 3)}
   <p class="text-center mt"><a class="link-more" href="../marche/index.html">Vedi tutte le marche →</a></p>
 </div></section>` : ''}
 ${content.faqServizio(svc).length ? L.faqSection(content.faqServizio(svc)) : ''}
-${L.callbackForm(1, svc.slug)}
+${svc.urgent ? '' : L.callbackForm(1, svc.slug)}
 <section class="section cta-section"><div class="container container-narrow">
-  <h2 class="section-title">Richiedi intervento</h2>
-  <p class="section-intro">Per ${L.esc(svc.name.toLowerCase())} a Verona siamo disponibili h24.</p>
+  <h2 class="section-title">${svc.urgent ? `Chiama per ${L.esc(seo.h1.toLowerCase())}` : 'Richiedi intervento'}</h2>
+  <p class="section-intro">${svc.urgent ? `Linea diretta h24 · ${SITE.legalName}` : `Per ${L.esc(svc.name.toLowerCase())} a Verona siamo disponibili.`}</p>
   ${L.ctaBlock(svc.name, 'footer')}
 </div></section>`;
 

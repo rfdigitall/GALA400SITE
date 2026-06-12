@@ -284,6 +284,37 @@ a { text-decoration: none; color: inherit; }
 }
 .section-compact { padding: 2rem 0; }
 .section-compact .section-intro { margin-bottom: 1.25rem; }
+.section-emergency { background: var(--surface); border-block: 1px solid var(--border); }
+.section-intro.left { text-align: left; margin-left: 0; max-width: 36rem; }
+.emergency-list {
+  list-style: none;
+  display: grid;
+  gap: 0.5rem;
+  max-width: 28rem;
+  margin: 0 0 1.25rem;
+}
+.emergency-list li {
+  padding: 0.65rem 0.85rem 0.65rem 2rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--navy);
+  position: relative;
+}
+.emergency-list li::before {
+  content: '';
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background: var(--teal);
+  border-radius: 50%;
+}
+.emergency-call { max-width: 22rem; }
 @media (min-width: 768px) {
   .hero-grid { grid-template-columns: 1fr min(320px, 38%); align-items: start; }
   .hero-grid-compact { grid-template-columns: 1fr min(280px, 36%); align-items: center; }

@@ -120,9 +120,9 @@ export function checkList(items) {
   const lis = items
     .map((item) => {
       if (typeof item === 'string') {
-        return `<li><span class="check-ico" aria-hidden="true">${ICON.check}</span>${esc(item)}</li>`;
+        return `<li><span class="check-ico" aria-hidden="true"></span>${esc(item)}</li>`;
       }
-      return `<li><span class="check-ico" aria-hidden="true">${item.icon || ICON.check}</span>${esc(item.text)}</li>`;
+      return `<li><span class="check-ico" aria-hidden="true"></span>${esc(item.text)}</li>`;
     })
     .join('');
   return `<ul class="check-list">${lis}</ul>`;
