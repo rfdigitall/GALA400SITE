@@ -224,11 +224,6 @@ footer.site-footer{background:var(--ink2);padding:2.2rem 0 1.2rem}
 .sticky-call-num{font-family:var(--font-body);font-weight:700;font-size:1.2rem}
 
 #call-gate{display:none!important}
-.cookie-banner{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:50;background:var(--ink);color:var(--text-onink);border-radius:14px;padding:.9rem 1.1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;box-shadow:var(--shadow)}
-.cookie-banner.is-hidden{display:none}
-.cookie-banner p{margin:0;font-size:.85rem;flex:1;min-width:200px}
-.cookie-banner a{text-decoration:underline}
-.cookie-accept{background:var(--copper);color:#fff;border:0;border-radius:8px;padding:.55rem 1.1rem;font-weight:700;cursor:pointer}
 
 main{padding-bottom:74px}
 
@@ -431,3 +426,18 @@ footer.foot-pro{background:var(--ink2);padding:3rem 1.25rem 1.5rem;color:rgba(25
 
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+:root{
+  --cc-font-family: var(--font-body);
+  --cc-btn-primary-bg: var(--copper);
+  --cc-btn-primary-border-color: var(--copper);
+  --cc-btn-primary-hover-bg: var(--ink);
+  --cc-btn-primary-hover-border-color: var(--ink);
+  --cc-btn-secondary-bg: #fff;
+  --cc-btn-secondary-border-color: var(--line);
+  --cc-btn-secondary-hover-bg: var(--paper-alt);
+  --cc-bg: #fff;
+  --cc-text: var(--ink);
+  --cc-toggle-on-bg: var(--copper);
+}
+
