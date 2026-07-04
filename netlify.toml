@@ -1,16 +1,5 @@
 [build]
-  command = "npm run build"
   publish = "."
-
-[[headers]]
-  for = "/css/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/js/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
   for = "/assets/*"
@@ -62,9 +51,3 @@
   to = "https://gala400.it/:splat"
   status = 301
   force = true
-
-# Redirect vecchi URL marche → nuova struttura
-[[redirects]]
-  from = "/marche/assistenza-:brand-verona.html"
-  to = "/marche/:brand-verona.html"
-  status = 301
