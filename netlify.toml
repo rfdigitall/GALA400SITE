@@ -51,3 +51,27 @@
   to = "https://gala400.it/:splat"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/servizi/index.html"
+  to = "/servizi/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/quartieri/index.html"
+  to = "/quartieri/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/marche/index.html"
+  to = "/marche/"
+  status = 301
+  force = true

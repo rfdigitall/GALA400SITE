@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it-IT">
 <head>
 <meta charset="UTF-8">
@@ -28,19 +28,21 @@ gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_pers
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18106797178"></script>
 <script>
 gtag('js', new Date());
-gtag('config', 'AW-18106797178');
+gtag('set', {
+  'phone_conversion_number': '+393494208551',
+  'phone_conversion_ids': ['AW-18106797178/tG61CLym4LocEPqY_7lD']
+});
+gtag('config', 'AW-18106797178', {
+  'phone_conversion_number': '+393494208551',
+  'conversion_linker': true
+});
 gtag('config', 'G-TLQ5WCBTJK', {'anonymize_ip': true});
-function gtag_report_conversion(url) {
-  var callback = function () { if (typeof url !== 'undefined') { window.location.href = url; } };
-  gtag('event', 'conversion', { send_to: 'AW-18106797178/tG61CLym4LocEPqY_7lD', event_callback: callback });
-  return false;
-}
 </script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css">
 <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>
 </head>
 <body>
-  <a class="back" href="index.html">← Torna al sito</a>
+  <a class="back" href="/">← Torna al sito</a>
   <h1>Cookie Policy</h1>
   <p class="meta">Gala 400 Srls · P.IVA 05180000233 · Ultimo aggiornamento: luglio 2026</p>
 
@@ -70,7 +72,7 @@ function gtag_report_conversion(url) {
   <p>Gala 400 Srls — Verona (VR) — P.IVA 05180000233 — Tel. 349 420 8551.</p>
   <p>Per il trattamento dei dati personali vedi la Privacy Policy.</p>
 
-  <p style="margin-top:2rem"><a href="privacy-policy.html">Privacy Policy</a> · <a href="index.html">Home</a></p>
+  <p style="margin-top:2rem"><a href="privacy-policy.html">Privacy Policy</a> · <a href="/">Home</a></p>
 <script>
 function gala400UpdateConsent(analytics, ads){
   gtag('consent','update',{

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="it-IT">
 <head>
 <meta charset="UTF-8">
@@ -24,17 +24,19 @@ gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_pers
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18106797178"></script>
 <script>
 gtag('js', new Date());
-gtag('config', 'AW-18106797178');
+gtag('set', {
+  'phone_conversion_number': '+393494208551',
+  'phone_conversion_ids': ['AW-18106797178/tG61CLym4LocEPqY_7lD']
+});
+gtag('config', 'AW-18106797178', {
+  'phone_conversion_number': '+393494208551',
+  'conversion_linker': true
+});
 gtag('config', 'G-TLQ5WCBTJK', {'anonymize_ip': true});
-function gtag_report_conversion(url) {
-  var callback = function () { if (typeof url !== 'undefined') { window.location.href = url; } };
-  gtag('event', 'conversion', { send_to: 'AW-18106797178/tG61CLym4LocEPqY_7lD', event_callback: callback });
-  return false;
-}
 </script>
 </head>
 <body>
-  <a class="back" href="index.html">← Torna al sito</a>
+  <a class="back" href="/">← Torna al sito</a>
   <h1>Privacy Policy</h1>
   <p class="meta">Gala 400 Srls · P.IVA 05180000233 · REA VR476830 · Ultimo aggiornamento: luglio 2026</p>
 
@@ -76,6 +78,6 @@ function gtag_report_conversion(url) {
   <h2>9. Contatti</h2>
   <p>Per ogni richiesta relativa alla privacy: Gala 400 Srls — Verona (VR) — Tel. 349 420 8551.</p>
 
-  <p style="margin-top:2rem"><a href="cookie-policy.html">Cookie Policy</a> · <a href="index.html">Home</a></p>
+  <p style="margin-top:2rem"><a href="cookie-policy.html">Cookie Policy</a> · <a href="/">Home</a></p>
 </body>
 </html>
