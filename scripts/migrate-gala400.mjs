@@ -16,7 +16,20 @@ const TEMPLATE = path.join(NEW_ROOT, 'servizi', 'pronto-intervento-idraulico-ver
 const SEO_ONLY_STYLE = `<style>.seo-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}</style>`;
 const PHONE = '+393494208551';
 const PHONE_DISPLAY = '349 420 8551';
-const LASTMOD = '2026-07-11';
+const LASTMOD = '2026-07-12';
+
+const JUNK_PROSE_RE = /^(richiamata immediata|domande frequenti|zone vicine|servizi idraulici|assistenza caldaie|altre marche|elenco servizi|contatti|informazioni)$/i;
+
+const COOKIE_CONSENT_HEAD = `  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css">
+  <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>`;
+
+const NETLIFY_FORM_DETECT = `<form name="richiamata" netlify netlify-honeypot="bot-field" hidden aria-hidden="true">
+  <input type="hidden" name="form-name" value="richiamata">
+  <input name="telefono" type="tel">
+  <input name="zona" type="text">
+  <input name="consenso_privacy" type="checkbox">
+  <input name="bot-field">
+</form>`;
 
 const TICKER_ZONES = [
   'Verona Centro', 'Borgo Trento', 'Borgo Roma', 'San Zeno', 'Veronetta',
@@ -95,43 +108,185 @@ function parseHeroLead(html) {
   return m ? stripTags(m[1]) : '';
 }
 
-function parseCheckList(html) {
+function parseCheckListItems(html) {
   const items = [];
-  const block = html.match(/<ul\s+class="check-list"[^>]*>([\s\S]*?)<\/ul>/i);
-  if (!block) return items;
-  for (const m of block[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)) {
-    const text = stripTags(m[1]);
-    if (text) items.push(text);
+  for (const cls of ['check-list', 'chk-list']) {
+    const block = html.match(new RegExp(`<ul\\s+class="${cls}"[^>]*>([\\s\\S]*?)<\\/ul>`, 'i'));
+    if (!block) continue;
+    for (const m of block[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)) {
+      const text = stripTags(m[1]);
+      if (text) items.push(text);
+    }
+    if (items.length) return items;
+  }
+  const tags = html.match(/<ul\s+class="inline-tags"[^>]*>([\s\S]*?)<\/ul>/i);
+  if (tags) {
+    for (const m of tags[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)) {
+      const text = stripTags(m[1]);
+      if (text) items.push(text);
+    }
   }
   return items;
 }
 
 function parseProseParagraphs(html) {
   const paras = [];
-  for (const m of html.matchAll(/<div\s+class="[^"]*\bprose\b[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/gi)) {
-    const block = m[1];
-    for (const p of block.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
-      let inner = p[1].trim();
-      if (!inner || inner.startsWith('<h')) continue;
-      if (/<\/h2>/i.test(inner) || /<\/svg>/i.test(inner)) continue;
-      paras.push(inner);
+  const seen = new Set();
+
+  const addPara = (inner) => {
+    if (!inner) return;
+    const plain = stripTags(inner);
+    if (!plain || plain.length < 12) return;
+    if (JUNK_PROSE_RE.test(plain)) return;
+    if (seen.has(plain)) return;
+    seen.add(plain);
+    paras.push(inner);
+  };
+
+  for (const m of html.matchAll(/<div\s+class="[^"]*\bprose\b[^"]*"[^>]*>([\s\S]*?)<\/div>\s*(?:<\/div>|<section)/gi)) {
+    for (const p of m[1].matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
+      addPara(p[1].trim());
+    }
+    for (const art of m[1].matchAll(/<article\s+class="service-block"[^>]*>([\s\S]*?)<\/article>/gi)) {
+      const h3 = art[1].match(/<h3[^>]*>([\s\S]*?)<\/h3>/i);
+      const p = art[1].match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+      if (h3 && p) addPara(`<strong>${stripTags(h3[1])}</strong> ${p[1].trim()}`);
+      else if (p) addPara(p[1].trim());
     }
   }
-  if (paras.length === 0) {
-    for (const m of html.matchAll(/<section[^>]*>\s*<div[^>]*class="[^"]*\bprose\b[^"]*"[^>]*>([\s\S]*?)<\/section>/gi)) {
-      for (const p of m[1].matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
-        let inner = p[1].trim();
-        if (!inner || inner.startsWith('<h')) continue;
-        if (/<\/h2>/i.test(inner) || /<\/svg>/i.test(inner)) continue;
-        paras.push(inner);
+
+  for (const m of html.matchAll(/<p\s+class="section-intro"[^>]*>([\s\S]*?)<\/p>/gi)) {
+    addPara(m[1].trim());
+  }
+
+  return paras.slice(0, 10);
+}
+
+function parseProcessSteps(html) {
+  const steps = [];
+  for (const m of html.matchAll(/<div\s+class="ps2"[^>]*>[\s\S]*?<div\s+class="ps2-n">(\d+)<\/div>[\s\S]*?<div\s+class="ps2-title">([\s\S]*?)<\/div>[\s\S]*?<p\s+class="ps2-desc">([\s\S]*?)<\/p>/gi)) {
+    steps.push({ n: m[1], title: stripTags(m[2]), desc: stripTags(m[3]) });
+  }
+  return steps.slice(0, 3);
+}
+
+function parseCardLinksGrouped(html) {
+  const grouped = { servizi: [], marche: [], quartieri: [], altreMarche: [] };
+  for (const sec of html.matchAll(/<section[^>]*>([\s\S]*?)<\/section>/gi)) {
+    const block = sec[1];
+    if (!block.includes('card-link')) continue;
+    const h2m = block.match(/<h2[^>]*class="[^"]*section-title[^"]*"[^>]*>([\s\S]*?)<\/h2>/i);
+    const title = h2m ? stripTags(h2m[1]).toLowerCase() : '';
+    const links = [];
+    for (const m of block.matchAll(/<a\s+class="card-link"\s+href="([^"]+)"[\s\S]*?<span\s+class="card-link-title">([\s\S]*?)<\/span>(?:[\s\S]*?<span\s+class="card-link-desc">([\s\S]*?)<\/span>)?/gi)) {
+      links.push({ href: m[1], title: stripTags(m[2]), desc: m[3] ? stripTags(m[3]) : '' });
+    }
+    if (!links.length) continue;
+    if (/altre marche/.test(title)) grouped.altreMarche.push(...links);
+    else if (/marche|caldaie/.test(title)) grouped.marche.push(...links);
+    else if (/zone|quartier/.test(title)) grouped.quartieri.push(...links);
+    else if (/servizi/.test(title)) grouped.servizi.push(...links);
+    else {
+      for (const l of links) {
+        if (l.href.includes('/servizi/')) grouped.servizi.push(l);
+        else if (l.href.includes('/marche/')) grouped.marche.push(l);
+        else if (l.href.includes('/quartieri/') || l.href.includes('idraulico-')) grouped.quartieri.push(l);
       }
     }
   }
-  for (const h2 of html.matchAll(/<h2[^>]*class="[^"]*section-title[^"]*"[^>]*>([\s\S]*?)<\/h2>/gi)) {
-    const t = stripTags(h2[1]);
-    if (t && !paras.some((p) => stripTags(p) === t)) paras.unshift(`<strong>${t}</strong>`);
+  return grouped;
+}
+
+function brandFromPage(h1, filename) {
+  let b = h1.replace(/Assistenza\s+(caldaia\s+)?/i, '').replace(/\s*Verona.*/i, '').trim();
+  if (!b) b = filename.replace(/-verona\.html$/, '').replace(/-/g, ' ');
+  return b.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+function zoneFromPage(h1, filename) {
+  let z = h1.replace(/Idraulico\s+(urgente\s+)?/i, '').replace(/\s*Verona.*/i, '').trim();
+  if (!z) z = zoneNameFromFile(filename.replace(/^idraulico-/, 'idraulico-'));
+  return z;
+}
+
+function parseServiceBlockChecklist(html) {
+  const items = [];
+  for (const art of html.matchAll(/<article\s+class="service-block"[^>]*>([\s\S]*?)<\/article>/gi)) {
+    const p = art[1].match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+    const h3 = art[1].match(/<h3[^>]*>([\s\S]*?)<\/h3>/i);
+    const text = p ? stripTags(p[1]) : h3 ? stripTags(h3[1]) : '';
+    if (text) items.push(text);
   }
-  return paras.slice(0, 8);
+  return items.slice(0, 4);
+}
+
+const GENERIC_CHK_MARKERS = [
+  "Perdite d'acqua da tubature",
+  'Scarichi e WC bloccati',
+  'Caldaie spente o guasti termici',
+  'Emergenze gas — intervento h24',
+];
+
+function isGenericChecklist(items) {
+  if (!items.length) return true;
+  const hits = items.filter((i) => GENERIC_CHK_MARKERS.some((g) => i.includes(g.slice(0, 22)))).length;
+  return hits >= 2;
+}
+
+function resolveChecklist(html, existingV2, sectionDir, h1, desc, filename) {
+  let checkList = parseCheckListItems(html);
+  if (!checkList.length) checkList = parseServiceBlockChecklist(html);
+  if (!checkList.length || isGenericChecklist(checkList)) {
+    const v2chk = parseCheckListItems(existingV2);
+    if (v2chk.length && !isGenericChecklist(v2chk)) checkList = v2chk;
+  }
+  if (!checkList.length || isGenericChecklist(checkList)) {
+    checkList = buildChecklistFallback(sectionDir, h1, desc, html);
+  }
+  if (sectionDir === 'quartieri' && checkList.every((i) => i.length < 32)) {
+    const zone = zoneFromPage(h1, filename);
+    checkList = checkList.map((t) => `${t} a ${zone}, Verona — intervento h24`);
+  }
+  return checkList;
+}
+
+function buildChecklistFallback(sectionDir, h1, desc, html) {
+  const tags = [];
+  const tagBlock = html.match(/<ul\s+class="inline-tags"[^>]*>([\s\S]*?)<\/ul>/i);
+  if (tagBlock) {
+    for (const m of tagBlock[1].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)) tags.push(stripTags(m[1]));
+  }
+
+  if (sectionDir === 'marche') {
+    const brand = brandFromPage(h1, '');
+    return [
+      `Caldaia ${brand} spenta, blocco o codice errore sul display`,
+      `Manutenzione e controllo fumi caldaie ${brand} a Verona`,
+      `Perdite acqua, rumori o pressione impianto ${brand}`,
+      `Emergenza caldaia ${brand} — intervento h24 · ${PHONE_DISPLAY}`,
+    ];
+  }
+
+  if (sectionDir === 'quartieri') {
+    const zone = zoneFromPage(h1, '');
+    const base = tags.length
+      ? tags.map((t) => `${t} a ${zone} — pronto intervento`)
+      : [
+        `Perdite d'acqua e tubature rotte a ${zone}`,
+        `Caldaie, scaldabagni e impianti termici`,
+        `Scarichi, WC e spurghi intasati`,
+        `Emergenze gas — intervento h24 a Verona`,
+      ];
+    return base.slice(0, 4);
+  }
+
+  const topic = stripTags(h1).replace(/\s*Verona.*/i, '').trim() || 'idraulico';
+  return [
+    `${topic} urgente a Verona e provincia`,
+    `Arrivo medio ~20 minuti in città`,
+    `Preventivo chiaro prima di iniziare i lavori`,
+    `Disponibile h24 — chiama ${PHONE_DISPLAY}`,
+  ];
 }
 
 function parseCardLinks(html) {
@@ -182,15 +337,62 @@ function buildLinkGridSection(label, h2, links, ice = false) {
 </section>`;
 }
 
-function buildExtraLinkSections(cardLinks) {
-  const servizi = cardLinks.filter((c) => c.href.includes('/servizi/'));
-  const marche = cardLinks.filter((c) => c.href.includes('/marche/'));
-  const quartieri = cardLinks.filter((c) => c.href.includes('/quartieri/'));
-  return [
-    buildLinkGridSection('Servizi', 'Servizi idraulici<br>in zona.', servizi),
-    buildLinkGridSection('Caldaie', 'Assistenza caldaie<br>marche principali.', marche, true),
-    buildLinkGridSection('Zone', 'Zone vicine.', quartieri),
-  ].join('\n');
+function buildExtraLinkSections(cardLinks, grouped) {
+  const g = grouped || {
+    servizi: cardLinks.filter((c) => c.href.includes('/servizi/')),
+    marche: cardLinks.filter((c) => c.href.includes('/marche/')),
+    quartieri: cardLinks.filter((c) => c.href.includes('/quartieri/')),
+    altreMarche: [],
+  };
+  const sections = [
+    buildLinkGridSection('Servizi', 'Servizi idraulici<br>in zona.', g.servizi),
+    buildLinkGridSection('Caldaie', 'Assistenza caldaie<br>marche principali.', g.marche, true),
+    buildLinkGridSection('Zone', 'Zone vicine.', g.quartieri),
+  ];
+  if (g.altreMarche.length) {
+    sections.push(buildLinkGridSection('Altre marche', 'Altre marche<br>assistite.', g.altreMarche, true));
+  }
+  return sections.filter(Boolean).join('\n');
+}
+
+function buildProcessSection(steps) {
+  if (steps?.length) {
+    const cells = steps.map((s) =>
+      `<div class="ps2"><div class="ps2-n">${String(s.n).padStart(2, '0')}</div><div class="ps2-title">${s.title}</div><p class="ps2-desc">${s.desc}</p></div>`,
+    ).join('');
+    return `<section class="sec2 sec2-ice">
+  <div class="lbl2">Come intervengo</div>
+  <h2>Tre passaggi.<br>Nessuna sorpresa.</h2>
+  <div class="proc-grid">${cells}</div>
+</section>`;
+  }
+  return `<section class="sec2 sec2-ice">
+  <div class="lbl2">Come intervengo</div>
+  <h2>Tre passaggi.<br>Nessuna sorpresa.</h2>
+  <div class="proc-grid"><div class="ps2"><div class="ps2-n">01</div><div class="ps2-title">Mi chiami</div><p class="ps2-desc">Parli direttamente con me. Mi racconti il problema in 2 minuti.</p></div><div class="ps2"><div class="ps2-n">02</div><div class="ps2-title">Arrivo sul posto</div><p class="ps2-desc">Tempo medio ~20 minuti in città, con l'attrezzatura per la maggior parte dei guasti comuni.</p></div><div class="ps2"><div class="ps2-n">03</div><div class="ps2-title">Preventivo prima di iniziare</div><p class="ps2-desc">Vedi il costo prima che inizi a lavorare. Nessuna sorpresa in fattura.</p></div></div>
+</section>`;
+}
+
+function generateProseFallback(sectionDir, h1, heroLead, desc, filename) {
+  const plainH1 = stripTags(h1);
+  const lead = heroLead || desc || '';
+  if (sectionDir === 'marche') {
+    const brand = brandFromPage(h1, filename);
+    return [
+      `<strong>Assistenza caldaie ${brand} a Verona</strong> — pronto intervento h24 su caldaie ${brand} spente, bloccate o con codice errore. Intervento sul posto con diagnosi e preventivo prima di iniziare.`,
+      `Manutenzione, riparazione e sostituzione componenti per caldaie ${brand} a Verona e provincia. Chiama <a href="tel:${PHONE}">${PHONE_DISPLAY}</a> — arrivo medio ~20 minuti in città.`,
+    ];
+  }
+  if (sectionDir === 'quartieri') {
+    const zone = zoneFromPage(h1, filename);
+    return [
+      `<strong>Idraulico urgente a ${zone}, Verona</strong> — intervento h24 su perdite d'acqua, tubature rotte, scarichi intasati, caldaie e scaldabagni. ${lead}`,
+      `Copertura completa del quartiere ${zone} e zone limitrofe. Preventivo chiaro prima dei lavori — chiama <a href="tel:${PHONE}">${PHONE_DISPLAY}</a>.`,
+    ];
+  }
+  return lead ? [lead] : [
+    `${plainH1} — intervento h24 a Verona e provincia. Chiama <a href="tel:${PHONE}">${PHONE_DISPLAY}</a> per un preventivo prima di iniziare.`,
+  ];
 }
 
 function parseFaqFromHtml(html) {
@@ -239,8 +441,28 @@ function zoneNameFromFile(filename) {
     .replace(/San /g, 'San ');
 }
 
+function stripCookieConsent(html) {
+  return html
+    .replace(/<link rel="stylesheet" href="https:\/\/cdn\.jsdelivr\.net\/gh\/orestbida\/cookieconsent[^"]*"[^>]*>\s*/gi, '')
+    .replace(/<script defer src="https:\/\/cdn\.jsdelivr\.net\/gh\/orestbida\/cookieconsent[^"]*"[^>]*><\/script>\s*/gi, '');
+}
+
+function ensureSingleCookieConsent(html) {
+  let out = stripCookieConsent(html);
+  if (!out.includes('cookieconsent.umd.js')) {
+    out = out.replace('</head>', `${COOKIE_CONSENT_HEAD}\n</head>`);
+  }
+  return out;
+}
+
+function ensureNetlifyFormDetect(html) {
+  if (html.includes('name="richiamata"') && html.includes('data-netlify="true"')) return html;
+  if (html.includes('netlify-honeypot="bot-field" hidden')) return html;
+  return html.replace('<body', `${NETLIFY_FORM_DETECT}\n<body`);
+}
+
 function loadTemplate() {
-  const html = read(TEMPLATE);
+  const html = ensureSingleCookieConsent(read(TEMPLATE));
   const styleMatch = html.match(/<style>([\s\S]*?)<\/style>/);
   const style = styleMatch ? `<style>${styleMatch[1]}</style>` : '';
   const logoMatch = html.match(/<nav class="nav2"[\s\S]*?<img src="(data:image\/png;base64,[^"]+)"/);
@@ -249,9 +471,10 @@ function loadTemplate() {
   const footerTail = html.slice(html.indexOf('<footer class="foot-pro">'));
   const gtagStart = html.indexOf('<script>\n    window.dataLayer');
   const ldIdx = html.indexOf('<script type="application/ld+json">');
-  const gtagBlock = gtagStart >= 0 && ldIdx > gtagStart
+  let gtagBlock = gtagStart >= 0 && ldIdx > gtagStart
     ? html.slice(gtagStart, ldIdx).trim()
     : '';
+  gtagBlock = stripCookieConsent(gtagBlock);
   const faviconMatch = html.match(/<link rel="icon" href="(data:image[^"]+)"/);
   const favicon = faviconMatch ? faviconMatch[1] : '';
   return { style, logoBase64, contact2, footerTail, gtagBlock, favicon };
@@ -334,14 +557,6 @@ function buildCheckSection(items, title = 'Quando chiamarmi', subtitle = 'Non as
 </section>`;
 }
 
-function buildProcessSection() {
-  return `<section class="sec2 sec2-ice">
-  <div class="lbl2">Come intervengo</div>
-  <h2>Tre passaggi.<br>Nessuna sorpresa.</h2>
-  <div class="proc-grid"><div class="ps2"><div class="ps2-n">01</div><div class="ps2-title">Mi chiami</div><p class="ps2-desc">Parli direttamente con me. Mi racconti il problema in 2 minuti.</p></div><div class="ps2"><div class="ps2-n">02</div><div class="ps2-title">Arrivo sul posto</div><p class="ps2-desc">Tempo medio ~20 minuti in città, con l'attrezzatura per la maggior parte dei guasti comuni.</p></div><div class="ps2"><div class="ps2-n">03</div><div class="ps2-title">Preventivo prima di iniziare</div><p class="ps2-desc">Vedi il costo prima che inizi a lavorare. Nessuna sorpresa in fattura.</p></div></div>
-</section>`;
-}
-
 function buildProseSection(paras) {
   if (!paras.length) return '';
   const ps = paras.map((p) => `<p>${p}</p>`).join('\n    ');
@@ -397,8 +612,11 @@ function buildHead(meta, tpl, prefix) {
   <meta name="geo.region" content="IT-VR">
   <meta name="geo.placename" content="Verona">
   <meta name="geo.position" content="45.4384;10.9916">
+  <meta name="ICBM" content="45.4384, 10.9916">
   <meta name="format-detection" content="telephone=yes">
   <link rel="canonical" href="${canon}">
+  <link rel="alternate" hreflang="it-IT" href="${canon}">
+  <link rel="alternate" hreflang="x-default" href="${canon}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="it_IT">
   <meta property="og:title" content="${meta.ogTitle || meta.title}">
@@ -418,8 +636,7 @@ function buildHead(meta, tpl, prefix) {
   ${tpl.style}
   ${SEO_ONLY_STYLE}
   ${tpl.gtagBlock}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css">
-  <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>${ld}
+${COOKIE_CONSENT_HEAD}${ld}
 </head>`;
 }
 
@@ -427,24 +644,44 @@ async function generatePage(oldPath, outPath, sectionDir, tpl) {
   try {
     const html = read(oldPath);
     const filename = path.basename(oldPath);
-    const h1 = parseH1(html) || metaContent(html, 'description').slice(0, 80);
-    const heroLead = parseHeroLead(html) || metaContent(html, 'description');
-    const checkList = parseCheckList(html);
-    const prose = parseProseParagraphs(html);
-    const cardLinks = parseCardLinks(html);
-    const ldRaw = ldJson(html);
+    const existingV2 = fs.existsSync(outPath) ? read(outPath) : '';
+
+    const h1 = parseH1(html) || parseH1(existingV2) || metaContent(html, 'description').slice(0, 80);
+    const heroLead = parseHeroLead(html) || parseHeroLead(existingV2) || metaContent(html, 'description');
+    const desc = metaContent(html, 'description') || metaContent(existingV2, 'description');
+
+    let checkList = resolveChecklist(html, existingV2, sectionDir, h1, desc, filename);
+
+    let processSteps = parseProcessSteps(html);
+    if (!processSteps.length) processSteps = parseProcessSteps(existingV2);
+
+    const grouped = parseCardLinksGrouped(html);
+    let cardLinks = parseCardLinks(html);
+    if (!cardLinks.length) cardLinks = parseCardLinks(existingV2);
+
+    let prose = parseProseParagraphs(html);
+    if (prose.length < 2) {
+      const v2Prose = parseProseParagraphs(existingV2);
+      if (v2Prose.length > prose.length) prose = v2Prose;
+    }
+    if (prose.length < 2) {
+      prose = generateProseFallback(sectionDir, h1, heroLead, desc, filename);
+    }
+
+    const ldRaw = ldJson(html) || ldJson(existingV2);
     let faqs = parseFaqFromLd(ldRaw);
     if (!faqs.length) faqs = parseFaqFromHtml(html);
+    if (!faqs.length) faqs = parseFaqFromHtml(existingV2);
 
     const meta = {
       title: html.match(/<title>([\s\S]*?)<\/title>/i)?.[1]?.trim() || h1,
-      description: metaContent(html, 'description'),
-      keywords: metaContent(html, 'keywords'),
-      canonical: canonical(html),
-      ogTitle: metaProperty(html, 'og:title'),
-      ogDescription: metaProperty(html, 'og:description'),
-      ogUrl: metaProperty(html, 'og:url'),
-      ogImage: metaProperty(html, 'og:image'),
+      description: desc,
+      keywords: metaContent(html, 'keywords') || metaContent(existingV2, 'keywords'),
+      canonical: canonical(html) || canonical(existingV2),
+      ogTitle: metaProperty(html, 'og:title') || metaProperty(existingV2, 'og:title'),
+      ogDescription: metaProperty(html, 'og:description') || metaProperty(existingV2, 'og:description'),
+      ogUrl: metaProperty(html, 'og:url') || metaProperty(existingV2, 'og:url'),
+      ogImage: metaProperty(html, 'og:image') || metaProperty(existingV2, 'og:image'),
       ldJson: ldRaw,
       filename,
       sectionDir,
@@ -456,18 +693,19 @@ async function generatePage(oldPath, outPath, sectionDir, tpl) {
 ${buildHero2(h1, heroLead, waText)}
 ${buildTicker()}
 ${buildCheckSection(checkList)}
-${buildProcessSection()}
+${buildProcessSection(processSteps)}
 ${buildProseSection(prose)}
-${buildExtraLinkSections(cardLinks)}
+${buildExtraLinkSections(cardLinks, grouped)}
 ${buildZoneGrid(cardLinks, sectionDir)}
 ${buildFaqSection(faqs)}
 ${tpl.contact2}
 </main>
 ${tpl.footerTail}`;
 
-    const page = `${buildHead(meta, tpl, '../')}
+    let page = `${buildHead(meta, tpl, '../')}
 <body class="home-v2">
 ${body}`;
+    page = ensureSingleCookieConsent(page);
     write(outPath, page);
     generated++;
     return { h1, filename, heroLead };
@@ -506,10 +744,43 @@ function insertBeforeContact(html, block) {
   return `${html.slice(0, idx)}${block}\n${html.slice(idx)}`;
 }
 
+function patchListingIndexChecklist(filePath, items) {
+  if (!fs.existsSync(filePath)) return;
+  let html = read(filePath);
+  const lis = items.map((t) => `<li>${TICK2}${t}</li>`).join('');
+  html = html.replace(
+    /<ul class="chk-list"[^>]*>[\s\S]*?<\/ul>/,
+    `<ul class="chk-list" style="margin-top:1.6rem;max-width:38rem">${lis}</ul>`,
+  );
+  write(filePath, html);
+}
+
+function patchListingIndexChecklists() {
+  patchListingIndexChecklist(path.join(NEW_ROOT, 'servizi', 'index.html'), [
+    'Pronto intervento idraulico h24 a Verona e provincia',
+    'Perdite d\'acqua, spurghi, caldaie e allagamenti',
+    'Preventivo chiaro prima di iniziare i lavori',
+    `Disponibile h24 — chiama ${PHONE_DISPLAY}`,
+  ]);
+  patchListingIndexChecklist(path.join(NEW_ROOT, 'quartieri', 'index.html'), [
+    'Idraulico urgente in ogni quartiere di Verona',
+    'Perdite d\'acqua, caldaie, scarichi e emergenze gas',
+    'Arrivo medio ~20 minuti in città',
+    `Intervento h24 · ${PHONE_DISPLAY}`,
+  ]);
+  patchListingIndexChecklist(path.join(NEW_ROOT, 'marche', 'index.html'), [
+    'Assistenza caldaie di tutte le marche a Verona',
+    'Caldaia spenta, blocco o codice errore sul display',
+    'Manutenzione, riparazione e controllo fumi',
+    `Emergenza caldaia h24 · ${PHONE_DISPLAY}`,
+  ]);
+}
+
 function fixIndexListingPages() {
   fixServiziIndexPage();
   fixQuartieriIndexPage();
   fixMarcheIndexPage();
+  patchListingIndexChecklists();
 }
 
 function fixServiziIndexPage() {
@@ -591,10 +862,74 @@ function fixMarcheIndexPage() {
   write(indexPath, html);
 }
 
+function applyHreflangToFile(filePath, canonUrl) {
+  if (!fs.existsSync(filePath)) return;
+  let html = read(filePath);
+  if (html.includes('hreflang="it-IT"')) return;
+  const block = `  <link rel="alternate" hreflang="it-IT" href="${canonUrl}">\n  <link rel="alternate" hreflang="x-default" href="${canonUrl}">\n`;
+  html = html.replace(/(<link rel="canonical" href="[^"]*">)/, `$1\n${block}`);
+  if (!html.includes('name="ICBM"')) {
+    html = html.replace(
+      /(<meta name="geo.position" content="45.4384;10.9916">)/,
+      `$1\n  <meta name="ICBM" content="45.4384, 10.9916">`,
+    );
+  }
+  write(filePath, html);
+}
+
+function applyHreflangAll() {
+  applyHreflangToFile(path.join(NEW_ROOT, 'index.html'), 'https://gala400.it/');
+  for (const extra of ['cookie-policy.html', 'privacy-policy.html']) {
+    applyHreflangToFile(path.join(NEW_ROOT, extra), `https://gala400.it/${extra}`);
+  }
+  for (const section of ['servizi', 'quartieri', 'marche']) {
+    const dir = path.join(NEW_ROOT, section);
+    if (!fs.existsSync(dir)) continue;
+    for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.html'))) {
+      const canon = file === 'index.html'
+        ? `https://gala400.it/${section}/`
+        : `https://gala400.it/${section}/${file}`;
+      applyHreflangToFile(path.join(dir, file), canon);
+    }
+  }
+}
+
+function polishAllPages() {
+  const files = [];
+  for (const f of ['index.html', 'cookie-policy.html', 'privacy-policy.html', '404.html', 'sitemap.xml']) {
+    const p = path.join(NEW_ROOT, f);
+    if (fs.existsSync(p)) files.push(p);
+  }
+  for (const section of ['servizi', 'quartieri', 'marche']) {
+    const dir = path.join(NEW_ROOT, section);
+    if (!fs.existsSync(dir)) continue;
+    for (const file of fs.readdirSync(dir).filter((f) => f.endsWith('.html'))) {
+      files.push(path.join(dir, file));
+    }
+  }
+  for (const file of files) {
+    if (!file.endsWith('.html')) continue;
+    let html = read(file);
+    html = ensureSingleCookieConsent(html);
+    if (file.endsWith(`${path.sep}index.html`) && !file.includes(`${path.sep}servizi${path.sep}`) && !file.includes(`${path.sep}quartieri${path.sep}`) && !file.includes(`${path.sep}marche${path.sep}`)) {
+      html = ensureNetlifyFormDetect(html);
+    }
+    if (html.includes('<form name="richiamata"') && !html.includes('gala400-tracking.js')) {
+      html = html.replace('</body>', '  <script src="js/gala400-tracking.js"></script>\n</body>');
+    }
+    write(file, html);
+  }
+}
+
 function updateSitemap() {
-  const src = path.join(OLD_ROOT, 'sitemap.xml');
-  if (!fs.existsSync(src)) {
-    errors.push('sitemap.xml not found in OLD site');
+  const candidates = [
+    path.join(OLD_ROOT, 'sitemap.xml'),
+    path.join(OLD_REF, 'sitemap.xml'),
+    path.join(NEW_ROOT, 'sitemap.xml'),
+  ];
+  const src = candidates.find((p) => fs.existsSync(p));
+  if (!src) {
+    errors.push('sitemap.xml not found');
     return;
   }
   let xml = read(src);
@@ -680,6 +1015,12 @@ function updateIndex() {
   if (!html.includes(SEO_ONLY_STYLE)) {
     html = html.replace('</head>', `  ${SEO_ONLY_STYLE}\n</head>`);
   }
+  if (!html.includes('name="ICBM"')) {
+    html = html.replace(
+      /(<meta name="geo.position" content="45.4384;10.9916">)/,
+      `$1\n  <meta name="ICBM" content="45.4384, 10.9916">`,
+    );
+  }
 
   write(indexPath, html);
 }
@@ -705,13 +1046,19 @@ async function main() {
   fixIndexListingPages();
   console.log('  index listing pages updated (servizi, quartieri, marche)');
 
-  if (fs.existsSync(path.join(OLD_ROOT, 'sitemap.xml'))) {
+  if (fs.existsSync(path.join(OLD_ROOT, 'sitemap.xml')) || fs.existsSync(path.join(OLD_REF, 'sitemap.xml')) || fs.existsSync(path.join(NEW_ROOT, 'sitemap.xml'))) {
     updateSitemap();
     console.log('  sitemap.xml updated');
   }
 
   updateIndex();
   console.log('  index.html updated');
+
+  applyHreflangAll();
+  console.log('  hreflang + ICBM applied to all pages');
+
+  polishAllPages();
+  console.log('  polish pass (cookieconsent dedupe, netlify detect)');
 
   console.log(`\nDone. Generated ${generated} HTML files.`);
   if (errors.length) {

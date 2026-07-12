@@ -42,9 +42,29 @@
     });
   }
 
+  function showFormSuccess() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('ok') !== '1') return;
+    var ok = document.getElementById('richiamata-ok');
+    if (ok) ok.hidden = false;
+    var form = document.querySelector('form[name="richiamata"]');
+    if (form) {
+      form.querySelectorAll('input, button[type="submit"]').forEach(function (el) {
+        if (el.type === 'hidden' || el.name === 'bot-field') return;
+        if (el.type === 'submit') el.style.display = 'none';
+        else el.disabled = true;
+      });
+    }
+    var target = document.getElementById('contatti') || document.querySelector('.contact2');
+    if (target) {
+      try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { target.scrollIntoView(true); }
+    }
+  }
+
   function initTracking() {
     bindTelLinks();
     bindForms();
+    showFormSuccess();
   }
 
   window.gtag_report_conversion = function (url) {
