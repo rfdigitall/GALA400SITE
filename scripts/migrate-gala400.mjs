@@ -10,7 +10,10 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const NEW_ROOT = path.resolve(__dirname, '..');
 const OLD_ROOT = path.resolve(NEW_ROOT, '..', '..', 'GALA400SITE');
+const OLD_REF = path.resolve(NEW_ROOT, '..', 'GALA400SITE-old-ref');
+const GITHUB_OLD = 'https://raw.githubusercontent.com/rfdigitall/GALA400SITE/3d55dd8';
 const TEMPLATE = path.join(NEW_ROOT, 'servizi', 'pronto-intervento-idraulico-verona.html');
+const SEO_ONLY_STYLE = `<style>.seo-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}</style>`;
 const PHONE = '+393494208551';
 const PHONE_DISPLAY = '349 420 8551';
 const LASTMOD = '2026-07-11';
@@ -133,10 +136,61 @@ function parseProseParagraphs(html) {
 
 function parseCardLinks(html) {
   const links = [];
-  for (const m of html.matchAll(/<a\s+class="card-link"\s+href="([^"]+)"[\s\S]*?<span\s+class="card-link-title">([\s\S]*?)<\/span>/gi)) {
-    links.push({ href: m[1], title: stripTags(m[2]) });
+  for (const m of html.matchAll(/<a\s+class="card-link"\s+href="([^"]+)"[\s\S]*?<span\s+class="card-link-title">([\s\S]*?)<\/span>(?:[\s\S]*?<span\s+class="card-link-desc">([\s\S]*?)<\/span>)?/gi)) {
+    links.push({ href: m[1], title: stripTags(m[2]), desc: m[3] ? stripTags(m[3]) : '' });
   }
   return links;
+}
+
+async function ensureOldFile(section, file) {
+  for (const base of [OLD_ROOT, OLD_REF]) {
+    const local = path.join(base, section, file);
+    if (fs.existsSync(local)) return local;
+  }
+  const local = path.join(OLD_REF, section, file);
+  fs.mkdirSync(path.dirname(local), { recursive: true });
+  const url = `${GITHUB_OLD}/${section}/${encodeURIComponent(file).replace(/%2F/g, '/')}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Old file not found: ${section}/${file}`);
+  write(local, await res.text());
+  return local;
+}
+
+function normalizeCardHref(href) {
+  return href.replace(/^\.\.\//, '../');
+}
+
+function cardLinkLabel(title) {
+  return title
+    .replace(/^Idraulico\s+(urgente\s+)?/i, '')
+    .replace(/\s*—.*$/, '')
+    .trim() || title;
+}
+
+function buildLinkGridSection(label, h2, links, ice = false) {
+  if (!links.length) return '';
+  const items = links.map((c) => {
+    const href = normalizeCardHref(c.href);
+    const name = cardLinkLabel(c.title);
+    return `<a class="zc2" href="${href}"><span class="zdot2"></span><span class="zname2">${name}</span></a>`;
+  }).join('');
+  const cls = ice ? 'sec2 sec2-ice' : 'sec2';
+  return `<section class="${cls}">
+  <div class="lbl2">${label}</div>
+  <h2>${h2}</h2>
+  <div class="zone2-grid">${items}</div>
+</section>`;
+}
+
+function buildExtraLinkSections(cardLinks) {
+  const servizi = cardLinks.filter((c) => c.href.includes('/servizi/'));
+  const marche = cardLinks.filter((c) => c.href.includes('/marche/'));
+  const quartieri = cardLinks.filter((c) => c.href.includes('/quartieri/'));
+  return [
+    buildLinkGridSection('Servizi', 'Servizi idraulici<br>in zona.', servizi),
+    buildLinkGridSection('Caldaie', 'Assistenza caldaie<br>marche principali.', marche, true),
+    buildLinkGridSection('Zone', 'Zone vicine.', quartieri),
+  ].join('\n');
 }
 
 function parseFaqFromHtml(html) {
@@ -307,7 +361,7 @@ function buildZoneGrid(cardLinks, sectionDir) {
     const name = c.title.replace(/^.*?—\s*/, '').trim() || stripTags(c.title);
     return `<a class="zc2" href="${href}"><span class="zdot2"></span><span class="zname2">${name}</span></a>`;
   }).join('');
-  return `<section class="sec2">
+  return `<section class="sec2 seo-only" aria-hidden="true">
   <div class="lbl2">Zone coperte</div>
   <h2>Intervento<br>in zona.</h2>
   <div class="zone2-grid">${items}</div>
@@ -362,13 +416,14 @@ function buildHead(meta, tpl, prefix) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">${keywords}
   ${tpl.style}
+  ${SEO_ONLY_STYLE}
   ${tpl.gtagBlock}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css">
   <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>${ld}
 </head>`;
 }
 
-function generatePage(oldPath, outPath, sectionDir, tpl) {
+async function generatePage(oldPath, outPath, sectionDir, tpl) {
   try {
     const html = read(oldPath);
     const filename = path.basename(oldPath);
@@ -403,6 +458,7 @@ ${buildTicker()}
 ${buildCheckSection(checkList)}
 ${buildProcessSection()}
 ${buildProseSection(prose)}
+${buildExtraLinkSections(cardLinks)}
 ${buildZoneGrid(cardLinks, sectionDir)}
 ${buildFaqSection(faqs)}
 ${tpl.contact2}
@@ -421,20 +477,118 @@ ${body}`;
   }
 }
 
-function migrateSection(section, tpl) {
-  const oldDir = path.join(OLD_ROOT, section);
+async function migrateSection(section, tpl) {
   const newDir = path.join(NEW_ROOT, section);
-  if (!fs.existsSync(oldDir)) {
-    errors.push(`Missing old dir: ${oldDir}`);
+  if (!fs.existsSync(newDir)) {
+    errors.push(`Missing new dir: ${newDir}`);
     return [];
   }
-  const files = fs.readdirSync(oldDir).filter((f) => f.endsWith('.html')).sort();
+  const files = fs.readdirSync(newDir).filter((f) => f.endsWith('.html') && f !== 'index.html').sort();
   const results = [];
   for (const file of files) {
-    const info = generatePage(path.join(oldDir, file), path.join(newDir, file), section, tpl);
+    let oldPath;
+    try {
+      oldPath = await ensureOldFile(section, file);
+    } catch (e) {
+      errors.push(`${section}/${file}: ${e.message}`);
+      continue;
+    }
+    const info = await generatePage(oldPath, path.join(newDir, file), section, tpl);
     if (info) results.push(info);
   }
   return results;
+}
+
+function insertBeforeContact(html, block) {
+  const marker = '<section class="contact2"';
+  const idx = html.indexOf(marker);
+  if (idx === -1) return html;
+  return `${html.slice(0, idx)}${block}\n${html.slice(idx)}`;
+}
+
+function fixIndexListingPages() {
+  fixServiziIndexPage();
+  fixQuartieriIndexPage();
+  fixMarcheIndexPage();
+}
+
+function fixServiziIndexPage() {
+  const indexPath = path.join(NEW_ROOT, 'servizi', 'index.html');
+  if (!fs.existsSync(indexPath)) return;
+  let html = read(indexPath);
+  const servizi = parseServiziForIndex();
+  const gridHtml = buildSrv2Grid(servizi);
+  const block = `<section class="sec2">
+  <div class="lbl2">Elenco servizi</div>
+  <h2>Tutti i servizi<br>a Verona.</h2>
+  <div class="srv2-grid">${gridHtml}</div>
+</section>
+
+`;
+  html = html.replace(
+    /<section class="sec2">\s*<div class="lbl2">Elenco servizi[\s\S]*?<\/section>\s*\n\s*\n/,
+    '',
+  );
+  html = insertBeforeContact(html, block);
+  if (!html.includes(SEO_ONLY_STYLE)) {
+    html = html.replace('</head>', `  ${SEO_ONLY_STYLE}\n</head>`);
+  }
+  write(indexPath, html);
+}
+
+function fixQuartieriIndexPage() {
+  const indexPath = path.join(NEW_ROOT, 'quartieri', 'index.html');
+  if (!fs.existsSync(indexPath)) return;
+  let html = read(indexPath);
+  const zoneGrid = buildZone2GridHome();
+  const block = `<section class="sec2">
+  <div class="lbl2">Zone coperte</div>
+  <h2>Verona.<br>Ogni quartiere.</h2>
+  <div class="zone2-grid">${zoneGrid}</div>
+</section>
+
+`;
+  html = html.replace(
+    /<section class="sec2">\s*<div class="lbl2">Zone coperte[\s\S]*?<\/section>\s*\n\s*\n/,
+    '',
+  );
+  html = insertBeforeContact(html, block);
+  if (!html.includes(SEO_ONLY_STYLE)) {
+    html = html.replace('</head>', `  ${SEO_ONLY_STYLE}\n</head>`);
+  }
+  write(indexPath, html);
+}
+
+function fixMarcheIndexPage() {
+  const indexPath = path.join(NEW_ROOT, 'marche', 'index.html');
+  if (!fs.existsSync(indexPath)) return;
+  let html = read(indexPath);
+  const dir = path.join(NEW_ROOT, 'marche');
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.html') && f !== 'index.html').sort();
+  const items = files.map((file) => {
+    const page = read(path.join(dir, file));
+    const h1 = parseH1(page);
+    let name = h1.replace(/Assistenza caldaia\s*/i, '').replace(/Verona.*$/i, '').trim();
+    if (!name) name = file.replace(/-verona\.html$/, '').replace(/-/g, ' ');
+    name = name.charAt(0).toUpperCase() + name.slice(1);
+    return `<a class="zc2" href="${file}"><span class="zdot2"></span><span class="zname2">${name}</span></a>`;
+  }).join('');
+  const block = `<section class="sec2">
+  <div class="lbl2">Marche caldaie</div>
+  <h2>Assistenza<br>caldaie Verona.</h2>
+  <div class="zone2-grid">${items}</div>
+</section>
+
+`;
+  html = html.replace(
+    /<section class="sec2">\s*<div class="lbl2">Marche caldaie[\s\S]*?<\/section>\s*\n\s*\n/,
+    '',
+  );
+  html = insertBeforeContact(html, block);
+  if (!html.includes(SEO_ONLY_STYLE)) {
+    html = html.replace('</head>', `  ${SEO_ONLY_STYLE}\n</head>`);
+  }
+  write(indexPath, html);
 }
 
 function updateSitemap() {
@@ -449,7 +603,7 @@ function updateSitemap() {
 }
 
 function parseServiziForIndex() {
-  const dir = path.join(OLD_ROOT, 'servizi');
+  const dir = path.join(NEW_ROOT, 'servizi');
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.html') && f !== 'index.html').sort();
   return files.map((file, i) => {
     const html = read(path.join(dir, file));
@@ -472,7 +626,7 @@ function buildSrv2Grid(cards) {
 }
 
 function buildZone2GridHome() {
-  const dir = path.join(OLD_ROOT, 'quartieri');
+  const dir = path.join(NEW_ROOT, 'quartieri');
   const files = fs.readdirSync(dir).filter((f) => f.startsWith('idraulico-') && f.endsWith('.html')).sort();
   return files.map((file) => {
     const html = read(path.join(dir, file));
@@ -513,25 +667,28 @@ function updateIndex() {
     `<div class="srv2-grid">${gridHtml}</div>\n  <p style="margin-top:1.2rem"><a href="servizi/index.html" class="link-more">Tutti i servizi →</a></p>\n</section>\n\n<section class="sec2 sec2-ice" id="come-lavoro">`,
   );
 
-  // zone2-grid
+  // zone2-grid — nascosto visivamente, resta nel codice per SEO
   const zoneGrid = buildZone2GridHome();
+  html = html.replace(
+    /<section class="sec2" id="zone">/,
+    '<section class="sec2 seo-only" id="zone" aria-hidden="true">',
+  );
   html = html.replace(
     /<div class="zone2-grid">[\s\S]*?<\/div>\s*\n<\/section>\s*\n\s*<section class="sec2 sec2-ice">\s*\n\s*<div class="lbl2">Perché chiamarmi/,
     `<div class="zone2-grid">${zoneGrid}</div>\n  <p style="margin-top:1.2rem"><a href="quartieri/index.html" class="link-more">Tutte le zone Verona →</a> · <a href="marche/index.html" class="link-more">Marche caldaie →</a></p>\n</section>\n\n<section class="sec2 sec2-ice">\n  <div class="lbl2">Perché chiamarmi`,
   );
+  if (!html.includes(SEO_ONLY_STYLE)) {
+    html = html.replace('</head>', `  ${SEO_ONLY_STYLE}\n</head>`);
+  }
 
   write(indexPath, html);
 }
 
-function main() {
+async function main() {
   console.log('Gala 400 migration — OLD → V2');
-  console.log(`OLD: ${OLD_ROOT}`);
+  console.log(`OLD ref: ${OLD_REF} (GitHub ${GITHUB_OLD})`);
   console.log(`NEW: ${NEW_ROOT}`);
 
-  if (!fs.existsSync(OLD_ROOT)) {
-    console.error('OLD site not found:', OLD_ROOT);
-    process.exit(1);
-  }
   if (!fs.existsSync(TEMPLATE)) {
     console.error('Template not found:', TEMPLATE);
     process.exit(1);
@@ -541,12 +698,17 @@ function main() {
   console.log('Template loaded (style, nav logo, contact2, footer, gtag).');
 
   for (const section of ['servizi', 'quartieri', 'marche']) {
-    const n = migrateSection(section, tpl);
+    const n = await migrateSection(section, tpl);
     console.log(`  ${section}: ${n.length} pages`);
   }
 
-  updateSitemap();
-  console.log('  sitemap.xml updated');
+  fixIndexListingPages();
+  console.log('  index listing pages updated (servizi, quartieri, marche)');
+
+  if (fs.existsSync(path.join(OLD_ROOT, 'sitemap.xml'))) {
+    updateSitemap();
+    console.log('  sitemap.xml updated');
+  }
 
   updateIndex();
   console.log('  index.html updated');
