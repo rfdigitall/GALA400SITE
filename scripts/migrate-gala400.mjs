@@ -19,6 +19,9 @@ const PHONE_DISPLAY = '349 420 8551';
 const LASTMOD = '2026-07-12';
 
 const JUNK_PROSE_RE = /^(richiamata immediata|domande frequenti|zone vicine|servizi idraulici|assistenza caldaie|altre marche|elenco servizi|contatti|informazioni)$/i;
+const TRUST_LINE_RE = /^(chiami il numero|preventivo prima|tecnico in zona|intervento e collaudo|linea diretta|emergenza ora|gala 400)/i;
+const BROKEN_HTML_RE = /<\/(h[1-6]|svg|span|article|section|div)/i;
+const CALDAIA_ICO = `<svg class="sc2-ico" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="12" y="8" width="20" height="24" rx="2"/><path d="M16 16h12M16 22h12M16 28h8"/><circle cx="32" cy="12" r="3"/></svg>`;
 
 const COOKIE_CONSENT_HEAD = `  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css">
   <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>`;
@@ -129,37 +132,102 @@ function parseCheckListItems(html) {
   return items;
 }
 
+function sanitizeProseHtml(inner) {
+  if (!inner || BROKEN_HTML_RE.test(inner)) return null;
+  const plain = stripTags(inner);
+  if (!plain || plain.length < 12) return null;
+  if (JUNK_PROSE_RE.test(plain)) return null;
+  if (TRUST_LINE_RE.test(plain)) return null;
+  return inner.trim();
+}
+
+function parseProseHeading(html) {
+  const block = extractProseBlock(html);
+  if (block) {
+    const h2 = block.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i);
+    if (h2) {
+      const t = stripTags(h2[1]);
+      if (t && t.length > 8) return t;
+    }
+  }
+  return '';
+}
+
+function parseStepCards(html) {
+  const steps = [];
+  for (const m of html.matchAll(/<div\s+class="step-card"[^>]*>[\s\S]*?<p>([\s\S]*?)<\/p>/gi)) {
+    const t = stripTags(m[1]);
+    if (t && !TRUST_LINE_RE.test(t)) steps.push(t);
+  }
+  return steps;
+}
+
+function parseServiceBlocks(html) {
+  const blocks = [];
+  for (const art of html.matchAll(/<article\s+class="service-block"[^>]*>([\s\S]*?)<\/article>/gi)) {
+    const h3 = art[1].match(/<h3[^>]*>([\s\S]*?)<\/h3>/i);
+    const p = art[1].match(/<p[^>]*>([\s\S]*?)<\/p>/i);
+    const link = art[1].match(/<a\s+class="link-arrow"\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i);
+    if (h3) {
+      const rawTitle = stripTags(h3[1]).replace(/^[A-Z]\s+/, '').trim();
+      blocks.push({
+        title: rawTitle,
+        desc: p ? stripTags(p[1]) : '',
+        href: link ? link[1] : '',
+        linkLabel: link ? stripTags(link[2]).replace(/\s*→\s*$/, '') : '',
+      });
+    }
+  }
+  return blocks;
+}
+
+function extractProseBlock(html) {
+  const open = html.match(/<div\s+class="[^"]*\bprose\b[^"]*"[^>]*>/i);
+  if (!open) return '';
+  const start = open.index + open[0].length;
+  let depth = 1;
+  let i = start;
+  while (i < html.length && depth > 0) {
+    const nextOpen = html.indexOf('<div', i);
+    const nextClose = html.indexOf('</div>', i);
+    if (nextClose === -1) break;
+    if (nextOpen !== -1 && nextOpen < nextClose) {
+      depth += 1;
+      i = nextOpen + 4;
+    } else {
+      depth -= 1;
+      if (depth === 0) return html.slice(start, nextClose);
+      i = nextClose + 6;
+    }
+  }
+  return '';
+}
+
 function parseProseParagraphs(html) {
   const paras = [];
   const seen = new Set();
 
   const addPara = (inner) => {
-    if (!inner) return;
-    const plain = stripTags(inner);
-    if (!plain || plain.length < 12) return;
-    if (JUNK_PROSE_RE.test(plain)) return;
+    const clean = sanitizeProseHtml(inner);
+    if (!clean) return;
+    const plain = stripTags(clean);
     if (seen.has(plain)) return;
     seen.add(plain);
-    paras.push(inner);
+    paras.push(clean);
   };
 
-  for (const m of html.matchAll(/<div\s+class="[^"]*\bprose\b[^"]*"[^>]*>([\s\S]*?)<\/div>\s*(?:<\/div>|<section)/gi)) {
-    for (const p of m[1].matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
+  const proseHtml = extractProseBlock(html);
+  if (proseHtml) {
+    const proseOnly = proseHtml
+      .replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/gi, '')
+      .replace(/<article\s+class="service-block"[\s\S]*?<\/article>/gi, '')
+      .replace(/<div\s+class="step-card"[\s\S]*?<\/div>/gi, '');
+    for (const p of proseOnly.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)) {
       addPara(p[1].trim());
     }
-    for (const art of m[1].matchAll(/<article\s+class="service-block"[^>]*>([\s\S]*?)<\/article>/gi)) {
-      const h3 = art[1].match(/<h3[^>]*>([\s\S]*?)<\/h3>/i);
-      const p = art[1].match(/<p[^>]*>([\s\S]*?)<\/p>/i);
-      if (h3 && p) addPara(`<strong>${stripTags(h3[1])}</strong> ${p[1].trim()}`);
-      else if (p) addPara(p[1].trim());
-    }
   }
 
-  for (const m of html.matchAll(/<p\s+class="section-intro"[^>]*>([\s\S]*?)<\/p>/gi)) {
-    addPara(m[1].trim());
-  }
-
-  return paras.slice(0, 10);
+  return paras.slice(0, 8);
 }
 
 function parseProcessSteps(html) {
@@ -235,7 +303,11 @@ function isGenericChecklist(items) {
 
 function resolveChecklist(html, existingV2, sectionDir, h1, desc, filename) {
   let checkList = parseCheckListItems(html);
-  if (!checkList.length) checkList = parseServiceBlockChecklist(html);
+  if (!checkList.length) {
+    checkList = html.includes('service-block') && sectionDir === 'marche'
+      ? buildChecklistFallback(sectionDir, h1, desc, html)
+      : parseServiceBlockChecklist(html);
+  }
   if (!checkList.length || isGenericChecklist(checkList)) {
     const v2chk = parseCheckListItems(existingV2);
     if (v2chk.length && !isGenericChecklist(v2chk)) checkList = v2chk;
@@ -315,26 +387,125 @@ function normalizeCardHref(href) {
   return href.replace(/^\.\.\//, '../');
 }
 
-function cardLinkLabel(title) {
-  return title
-    .replace(/^Idraulico\s+(urgente\s+)?/i, '')
-    .replace(/\s*—.*$/, '')
-    .trim() || title;
+function cardLinkLabel(title, href = '') {
+  const t = stripTags(title);
+  const afterDash = t.match(/\s*—\s*(.+)$/);
+  if (afterDash) return afterDash[1].trim();
+  if (href.includes('/quartieri/')) {
+    const fn = href.match(/\/([^/]+)\.html$/)?.[1];
+    if (fn) return zoneNameFromFile(fn);
+  }
+  if (href.includes('/marche/')) {
+    const fn = href.match(/\/([^/]+)\.html$/)?.[1];
+    if (fn) return brandFromPage('', fn);
+  }
+  if (href.includes('/servizi/')) {
+    const fn = href.match(/\/([^/]+)\.html$/)?.[1];
+    if (fn) {
+      return fn.replace(/-verona\.html$/, '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+  }
+  return t.replace(/^Idraulico\s+(urgente\s+)?/i, '').replace(/\s*—.*$/, '').trim() || t;
 }
 
-function buildLinkGridSection(label, h2, links, ice = false) {
-  if (!links.length) return '';
-  const items = links.map((c) => {
+const BALANCED_GRID_COUNTS = [32, 16, 12, 9, 8, 6, 4, 3, 2, 1];
+
+function dedupeLinks(links) {
+  const seen = new Set();
+  return links.filter((l) => {
+    const key = l.href;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function normalizeGridLinks(links, pool = []) {
+  const unique = dedupeLinks(links);
+  const n = unique.length;
+  if (n === 0) return [];
+  if (BALANCED_GRID_COUNTS.includes(n)) return unique;
+  if (n <= 3) return unique.slice(0, n);
+
+  const upper = [...BALANCED_GRID_COUNTS].reverse().find((t) => t > n);
+  if (upper && upper - n <= 2) {
+    const padded = dedupeLinks([...unique, ...pool]);
+    if (padded.length >= upper) return padded.slice(0, upper);
+  }
+
+  const lower = BALANCED_GRID_COUNTS.find((t) => t <= n);
+  return unique.slice(0, lower || 4);
+}
+
+function gridColsClass(count) {
+  if (count === 1) return 'zone2-c1';
+  if (count === 4) return 'zone2-c4';
+  if (count === 9) return 'zone2-c9';
+  if (count === 16) return 'zone2-c16';
+  if (count === 6) return 'zone2-c6';
+  if (count === 8) return 'zone2-c8';
+  if (count === 12) return 'zone2-c12';
+  if (count % 4 === 0) return 'zone2-c8';
+  if (count % 3 === 0) return 'zone2-c6';
+  return 'zone2-c2';
+}
+
+function renderFullLinkGrid(links) {
+  const unique = dedupeLinks(links);
+  return {
+    items: renderZc2Items(unique),
+    gridClass: gridColsClass(unique.length),
+    count: unique.length,
+    total: unique.length,
+  };
+}
+
+function renderZc2Items(links) {
+  return links.map((c) => {
     const href = normalizeCardHref(c.href);
-    const name = cardLinkLabel(c.title);
+    const name = cardLinkLabel(c.title, c.href);
     return `<a class="zc2" href="${href}"><span class="zdot2"></span><span class="zname2">${name}</span></a>`;
   }).join('');
+}
+
+function renderBalancedLinkGrid(links, pool = []) {
+  const balanced = normalizeGridLinks(links, pool);
+  return {
+    items: renderZc2Items(balanced),
+    gridClass: gridColsClass(balanced.length),
+    count: balanced.length,
+    total: dedupeLinks(links).length,
+  };
+}
+
+function buildLinkGridSection(label, h2, links, ice = false, pool = []) {
+  if (!links.length) return '';
+  const grid = renderBalancedLinkGrid(links, pool.length ? pool : links);
   const cls = ice ? 'sec2 sec2-ice' : 'sec2';
+  const moreLink = grid.total > grid.count
+    ? `\n  <p style="margin-top:1.2rem"><a href="${moreLinkForLabel(label)}" class="link-more">${moreLabelForSection(label)} →</a></p>`
+    : '';
   return `<section class="${cls}">
   <div class="lbl2">${label}</div>
   <h2>${h2}</h2>
-  <div class="zone2-grid">${items}</div>
+  <div class="zone2-grid ${grid.gridClass}">${grid.items}</div>${moreLink}
 </section>`;
+}
+
+function moreLinkForLabel(label) {
+  if (label === 'Zone') return '../quartieri/index.html';
+  if (label === 'Caldaie' || label === 'Altre marche') return '../marche/index.html';
+  if (label === 'Servizi') return '../servizi/index.html';
+  if (label === 'Marche caldaie') return 'index.html';
+  if (label === 'Zone coperte') return '../quartieri/index.html';
+  return '../index.html';
+}
+
+function moreLabelForSection(label) {
+  if (label === 'Zone' || label === 'Zone coperte') return 'Tutte le zone Verona';
+  if (label === 'Caldaie' || label === 'Altre marche' || label === 'Marche caldaie') return 'Tutte le marche';
+  if (label === 'Servizi') return 'Tutti i servizi';
+  return 'Vedi tutto';
 }
 
 function buildExtraLinkSections(cardLinks, grouped) {
@@ -345,12 +516,12 @@ function buildExtraLinkSections(cardLinks, grouped) {
     altreMarche: [],
   };
   const sections = [
-    buildLinkGridSection('Servizi', 'Servizi idraulici<br>in zona.', g.servizi),
-    buildLinkGridSection('Caldaie', 'Assistenza caldaie<br>marche principali.', g.marche, true),
-    buildLinkGridSection('Zone', 'Zone vicine.', g.quartieri),
+    buildLinkGridSection('Servizi', 'Servizi idraulici<br>in zona.', g.servizi, false, cardLinks.filter((c) => c.href.includes('/servizi/'))),
+    buildLinkGridSection('Caldaie', 'Assistenza caldaie<br>marche principali.', g.marche, true, cardLinks.filter((c) => c.href.includes('/marche/'))),
+    buildLinkGridSection('Zone', 'Zone vicine.', g.quartieri, false, cardLinks.filter((c) => c.href.includes('/quartieri/'))),
   ];
   if (g.altreMarche.length) {
-    sections.push(buildLinkGridSection('Altre marche', 'Altre marche<br>assistite.', g.altreMarche, true));
+    sections.push(buildLinkGridSection('Altre marche', 'Altre marche<br>assistite.', g.altreMarche, true, cardLinks.filter((c) => c.href.includes('/marche/'))));
   }
   return sections.filter(Boolean).join('\n');
 }
@@ -557,30 +728,168 @@ function buildCheckSection(items, title = 'Quando chiamarmi', subtitle = 'Non as
 </section>`;
 }
 
-function buildProseSection(paras) {
-  if (!paras.length) return '';
-  const ps = paras.map((p) => `<p>${p}</p>`).join('\n    ');
-  return `<section class="sec2">
-  <div class="lbl2">Informazioni</div>
-  <div class="prose2" style="max-width:44rem;margin-top:1.2rem;font-size:.95rem;color:var(--text-soft);line-height:1.75">
-    ${ps}
+function detailSectionLabel(sectionDir) {
+  if (sectionDir === 'marche') return 'Assistenza';
+  if (sectionDir === 'quartieri') return 'In zona';
+  return 'Il servizio';
+}
+
+function detailH2(heading, h1, sectionDir, filename) {
+  const plain = stripTags(heading || h1);
+  if (sectionDir === 'quartieri') {
+    const z = zoneFromPage(h1, filename);
+    return `${z}.`;
+  }
+  if (sectionDir === 'marche') {
+    const b = brandFromPage(h1, filename);
+    return `Caldaie ${b}.`;
+  }
+  if (sectionDir === 'servizi') {
+    let t = plain.replace(/^Idraulico\s+/i, '').trim();
+    if (!/\bverona\b/i.test(t)) t += ' a Verona';
+    t = t.charAt(0).toUpperCase() + t.slice(1);
+    return t.endsWith('.') ? t : `${t}.`;
+  }
+  const trimmed = plain.replace(/\s+a Verona.*$/i, '').replace(/\s+Verona.*$/i, '');
+  const m = trimmed.match(/^(?:Idraulico|Assistenza|Pronto intervento|Emergenza)\s+(?:per\s+|urgente\s+)?(.+)/i);
+  if (m?.[1]) return `${m[1].charAt(0).toUpperCase()}${m[1].slice(1)}.`;
+  return trimmed.endsWith('.') ? trimmed : `${trimmed}.`;
+}
+
+function detailStats(sectionDir, h1, filename) {
+  if (sectionDir === 'marche') {
+    const b = brandFromPage(h1, filename);
+    const short = b.split(' ')[0].slice(0, 10);
+    return [
+      { v: 'H24', l: 'Pronto intervento' },
+      { v: '20 min', l: 'Arrivo medio' },
+      { v: '100%', l: 'Preventivo prima' },
+      { v: short, l: 'Marca assistita' },
+    ];
+  }
+  if (sectionDir === 'quartieri') {
+    const z = zoneFromPage(h1, filename);
+    const short = z.split(' ').slice(-1)[0].slice(0, 8);
+    return [
+      { v: 'H24', l: 'Reperibilità' },
+      { v: '20 min', l: 'Arrivo medio' },
+      { v: short, l: 'Quartiere' },
+      { v: 'VR', l: 'Verona' },
+    ];
+  }
+  return [
+    { v: 'H24', l: 'Reperibilità' },
+    { v: '20 min', l: 'Arrivo medio' },
+    { v: '100%', l: 'Preventivo prima' },
+    { v: 'RC Prof.', l: 'Assicurazione' },
+  ];
+}
+
+function buildDetailSection({ prose, h1, sectionDir, filename, sourceHtml, checkList, serviceBlocks }) {
+  const heading = parseProseHeading(sourceHtml) || stripTags(h1);
+  const bodyParas = prose.filter((p) => stripTags(p).length > 25).slice(0, 2);
+  if (!bodyParas.length && !prose.length) return '';
+
+  const stepItems = parseStepCards(sourceHtml);
+  const hasBlocks = serviceBlocks?.length > 0;
+  const listItems = hasBlocks
+    ? []
+    : stepItems.length
+      ? stepItems.slice(0, 4)
+      : (checkList || []).slice(0, 4);
+
+  const label = detailSectionLabel(sectionDir);
+  const h2 = detailH2(heading, h1, sectionDir, filename);
+  const bodyHtml = (bodyParas.length ? bodyParas : prose.slice(0, 2))
+    .map((p) => `<p class="chi2-body">${p}</p>`)
+    .join('\n      ');
+  const listHtml = listItems.length
+    ? `<ul class="chi2-list">${listItems.map((i) => `<li>${TICK2}${i}</li>`).join('')}</ul>`
+    : '';
+  const stats = detailStats(sectionDir, h1, filename);
+  const statsHtml = stats.map((s) =>
+    `<div class="cn2"><div class="cn2-v">${s.v}</div><div class="cn2-l">${s.l}</div></div>`,
+  ).join('\n      ');
+
+  return `<section class="chi2">
+  <div class="chi2-inner">
+    <div class="chi2-l">
+      <div class="lbl2">${label}</div>
+      <h2>${h2}</h2>
+      ${bodyHtml}
+      ${listHtml}
+    </div>
+    <div class="chi2-stats">
+      ${statsHtml}
+    </div>
   </div>
+</section>`;
+}
+
+function fourthMarcheBlock(brand) {
+  return {
+    title: `Emergenza caldaia ${brand} h24`,
+    desc: `Caldaia ${brand} guasta di notte o nel weekend? Linea diretta h24 a Verona — arrivo medio ~20 minuti, preventivo comunicato prima di iniziare.`,
+    href: '../servizi/pronto-intervento-idraulico-verona.html',
+    linkLabel: 'Pronto intervento h24 Verona',
+  };
+}
+
+function normalizeServiceBlocks(blocks, brand, sectionDir) {
+  if (sectionDir !== 'marche' || !blocks.length) return blocks;
+  const items = blocks.map((b) => ({
+    ...b,
+    desc: b.desc.replace(/\s+:\s+/g, ' — ').trim(),
+  }));
+  if (items.length === 3) items.push(fourthMarcheBlock(brand));
+  return items.slice(0, 4);
+}
+
+function buildServiceBlocksSection(blocks, brand, sectionDir) {
+  const items = normalizeServiceBlocks(blocks, brand, sectionDir);
+  if (!items.length) return '';
+  const cards = items.map((b, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    const href = b.href ? normalizeCardHref(b.href) : '';
+    const link = href
+      ? `<a class="sc2-link" href="${href}">${b.linkLabel || 'Scopri di più'} →</a>`
+      : '';
+    return `<div class="sc2">
+  <div class="sc2-num">${num}</div>
+  ${CALDAIA_ICO}
+  <div class="sc2-title">${b.title}</div>
+  <p class="sc2-desc">${b.desc}</p>
+  ${link}
+</div>`;
+  }).join('');
+  return `<section class="sec2 sec2-ice">
+  <div class="lbl2">Interventi</div>
+  <h2>Cosa facciamo<br>sul posto.</h2>
+  <div class="srv2-grid">${cards}</div>
+</section>`;
+}
+
+function buildSeoProseHidden(paras, shownCount = 2) {
+  const extra = paras.filter((p) => stripTags(p).length > 35).slice(shownCount);
+  if (!extra.length) return '';
+  const ps = extra.map((p) => `<p>${p}</p>`).join('\n    ');
+  return `<section class="seo-only" aria-hidden="true">
+  <div class="prose2">${ps}</div>
 </section>`;
 }
 
 function buildZoneGrid(cardLinks, sectionDir) {
   const zoneLinks = cardLinks.filter((c) => c.href.includes('/quartieri/'));
   if (!zoneLinks.length) return '';
-  const items = zoneLinks.map((c) => {
-    const href = c.href.replace(/^\.\.\//, '../');
-    const name = c.title.replace(/^.*?—\s*/, '').trim() || stripTags(c.title);
-    return `<a class="zc2" href="${href}"><span class="zdot2"></span><span class="zname2">${name}</span></a>`;
-  }).join('');
+  const pool = zoneLinks.map((c) => ({ ...c, href: c.href.replace(/^\.\.\//, '../') }));
+  const grid = renderBalancedLinkGrid(pool, pool);
+  const more = grid.total > grid.count
+    ? `\n  <p style="margin-top:1.2rem"><a href="../quartieri/index.html" class="link-more">Tutte le zone Verona →</a></p>`
+    : '';
   return `<section class="sec2 seo-only" aria-hidden="true">
   <div class="lbl2">Zone coperte</div>
   <h2>Intervento<br>in zona.</h2>
-  <div class="zone2-grid">${items}</div>
-  <p style="margin-top:1.2rem"><a href="../quartieri/index.html" class="link-more">Tutte le zone Verona →</a></p>
+  <div class="zone2-grid ${grid.gridClass}">${grid.items}</div>${more}
 </section>`;
 }
 
@@ -661,12 +970,10 @@ async function generatePage(oldPath, outPath, sectionDir, tpl) {
 
     let prose = parseProseParagraphs(html);
     if (prose.length < 2) {
-      const v2Prose = parseProseParagraphs(existingV2);
-      if (v2Prose.length > prose.length) prose = v2Prose;
-    }
-    if (prose.length < 2) {
       prose = generateProseFallback(sectionDir, h1, heroLead, desc, filename);
     }
+
+    const serviceBlocks = parseServiceBlocks(html);
 
     const ldRaw = ldJson(html) || ldJson(existingV2);
     let faqs = parseFaqFromLd(ldRaw);
@@ -694,7 +1001,9 @@ ${buildHero2(h1, heroLead, waText)}
 ${buildTicker()}
 ${buildCheckSection(checkList)}
 ${buildProcessSection(processSteps)}
-${buildProseSection(prose)}
+${buildDetailSection({ prose, h1, sectionDir, filename, sourceHtml: html, checkList, serviceBlocks })}
+${buildServiceBlocksSection(serviceBlocks, brandFromPage(h1, filename), sectionDir)}
+${buildSeoProseHidden(prose)}
 ${buildExtraLinkSections(cardLinks, grouped)}
 ${buildZoneGrid(cardLinks, sectionDir)}
 ${buildFaqSection(faqs)}
@@ -815,7 +1124,7 @@ function fixQuartieriIndexPage() {
   const block = `<section class="sec2">
   <div class="lbl2">Zone coperte</div>
   <h2>Verona.<br>Ogni quartiere.</h2>
-  <div class="zone2-grid">${zoneGrid}</div>
+  <div class="zone2-grid ${zoneGrid.gridClass}">${zoneGrid.items}</div>
 </section>
 
 `;
@@ -836,18 +1145,19 @@ function fixMarcheIndexPage() {
   let html = read(indexPath);
   const dir = path.join(NEW_ROOT, 'marche');
   const files = fs.readdirSync(dir).filter((f) => f.endsWith('.html') && f !== 'index.html').sort();
-  const items = files.map((file) => {
+  const links = files.map((file) => {
     const page = read(path.join(dir, file));
     const h1 = parseH1(page);
     let name = h1.replace(/Assistenza caldaia\s*/i, '').replace(/Verona.*$/i, '').trim();
     if (!name) name = file.replace(/-verona\.html$/, '').replace(/-/g, ' ');
     name = name.charAt(0).toUpperCase() + name.slice(1);
-    return `<a class="zc2" href="${file}"><span class="zdot2"></span><span class="zname2">${name}</span></a>`;
-  }).join('');
+    return { href: file, title: name };
+  });
+  const grid = renderFullLinkGrid(links);
   const block = `<section class="sec2">
   <div class="lbl2">Marche caldaie</div>
   <h2>Assistenza<br>caldaie Verona.</h2>
-  <div class="zone2-grid">${items}</div>
+  <div class="zone2-grid ${grid.gridClass}">${grid.items}</div>
 </section>
 
 `;
@@ -963,14 +1273,15 @@ function buildSrv2Grid(cards) {
 function buildZone2GridHome() {
   const dir = path.join(NEW_ROOT, 'quartieri');
   const files = fs.readdirSync(dir).filter((f) => f.startsWith('idraulico-') && f.endsWith('.html')).sort();
-  return files.map((file) => {
+  const links = files.map((file) => {
     const html = read(path.join(dir, file));
     const h1 = parseH1(html);
     let name = h1.replace(/Idraulico urgente\s*/i, '').replace(/Idraulico\s*/i, '').trim();
     if (!name) name = zoneNameFromFile(file);
     name = name.replace(/\s*Verona.*$/i, '').trim() || zoneNameFromFile(file);
-    return `<a class="zc2" href="quartieri/${file}"><span class="zdot2"></span><span class="zname2">${name}</span></a>`;
-  }).join('');
+    return { href: `quartieri/${file}`, title: name };
+  });
+  return renderFullLinkGrid(links);
 }
 
 function updateIndex() {
@@ -1004,13 +1315,15 @@ function updateIndex() {
 
   // zone2-grid — nascosto visivamente, resta nel codice per SEO
   const zoneGrid = buildZone2GridHome();
+  if (!html.includes('id="zone" aria-hidden="true"')) {
+    html = html.replace(
+      /<section class="sec2" id="zone">/,
+      '<section class="sec2 seo-only" id="zone" aria-hidden="true">',
+    );
+  }
   html = html.replace(
-    /<section class="sec2" id="zone">/,
-    '<section class="sec2 seo-only" id="zone" aria-hidden="true">',
-  );
-  html = html.replace(
-    /<div class="zone2-grid">[\s\S]*?<\/div>\s*\n<\/section>\s*\n\s*<section class="sec2 sec2-ice">\s*\n\s*<div class="lbl2">Perché chiamarmi/,
-    `<div class="zone2-grid">${zoneGrid}</div>\n  <p style="margin-top:1.2rem"><a href="quartieri/index.html" class="link-more">Tutte le zone Verona →</a> · <a href="marche/index.html" class="link-more">Marche caldaie →</a></p>\n</section>\n\n<section class="sec2 sec2-ice">\n  <div class="lbl2">Perché chiamarmi`,
+    /<div class="zone2-grid[^"]*">[\s\S]*?<\/div>(?=\s*\n\s*<p style="margin-top:1\.2rem"><a href="quartieri\/index\.html")/,
+    `<div class="zone2-grid ${zoneGrid.gridClass}">${zoneGrid.items}</div>`,
   );
   if (!html.includes(SEO_ONLY_STYLE)) {
     html = html.replace('</head>', `  ${SEO_ONLY_STYLE}\n</head>`);

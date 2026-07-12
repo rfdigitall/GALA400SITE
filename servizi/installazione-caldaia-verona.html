@@ -322,11 +322,11 @@ section.sec2 > *{max-width:1120px;margin-left:auto;margin-right:auto}
 .lbl2::before{content:'';width:16px;height:1.5px;background:var(--copper)}
 .srv2-top p{color:var(--text-soft);font-size:.9rem;line-height:1.8;max-width:38rem}
 .srv2-grid{display:grid;grid-template-columns:1fr;gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
-.sc2{background:#fff;padding:1.8rem 1.5rem;position:relative}
+.sc2{background:#fff;padding:1.8rem 1.5rem;position:relative;display:flex;flex-direction:column;height:100%}
 .sc2-num{font-family:var(--font-head);font-size:2.6rem;font-weight:900;color:rgba(18,89,176,.08);line-height:1;margin-bottom:.4rem}
-.sc2-ico{width:38px;height:38px;color:var(--ink);margin-bottom:.9rem}
+.sc2-ico{width:38px;height:38px;color:var(--ink);margin-bottom:.9rem;flex-shrink:0}
 .sc2-title{font-family:var(--font-head);font-size:1.05rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink);margin-bottom:.4rem}
-.sc2-desc{font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-bottom:.9rem}
+.sc2-desc{font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-bottom:.9rem;flex:1}
 .sc2-link{font-size:.72rem;font-weight:700;color:var(--copper);text-transform:uppercase;letter-spacing:.05em}
 
 .proc-grid{display:grid;grid-template-columns:1fr;border:1px solid var(--line);margin-top:1.8rem}
@@ -355,8 +355,16 @@ section.chi2{background:var(--ink2)}
 .cn2-l{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45)}
 .cn2:first-child .cn2-l{color:rgba(255,255,255,.75)}
 
-.zone2-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
-.zc2{background:#fff;padding:1.1rem 1rem;display:flex;align-items:center;gap:.7rem}
+.zone2-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
+.zone2-grid.zone2-c1{grid-template-columns:1fr}
+.zone2-grid.zone2-c3{grid-template-columns:repeat(3,1fr)}
+.zone2-grid.zone2-c4{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c6{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c8{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c9{grid-template-columns:repeat(3,1fr)}
+.zone2-grid.zone2-c12{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c16{grid-template-columns:repeat(2,1fr)}
+.zc2{background:#fff;padding:1.1rem 1rem;display:flex;align-items:center;gap:.7rem;min-height:100%}
 .zdot2{width:7px;height:7px;border-radius:50%;background:var(--copper);flex-shrink:0}
 .zname2{font-family:var(--font-head);font-size:.92rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
 
@@ -409,7 +417,12 @@ section.contact2{background:var(--ink)}
   .proc-grid{grid-template-columns:repeat(3,1fr)}
   .ps2{border-top:none;border-left:1px solid var(--line)}
   .ps2:first-child{border-left:none}
-  .zone2-grid{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c4{grid-template-columns:repeat(2,1fr)}
+  .zone2-grid.zone2-c6{grid-template-columns:repeat(3,1fr)}
+  .zone2-grid.zone2-c8{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c9{grid-template-columns:repeat(3,1fr)}
+  .zone2-grid.zone2-c12{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c16{grid-template-columns:repeat(4,1fr)}
   .gar2-grid{grid-template-columns:repeat(3,1fr)}
   .chi2-inner{display:grid;grid-template-columns:1fr 1fr;padding:0}
   .chi2-l{padding:3.4rem 2.5rem;border-right:1px solid rgba(255,255,255,.08)}
@@ -560,38 +573,41 @@ footer.foot-pro{background:var(--ink2);padding:3rem 1.25rem 1.5rem;color:rgba(25
   <h2>Tre passaggi.<br>Nessuna sorpresa.</h2>
   <div class="proc-grid"><div class="ps2"><div class="ps2-n">01</div><div class="ps2-title">Mi chiami</div><p class="ps2-desc">Parli direttamente con me. Mi racconti il problema in 2 minuti.</p></div><div class="ps2"><div class="ps2-n">02</div><div class="ps2-title">Arrivo sul posto</div><p class="ps2-desc">Tempo medio ~20 minuti in città, con l'attrezzatura per la maggior parte dei guasti comuni.</p></div><div class="ps2"><div class="ps2-n">03</div><div class="ps2-title">Preventivo prima di iniziare</div><p class="ps2-desc">Vedi il costo prima che inizi a lavorare. Nessuna sorpresa in fattura.</p></div></div>
 </section>
-<section class="sec2">
-  <div class="lbl2">Informazioni</div>
-  <div class="prose2" style="max-width:44rem;margin-top:1.2rem;font-size:.95rem;color:var(--text-soft);line-height:1.75">
-    <p></svg></span>Installazione caldaia a Verona</h2>
-    
-    <p>Installazione caldaia a Verona con tecnici qualificati Gala 400 Srls.</p>
-    <p>Sostituzione e installazione caldaie a condensazione. Interventi programmati con tempi concordati e preventivo scritto prima dell'avvio.</p>
-    <p>Prima di iniziare comunichiamo costi e tempi. Gala 400 Srls · P.IVA 05180000233. Preventivo prima dei lavori, nessun costo nascosto.</p>
-    <p>Chiami il numero diretto</p>
-    <p>Preventivo prima dei lavori</p>
-    <p>Tecnico in zona Verona</p>
-    <p>Intervento e collaudo</p>
-    <p>Interveniamo rapidamente nei principali quartieri di Verona e in provincia.</p>
-    <p>Assistenza, manutenzione e riparazione sulle principali marche installate in Italia.</p>
-    <p>Per urgenze chiama subito <a href="tel:+393494208551" class="link-accent link-tel" data-cta="richiamata-tel">349 420 8551</a>. Il form sotto è per richiamata non urgente.</p>
+<section class="chi2">
+  <div class="chi2-inner">
+    <div class="chi2-l">
+      <div class="lbl2">Il servizio</div>
+      <h2>Installazione caldaia a Verona.</h2>
+      <p class="chi2-body">Installazione caldaia a Verona con tecnici qualificati Gala 400 Srls.</p>
+      <p class="chi2-body">Sostituzione e installazione caldaie a condensazione. Interventi programmati con tempi concordati e preventivo scritto prima dell'avvio.</p>
+      <ul class="chi2-list"><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Tutte le marche principali</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Diagnosi e ricambi</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Sicurezza impianto gas</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Manutenzione programmata</li></ul>
+    </div>
+    <div class="chi2-stats">
+      <div class="cn2"><div class="cn2-v">H24</div><div class="cn2-l">Reperibilità</div></div>
+      <div class="cn2"><div class="cn2-v">20 min</div><div class="cn2-l">Arrivo medio</div></div>
+      <div class="cn2"><div class="cn2-v">100%</div><div class="cn2-l">Preventivo prima</div></div>
+      <div class="cn2"><div class="cn2-v">RC Prof.</div><div class="cn2-l">Assicurazione</div></div>
+    </div>
   </div>
+</section>
+
+<section class="seo-only" aria-hidden="true">
+  <div class="prose2"><p>Prima di iniziare comunichiamo costi e tempi. Gala 400 Srls · P.IVA 05180000233. Preventivo prima dei lavori, nessun costo nascosto.</p></div>
 </section>
 <section class="sec2 sec2-ice">
   <div class="lbl2">Caldaie</div>
   <h2>Assistenza caldaie<br>marche principali.</h2>
-  <div class="zone2-grid"><a class="zc2" href="../marche/vaillant-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Vaillant</span></a><a class="zc2" href="../marche/baxi-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Baxi</span></a><a class="zc2" href="../marche/ariston-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Ariston</span></a><a class="zc2" href="../marche/beretta-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Beretta</span></a><a class="zc2" href="../marche/immergas-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Immergas</span></a><a class="zc2" href="../marche/bosch-junkers-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Bosch / Junkers</span></a><a class="zc2" href="../marche/riello-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Riello</span></a><a class="zc2" href="../marche/ferroli-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Ferroli</span></a><a class="zc2" href="../marche/saunier-duval-verona.html"><span class="zdot2"></span><span class="zname2">Caldaie Saunier Duval</span></a></div>
+  <div class="zone2-grid zone2-c9"><a class="zc2" href="../marche/vaillant-verona.html"><span class="zdot2"></span><span class="zname2">Vaillant Verona</span></a><a class="zc2" href="../marche/baxi-verona.html"><span class="zdot2"></span><span class="zname2">Baxi Verona</span></a><a class="zc2" href="../marche/ariston-verona.html"><span class="zdot2"></span><span class="zname2">Ariston Verona</span></a><a class="zc2" href="../marche/beretta-verona.html"><span class="zdot2"></span><span class="zname2">Beretta Verona</span></a><a class="zc2" href="../marche/immergas-verona.html"><span class="zdot2"></span><span class="zname2">Immergas Verona</span></a><a class="zc2" href="../marche/bosch-junkers-verona.html"><span class="zdot2"></span><span class="zname2">Bosch Junkers Verona</span></a><a class="zc2" href="../marche/riello-verona.html"><span class="zdot2"></span><span class="zname2">Riello Verona</span></a><a class="zc2" href="../marche/ferroli-verona.html"><span class="zdot2"></span><span class="zname2">Ferroli Verona</span></a><a class="zc2" href="../marche/saunier-duval-verona.html"><span class="zdot2"></span><span class="zname2">Saunier Duval Verona</span></a></div>
 </section>
 <section class="sec2">
   <div class="lbl2">Zone</div>
   <h2>Zone vicine.</h2>
-  <div class="zone2-grid"><a class="zc2" href="../quartieri/idraulico-verona-centro.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../quartieri/idraulico-borgo-trento.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../quartieri/idraulico-borgo-roma.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../quartieri/idraulico-san-zeno.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../quartieri/idraulico-valdonega.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../quartieri/idraulico-cittadella.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../quartieri/idraulico-filippini.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../quartieri/idraulico-stadio.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../quartieri/idraulico-quadrante-europa.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a></div>
+  <div class="zone2-grid zone2-c9"><a class="zc2" href="../quartieri/idraulico-verona-centro.html"><span class="zdot2"></span><span class="zname2">Verona Centro</span></a><a class="zc2" href="../quartieri/idraulico-borgo-trento.html"><span class="zdot2"></span><span class="zname2">Borgo Trento</span></a><a class="zc2" href="../quartieri/idraulico-borgo-roma.html"><span class="zdot2"></span><span class="zname2">Borgo Roma</span></a><a class="zc2" href="../quartieri/idraulico-san-zeno.html"><span class="zdot2"></span><span class="zname2">San Zeno</span></a><a class="zc2" href="../quartieri/idraulico-valdonega.html"><span class="zdot2"></span><span class="zname2">Valdonega</span></a><a class="zc2" href="../quartieri/idraulico-cittadella.html"><span class="zdot2"></span><span class="zname2">Cittadella</span></a><a class="zc2" href="../quartieri/idraulico-filippini.html"><span class="zdot2"></span><span class="zname2">Filippini</span></a><a class="zc2" href="../quartieri/idraulico-stadio.html"><span class="zdot2"></span><span class="zname2">Stadio</span></a><a class="zc2" href="../quartieri/idraulico-quadrante-europa.html"><span class="zdot2"></span><span class="zname2">Quadrante Europa</span></a></div>
 </section>
 <section class="sec2 seo-only" aria-hidden="true">
   <div class="lbl2">Zone coperte</div>
   <h2>Intervento<br>in zona.</h2>
-  <div class="zone2-grid"><a class="zc2" href="../quartieri/idraulico-verona-centro.html"><span class="zdot2"></span><span class="zname2">Verona Centro</span></a><a class="zc2" href="../quartieri/idraulico-borgo-trento.html"><span class="zdot2"></span><span class="zname2">Borgo Trento</span></a><a class="zc2" href="../quartieri/idraulico-borgo-roma.html"><span class="zdot2"></span><span class="zname2">Borgo Roma</span></a><a class="zc2" href="../quartieri/idraulico-san-zeno.html"><span class="zdot2"></span><span class="zname2">San Zeno</span></a><a class="zc2" href="../quartieri/idraulico-valdonega.html"><span class="zdot2"></span><span class="zname2">Valdonega</span></a><a class="zc2" href="../quartieri/idraulico-cittadella.html"><span class="zdot2"></span><span class="zname2">Cittadella</span></a><a class="zc2" href="../quartieri/idraulico-filippini.html"><span class="zdot2"></span><span class="zname2">Filippini</span></a><a class="zc2" href="../quartieri/idraulico-stadio.html"><span class="zdot2"></span><span class="zname2">Stadio</span></a><a class="zc2" href="../quartieri/idraulico-quadrante-europa.html"><span class="zdot2"></span><span class="zname2">Quadrante Europa</span></a></div>
-  <p style="margin-top:1.2rem"><a href="../quartieri/index.html" class="link-more">Tutte le zone Verona →</a></p>
+  <div class="zone2-grid zone2-c9"><a class="zc2" href="../quartieri/idraulico-verona-centro.html"><span class="zdot2"></span><span class="zname2">Verona Centro</span></a><a class="zc2" href="../quartieri/idraulico-borgo-trento.html"><span class="zdot2"></span><span class="zname2">Borgo Trento</span></a><a class="zc2" href="../quartieri/idraulico-borgo-roma.html"><span class="zdot2"></span><span class="zname2">Borgo Roma</span></a><a class="zc2" href="../quartieri/idraulico-san-zeno.html"><span class="zdot2"></span><span class="zname2">San Zeno</span></a><a class="zc2" href="../quartieri/idraulico-valdonega.html"><span class="zdot2"></span><span class="zname2">Valdonega</span></a><a class="zc2" href="../quartieri/idraulico-cittadella.html"><span class="zdot2"></span><span class="zname2">Cittadella</span></a><a class="zc2" href="../quartieri/idraulico-filippini.html"><span class="zdot2"></span><span class="zname2">Filippini</span></a><a class="zc2" href="../quartieri/idraulico-stadio.html"><span class="zdot2"></span><span class="zname2">Stadio</span></a><a class="zc2" href="../quartieri/idraulico-quadrante-europa.html"><span class="zdot2"></span><span class="zname2">Quadrante Europa</span></a></div>
 </section>
 <section class="section section-alt"><div class="container container-narrow">
   <h2 class="section-title"><span class="section-title-ico" aria-hidden="true"><svg class="ico" width="22" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2s7 8.5 7 13a7 7 0 11-14 0c0-4.5 7-13 7-13z"/></svg></span>Domande frequenti</h2>

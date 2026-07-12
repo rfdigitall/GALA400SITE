@@ -322,11 +322,11 @@ section.sec2 > *{max-width:1120px;margin-left:auto;margin-right:auto}
 .lbl2::before{content:'';width:16px;height:1.5px;background:var(--copper)}
 .srv2-top p{color:var(--text-soft);font-size:.9rem;line-height:1.8;max-width:38rem}
 .srv2-grid{display:grid;grid-template-columns:1fr;gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
-.sc2{background:#fff;padding:1.8rem 1.5rem;position:relative}
+.sc2{background:#fff;padding:1.8rem 1.5rem;position:relative;display:flex;flex-direction:column;height:100%}
 .sc2-num{font-family:var(--font-head);font-size:2.6rem;font-weight:900;color:rgba(18,89,176,.08);line-height:1;margin-bottom:.4rem}
-.sc2-ico{width:38px;height:38px;color:var(--ink);margin-bottom:.9rem}
+.sc2-ico{width:38px;height:38px;color:var(--ink);margin-bottom:.9rem;flex-shrink:0}
 .sc2-title{font-family:var(--font-head);font-size:1.05rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink);margin-bottom:.4rem}
-.sc2-desc{font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-bottom:.9rem}
+.sc2-desc{font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-bottom:.9rem;flex:1}
 .sc2-link{font-size:.72rem;font-weight:700;color:var(--copper);text-transform:uppercase;letter-spacing:.05em}
 
 .proc-grid{display:grid;grid-template-columns:1fr;border:1px solid var(--line);margin-top:1.8rem}
@@ -355,8 +355,16 @@ section.chi2{background:var(--ink2)}
 .cn2-l{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45)}
 .cn2:first-child .cn2-l{color:rgba(255,255,255,.75)}
 
-.zone2-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
-.zc2{background:#fff;padding:1.1rem 1rem;display:flex;align-items:center;gap:.7rem}
+.zone2-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
+.zone2-grid.zone2-c1{grid-template-columns:1fr}
+.zone2-grid.zone2-c3{grid-template-columns:repeat(3,1fr)}
+.zone2-grid.zone2-c4{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c6{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c8{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c9{grid-template-columns:repeat(3,1fr)}
+.zone2-grid.zone2-c12{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c16{grid-template-columns:repeat(2,1fr)}
+.zc2{background:#fff;padding:1.1rem 1rem;display:flex;align-items:center;gap:.7rem;min-height:100%}
 .zdot2{width:7px;height:7px;border-radius:50%;background:var(--copper);flex-shrink:0}
 .zname2{font-family:var(--font-head);font-size:.92rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
 
@@ -409,7 +417,12 @@ section.contact2{background:var(--ink)}
   .proc-grid{grid-template-columns:repeat(3,1fr)}
   .ps2{border-top:none;border-left:1px solid var(--line)}
   .ps2:first-child{border-left:none}
-  .zone2-grid{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c4{grid-template-columns:repeat(2,1fr)}
+  .zone2-grid.zone2-c6{grid-template-columns:repeat(3,1fr)}
+  .zone2-grid.zone2-c8{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c9{grid-template-columns:repeat(3,1fr)}
+  .zone2-grid.zone2-c12{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c16{grid-template-columns:repeat(4,1fr)}
   .gar2-grid{grid-template-columns:repeat(3,1fr)}
   .chi2-inner{display:grid;grid-template-columns:1fr 1fr;padding:0}
   .chi2-l{padding:3.4rem 2.5rem;border-right:1px solid rgba(255,255,255,.08)}
@@ -560,30 +573,39 @@ footer.foot-pro{background:var(--ink2);padding:3rem 1.25rem 1.5rem;color:rgba(25
   <h2>Tre passaggi.<br>Nessuna sorpresa.</h2>
   <div class="proc-grid"><div class="ps2"><div class="ps2-n">01</div><div class="ps2-title">Mi chiami</div><p class="ps2-desc">Parli direttamente con me. Mi racconti il problema in 2 minuti.</p></div><div class="ps2"><div class="ps2-n">02</div><div class="ps2-title">Arrivo sul posto</div><p class="ps2-desc">Tempo medio ~20 minuti in città, con l'attrezzatura per la maggior parte dei guasti comuni.</p></div><div class="ps2"><div class="ps2-n">03</div><div class="ps2-title">Preventivo prima di iniziare</div><p class="ps2-desc">Vedi il costo prima che inizi a lavorare. Nessuna sorpresa in fattura.</p></div></div>
 </section>
-<section class="sec2">
-  <div class="lbl2">Informazioni</div>
-  <div class="prose2" style="max-width:44rem;margin-top:1.2rem;font-size:.95rem;color:var(--text-soft);line-height:1.75">
-    <p></svg></span>Idraulico a Chievo</h2>
-    <p>Idraulico urgente nel quartiere <strong>Chievo</strong>: Gala 400 interviene su frazione a ovest del centro con pronto intervento h24. Per emergenze chiama <a href="tel:+393494208551" class="link-accent">349 420 8551</a>.</p>
-    <p>Nella zona di <strong>Chievo</strong> interveniamo su perdite d'acqua, caldaie, scarichi intasati e rubinetteria. Emergenza: <a href="tel:+393494208551" class="link-accent">349 420 8551</a>.</p>
-    <p>Manutenzione, assistenza e riparazione sulle caldaie più installate in Italia.</p>
-    <p>Per urgenze chiama subito <a href="tel:+393494208551" class="link-accent link-tel" data-cta="richiamata-tel">349 420 8551</a>. Il form sotto è per richiamata non urgente.</p>
+<section class="chi2">
+  <div class="chi2-inner">
+    <div class="chi2-l">
+      <div class="lbl2">In zona</div>
+      <h2>Chievo.</h2>
+      <p class="chi2-body">Idraulico urgente nel quartiere <strong>Chievo</strong>: Gala 400 interviene su frazione a ovest del centro con pronto intervento h24. Per emergenze chiama <a href="tel:+393494208551" class="link-accent">349 420 8551</a>.</p>
+      <p class="chi2-body">Nella zona di <strong>Chievo</strong> interveniamo su perdite d'acqua, caldaie, scarichi intasati e rubinetteria. Emergenza: <a href="tel:+393494208551" class="link-accent">349 420 8551</a>.</p>
+      <ul class="chi2-list"><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Perdite acqua a Chievo, Verona — intervento h24</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Caldaie a Chievo, Verona — intervento h24</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Spurghi a Chievo, Verona — intervento h24</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Gas a Chievo, Verona — intervento h24</li></ul>
+    </div>
+    <div class="chi2-stats">
+      <div class="cn2"><div class="cn2-v">H24</div><div class="cn2-l">Reperibilità</div></div>
+      <div class="cn2"><div class="cn2-v">20 min</div><div class="cn2-l">Arrivo medio</div></div>
+      <div class="cn2"><div class="cn2-v">Chievo</div><div class="cn2-l">Quartiere</div></div>
+      <div class="cn2"><div class="cn2-v">VR</div><div class="cn2-l">Verona</div></div>
+    </div>
   </div>
 </section>
+
+
 <section class="sec2">
   <div class="lbl2">Servizi</div>
   <h2>Servizi idraulici<br>in zona.</h2>
-  <div class="zone2-grid"><a class="zc2" href="../servizi/pronto-intervento-idraulico-verona.html"><span class="zdot2"></span><span class="zname2">Pronto intervento idraulico</span></a><a class="zc2" href="../servizi/perdite-acqua-urgenti-verona.html"><span class="zdot2"></span><span class="zname2">Riparazione perdite acqua</span></a><a class="zc2" href="../servizi/ricerca-perdite-acqua-verona.html"><span class="zdot2"></span><span class="zname2">Ricerca perdite acqua</span></a><a class="zc2" href="../servizi/ricerca-perdite-gas-verona.html"><span class="zdot2"></span><span class="zname2">Ricerca perdite gas</span></a><a class="zc2" href="../servizi/emergenza-gas-verona.html"><span class="zdot2"></span><span class="zname2">Emergenza gas</span></a><a class="zc2" href="../servizi/allagamento-verona.html"><span class="zdot2"></span><span class="zname2">Riparazione allagamenti</span></a><a class="zc2" href="../servizi/spurgo-urgente-verona.html"><span class="zdot2"></span><span class="zname2">Spurgo e disostruzione</span></a><a class="zc2" href="../servizi/wc-intasato-urgente-verona.html"><span class="zdot2"></span><span class="zname2">WC e scarichi intasati</span></a><a class="zc2" href="../servizi/assistenza-caldaia-verona.html"><span class="zdot2"></span><span class="zname2">Assistenza caldaia</span></a><a class="zc2" href="../servizi/riparazione-caldaia-verona.html"><span class="zdot2"></span><span class="zname2">Riparazione caldaia</span></a><a class="zc2" href="../servizi/manutenzione-caldaia-verona.html"><span class="zdot2"></span><span class="zname2">Manutenzione caldaia</span></a><a class="zc2" href="../servizi/installazione-caldaia-verona.html"><span class="zdot2"></span><span class="zname2">Installazione caldaia</span></a><a class="zc2" href="../servizi/scaldabagno-verona.html"><span class="zdot2"></span><span class="zname2">Scaldabagno</span></a><a class="zc2" href="../servizi/manutenzione-impianti-idraulici-verona.html"><span class="zdot2"></span><span class="zname2">Manutenzione impianti idraulici</span></a><a class="zc2" href="../servizi/rubinetteria-verona.html"><span class="zdot2"></span><span class="zname2">Rubinetteria e sanitari</span></a><a class="zc2" href="../servizi/idraulico-condominio-verona.html"><span class="zdot2"></span><span class="zname2">per condomini</span></a></div>
+  <div class="zone2-grid zone2-c16"><a class="zc2" href="../servizi/pronto-intervento-idraulico-verona.html"><span class="zdot2"></span><span class="zname2">Pronto Intervento Idraulico Verona</span></a><a class="zc2" href="../servizi/perdite-acqua-urgenti-verona.html"><span class="zdot2"></span><span class="zname2">Perdite Acqua Urgenti Verona</span></a><a class="zc2" href="../servizi/ricerca-perdite-acqua-verona.html"><span class="zdot2"></span><span class="zname2">Ricerca Perdite Acqua Verona</span></a><a class="zc2" href="../servizi/ricerca-perdite-gas-verona.html"><span class="zdot2"></span><span class="zname2">Ricerca Perdite Gas Verona</span></a><a class="zc2" href="../servizi/emergenza-gas-verona.html"><span class="zdot2"></span><span class="zname2">Emergenza Gas Verona</span></a><a class="zc2" href="../servizi/allagamento-verona.html"><span class="zdot2"></span><span class="zname2">Allagamento Verona</span></a><a class="zc2" href="../servizi/spurgo-urgente-verona.html"><span class="zdot2"></span><span class="zname2">Spurgo Urgente Verona</span></a><a class="zc2" href="../servizi/wc-intasato-urgente-verona.html"><span class="zdot2"></span><span class="zname2">Wc Intasato Urgente Verona</span></a><a class="zc2" href="../servizi/assistenza-caldaia-verona.html"><span class="zdot2"></span><span class="zname2">Assistenza Caldaia Verona</span></a><a class="zc2" href="../servizi/riparazione-caldaia-verona.html"><span class="zdot2"></span><span class="zname2">Riparazione Caldaia Verona</span></a><a class="zc2" href="../servizi/manutenzione-caldaia-verona.html"><span class="zdot2"></span><span class="zname2">Manutenzione Caldaia Verona</span></a><a class="zc2" href="../servizi/installazione-caldaia-verona.html"><span class="zdot2"></span><span class="zname2">Installazione Caldaia Verona</span></a><a class="zc2" href="../servizi/scaldabagno-verona.html"><span class="zdot2"></span><span class="zname2">Scaldabagno Verona</span></a><a class="zc2" href="../servizi/manutenzione-impianti-idraulici-verona.html"><span class="zdot2"></span><span class="zname2">Manutenzione Impianti Idraulici Verona</span></a><a class="zc2" href="../servizi/rubinetteria-verona.html"><span class="zdot2"></span><span class="zname2">Rubinetteria Verona</span></a><a class="zc2" href="../servizi/idraulico-condominio-verona.html"><span class="zdot2"></span><span class="zname2">Idraulico Condominio Verona</span></a></div>
 </section>
 <section class="sec2 sec2-ice">
   <div class="lbl2">Caldaie</div>
   <h2>Assistenza caldaie<br>marche principali.</h2>
-  <div class="zone2-grid"><a class="zc2" href="../marche/vaillant-verona.html"><span class="zdot2"></span><span class="zname2">Vaillant</span></a><a class="zc2" href="../marche/baxi-verona.html"><span class="zdot2"></span><span class="zname2">Baxi</span></a><a class="zc2" href="../marche/ariston-verona.html"><span class="zdot2"></span><span class="zname2">Ariston</span></a><a class="zc2" href="../marche/beretta-verona.html"><span class="zdot2"></span><span class="zname2">Beretta</span></a><a class="zc2" href="../marche/immergas-verona.html"><span class="zdot2"></span><span class="zname2">Immergas</span></a><a class="zc2" href="../marche/bosch-junkers-verona.html"><span class="zdot2"></span><span class="zname2">Bosch / Junkers</span></a><a class="zc2" href="../marche/riello-verona.html"><span class="zdot2"></span><span class="zname2">Riello</span></a><a class="zc2" href="../marche/ferroli-verona.html"><span class="zdot2"></span><span class="zname2">Ferroli</span></a><a class="zc2" href="../marche/saunier-duval-verona.html"><span class="zdot2"></span><span class="zname2">Saunier Duval</span></a><a class="zc2" href="../marche/viessmann-verona.html"><span class="zdot2"></span><span class="zname2">Viessmann</span></a><a class="zc2" href="../marche/chaffoteaux-verona.html"><span class="zdot2"></span><span class="zname2">Chaffoteaux</span></a><a class="zc2" href="../marche/de-dietrich-verona.html"><span class="zdot2"></span><span class="zname2">De Dietrich</span></a></div>
+  <div class="zone2-grid zone2-c12"><a class="zc2" href="../marche/vaillant-verona.html"><span class="zdot2"></span><span class="zname2">Vaillant Verona</span></a><a class="zc2" href="../marche/baxi-verona.html"><span class="zdot2"></span><span class="zname2">Baxi Verona</span></a><a class="zc2" href="../marche/ariston-verona.html"><span class="zdot2"></span><span class="zname2">Ariston Verona</span></a><a class="zc2" href="../marche/beretta-verona.html"><span class="zdot2"></span><span class="zname2">Beretta Verona</span></a><a class="zc2" href="../marche/immergas-verona.html"><span class="zdot2"></span><span class="zname2">Immergas Verona</span></a><a class="zc2" href="../marche/bosch-junkers-verona.html"><span class="zdot2"></span><span class="zname2">Bosch Junkers Verona</span></a><a class="zc2" href="../marche/riello-verona.html"><span class="zdot2"></span><span class="zname2">Riello Verona</span></a><a class="zc2" href="../marche/ferroli-verona.html"><span class="zdot2"></span><span class="zname2">Ferroli Verona</span></a><a class="zc2" href="../marche/saunier-duval-verona.html"><span class="zdot2"></span><span class="zname2">Saunier Duval Verona</span></a><a class="zc2" href="../marche/viessmann-verona.html"><span class="zdot2"></span><span class="zname2">Viessmann Verona</span></a><a class="zc2" href="../marche/chaffoteaux-verona.html"><span class="zdot2"></span><span class="zname2">Chaffoteaux Verona</span></a><a class="zc2" href="../marche/de-dietrich-verona.html"><span class="zdot2"></span><span class="zname2">De Dietrich Verona</span></a></div>
 </section>
 <section class="sec2">
   <div class="lbl2">Zone</div>
   <h2>Zone vicine.</h2>
-  <div class="zone2-grid"><a class="zc2" href="idraulico-verona-centro.html"><span class="zdot2"></span><span class="zname2">Verona Centro</span></a><a class="zc2" href="idraulico-borgo-trento.html"><span class="zdot2"></span><span class="zname2">Borgo Trento</span></a><a class="zc2" href="idraulico-borgo-roma.html"><span class="zdot2"></span><span class="zname2">Borgo Roma</span></a><a class="zc2" href="idraulico-san-zeno.html"><span class="zdot2"></span><span class="zname2">San Zeno</span></a><a class="zc2" href="idraulico-valdonega.html"><span class="zdot2"></span><span class="zname2">Valdonega</span></a><a class="zc2" href="idraulico-cittadella.html"><span class="zdot2"></span><span class="zname2">Cittadella</span></a></div>
+  <div class="zone2-grid zone2-c6"><a class="zc2" href="idraulico-verona-centro.html"><span class="zdot2"></span><span class="zname2">Verona Centro</span></a><a class="zc2" href="idraulico-borgo-trento.html"><span class="zdot2"></span><span class="zname2">Borgo Trento</span></a><a class="zc2" href="idraulico-borgo-roma.html"><span class="zdot2"></span><span class="zname2">Borgo Roma</span></a><a class="zc2" href="idraulico-san-zeno.html"><span class="zdot2"></span><span class="zname2">San Zeno</span></a><a class="zc2" href="idraulico-valdonega.html"><span class="zdot2"></span><span class="zname2">Valdonega</span></a><a class="zc2" href="idraulico-cittadella.html"><span class="zdot2"></span><span class="zname2">Cittadella</span></a></div>
 </section>
 
 <section class="section section-alt"><div class="container container-narrow">

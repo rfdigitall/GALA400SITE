@@ -322,11 +322,11 @@ section.sec2 > *{max-width:1120px;margin-left:auto;margin-right:auto}
 .lbl2::before{content:'';width:16px;height:1.5px;background:var(--copper)}
 .srv2-top p{color:var(--text-soft);font-size:.9rem;line-height:1.8;max-width:38rem}
 .srv2-grid{display:grid;grid-template-columns:1fr;gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
-.sc2{background:#fff;padding:1.8rem 1.5rem;position:relative}
+.sc2{background:#fff;padding:1.8rem 1.5rem;position:relative;display:flex;flex-direction:column;height:100%}
 .sc2-num{font-family:var(--font-head);font-size:2.6rem;font-weight:900;color:rgba(18,89,176,.08);line-height:1;margin-bottom:.4rem}
-.sc2-ico{width:38px;height:38px;color:var(--ink);margin-bottom:.9rem}
+.sc2-ico{width:38px;height:38px;color:var(--ink);margin-bottom:.9rem;flex-shrink:0}
 .sc2-title{font-family:var(--font-head);font-size:1.05rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink);margin-bottom:.4rem}
-.sc2-desc{font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-bottom:.9rem}
+.sc2-desc{font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-bottom:.9rem;flex:1}
 .sc2-link{font-size:.72rem;font-weight:700;color:var(--copper);text-transform:uppercase;letter-spacing:.05em}
 
 .proc-grid{display:grid;grid-template-columns:1fr;border:1px solid var(--line);margin-top:1.8rem}
@@ -355,8 +355,16 @@ section.chi2{background:var(--ink2)}
 .cn2-l{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45)}
 .cn2:first-child .cn2-l{color:rgba(255,255,255,.75)}
 
-.zone2-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
-.zc2{background:#fff;padding:1.1rem 1rem;display:flex;align-items:center;gap:.7rem}
+.zone2-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
+.zone2-grid.zone2-c1{grid-template-columns:1fr}
+.zone2-grid.zone2-c3{grid-template-columns:repeat(3,1fr)}
+.zone2-grid.zone2-c4{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c6{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c8{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c9{grid-template-columns:repeat(3,1fr)}
+.zone2-grid.zone2-c12{grid-template-columns:repeat(2,1fr)}
+.zone2-grid.zone2-c16{grid-template-columns:repeat(2,1fr)}
+.zc2{background:#fff;padding:1.1rem 1rem;display:flex;align-items:center;gap:.7rem;min-height:100%}
 .zdot2{width:7px;height:7px;border-radius:50%;background:var(--copper);flex-shrink:0}
 .zname2{font-family:var(--font-head);font-size:.92rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
 
@@ -409,7 +417,12 @@ section.contact2{background:var(--ink)}
   .proc-grid{grid-template-columns:repeat(3,1fr)}
   .ps2{border-top:none;border-left:1px solid var(--line)}
   .ps2:first-child{border-left:none}
-  .zone2-grid{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c4{grid-template-columns:repeat(2,1fr)}
+  .zone2-grid.zone2-c6{grid-template-columns:repeat(3,1fr)}
+  .zone2-grid.zone2-c8{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c9{grid-template-columns:repeat(3,1fr)}
+  .zone2-grid.zone2-c12{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid.zone2-c16{grid-template-columns:repeat(4,1fr)}
   .gar2-grid{grid-template-columns:repeat(3,1fr)}
   .chi2-inner{display:grid;grid-template-columns:1fr 1fr;padding:0}
   .chi2-l{padding:3.4rem 2.5rem;border-right:1px solid rgba(255,255,255,.08)}
@@ -553,33 +566,64 @@ footer.foot-pro{background:var(--ink2);padding:3rem 1.25rem 1.5rem;color:rgba(25
 <section class="sec2">
   <div class="lbl2">Quando chiamarmi</div>
   <h2>Non aspettare<br>che peggiori.</h2>
-  <ul class="chk-list" style="margin-top:1.6rem;max-width:38rem"><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Caldaia De Dietrich spenta o codice errore? Intervento urgente a Verona con diagnosi in loco.</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Manutenzione caldaie De Dietrich : controllo fumi, pulizia bruciatore, documentazione conformità.</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Riparazione De Dietrich : circolatori, valvole, schede. Preventivo prima di sostituire.</li></ul>
+  <ul class="chk-list" style="margin-top:1.6rem;max-width:38rem"><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Caldaia De Dietrich spenta, blocco o codice errore sul display</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Manutenzione e controllo fumi caldaie De Dietrich a Verona</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Perdite acqua, rumori o pressione impianto De Dietrich</li><li><span class="tick2"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Emergenza caldaia De Dietrich — intervento h24 · 349 420 8551</li></ul>
 </section>
 <section class="sec2 sec2-ice">
   <div class="lbl2">Come intervengo</div>
   <h2>Tre passaggi.<br>Nessuna sorpresa.</h2>
   <div class="proc-grid"><div class="ps2"><div class="ps2-n">01</div><div class="ps2-title">Mi chiami</div><p class="ps2-desc">Parli direttamente con me. Mi racconti il problema in 2 minuti.</p></div><div class="ps2"><div class="ps2-n">02</div><div class="ps2-title">Arrivo sul posto</div><p class="ps2-desc">Tempo medio ~20 minuti in città, con l'attrezzatura per la maggior parte dei guasti comuni.</p></div><div class="ps2"><div class="ps2-n">03</div><div class="ps2-title">Preventivo prima di iniziare</div><p class="ps2-desc">Vedi il costo prima che inizi a lavorare. Nessuna sorpresa in fattura.</p></div></div>
 </section>
-<section class="sec2">
-  <div class="lbl2">Informazioni</div>
-  <div class="prose2" style="max-width:44rem;margin-top:1.2rem;font-size:.95rem;color:var(--text-soft);line-height:1.75">
-    <p></svg></span>Assistenza De Dietrich a Verona</h2>
-    
-    <p>Assistenza caldaie <strong>De Dietrich</strong> a Verona (Francia): guasti urgenti, manutenzione e riparazione. Emergenza caldaia: <a href="tel:+393494208551" class="link-accent">349 420 8551</a>.</p>
-    <p>Modelli murali, a condensazione e sistemi ibridi.</p>
-    <p>Caldaia <strong>De Dietrich</strong> spenta o codice errore? Intervento urgente a Verona con diagnosi in loco.</p>
-    <p>Manutenzione caldaie <strong>De Dietrich</strong>: controllo fumi, pulizia bruciatore, documentazione conformità.</p>
-    <p>Riparazione <strong>De Dietrich</strong>: circolatori, valvole, schede. Preventivo prima di sostituire.</p>
-    <p><strong>A Assistenza caldaie De Dietrich</strong> Caldaia <strong>De Dietrich</strong> spenta o codice errore? Intervento urgente a Verona con diagnosi in loco.</p>
-    <p><strong>M Manutenzione caldaie De Dietrich</strong> Manutenzione caldaie <strong>De Dietrich</strong>: controllo fumi, pulizia bruciatore, documentazione conformità.</p>
-    <p><strong>R Riparazione caldaie De Dietrich</strong> Riparazione <strong>De Dietrich</strong>: circolatori, valvole, schede. Preventivo prima di sostituire.</p>
-    <p>Per urgenze chiama subito <a href="tel:+393494208551" class="link-accent link-tel" data-cta="richiamata-tel">349 420 8551</a>. Il form sotto è per richiamata non urgente.</p>
+<section class="chi2">
+  <div class="chi2-inner">
+    <div class="chi2-l">
+      <div class="lbl2">Assistenza</div>
+      <h2>Caldaie De Dietrich.</h2>
+      <p class="chi2-body">Assistenza caldaie <strong>De Dietrich</strong> a Verona (Francia): guasti urgenti, manutenzione e riparazione. Emergenza caldaia: <a href="tel:+393494208551" class="link-accent">349 420 8551</a>.</p>
+      <p class="chi2-body">Modelli murali, a condensazione e sistemi ibridi.</p>
+      
+    </div>
+    <div class="chi2-stats">
+      <div class="cn2"><div class="cn2-v">H24</div><div class="cn2-l">Pronto intervento</div></div>
+      <div class="cn2"><div class="cn2-v">20 min</div><div class="cn2-l">Arrivo medio</div></div>
+      <div class="cn2"><div class="cn2-v">100%</div><div class="cn2-l">Preventivo prima</div></div>
+      <div class="cn2"><div class="cn2-v">De</div><div class="cn2-l">Marca assistita</div></div>
+    </div>
   </div>
 </section>
 <section class="sec2 sec2-ice">
+  <div class="lbl2">Interventi</div>
+  <h2>Cosa facciamo<br>sul posto.</h2>
+  <div class="srv2-grid"><div class="sc2">
+  <div class="sc2-num">01</div>
+  <svg class="sc2-ico" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="12" y="8" width="20" height="24" rx="2"/><path d="M16 16h12M16 22h12M16 28h8"/><circle cx="32" cy="12" r="3"/></svg>
+  <div class="sc2-title">Assistenza caldaie De Dietrich</div>
+  <p class="sc2-desc">Caldaia De Dietrich spenta o codice errore? Intervento urgente a Verona con diagnosi in loco.</p>
+  <a class="sc2-link" href="../servizi/assistenza-caldaia-verona.html">Assistenza caldaie Verona →</a>
+</div><div class="sc2">
+  <div class="sc2-num">02</div>
+  <svg class="sc2-ico" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="12" y="8" width="20" height="24" rx="2"/><path d="M16 16h12M16 22h12M16 28h8"/><circle cx="32" cy="12" r="3"/></svg>
+  <div class="sc2-title">Manutenzione caldaie De Dietrich</div>
+  <p class="sc2-desc">Manutenzione caldaie De Dietrich — controllo fumi, pulizia bruciatore, documentazione conformità.</p>
+  <a class="sc2-link" href="../servizi/manutenzione-caldaia-verona.html">Manutenzione caldaie Verona →</a>
+</div><div class="sc2">
+  <div class="sc2-num">03</div>
+  <svg class="sc2-ico" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="12" y="8" width="20" height="24" rx="2"/><path d="M16 16h12M16 22h12M16 28h8"/><circle cx="32" cy="12" r="3"/></svg>
+  <div class="sc2-title">Riparazione caldaie De Dietrich</div>
+  <p class="sc2-desc">Riparazione De Dietrich — circolatori, valvole, schede. Preventivo prima di sostituire.</p>
+  <a class="sc2-link" href="../servizi/riparazione-caldaia-verona.html">Riparazione caldaie Verona →</a>
+</div><div class="sc2">
+  <div class="sc2-num">04</div>
+  <svg class="sc2-ico" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="12" y="8" width="20" height="24" rx="2"/><path d="M16 16h12M16 22h12M16 28h8"/><circle cx="32" cy="12" r="3"/></svg>
+  <div class="sc2-title">Emergenza caldaia De Dietrich h24</div>
+  <p class="sc2-desc">Caldaia De Dietrich guasta di notte o nel weekend? Linea diretta h24 a Verona — arrivo medio ~20 minuti, preventivo comunicato prima di iniziare.</p>
+  <a class="sc2-link" href="../servizi/pronto-intervento-idraulico-verona.html">Pronto intervento h24 Verona →</a>
+</div></div>
+</section>
+
+<section class="sec2 sec2-ice">
   <div class="lbl2">Altre marche</div>
   <h2>Altre marche<br>assistite.</h2>
-  <div class="zone2-grid"><a class="zc2" href="vaillant-verona.html"><span class="zdot2"></span><span class="zname2">Vaillant</span></a><a class="zc2" href="baxi-verona.html"><span class="zdot2"></span><span class="zname2">Baxi</span></a><a class="zc2" href="ariston-verona.html"><span class="zdot2"></span><span class="zname2">Ariston</span></a><a class="zc2" href="beretta-verona.html"><span class="zdot2"></span><span class="zname2">Beretta</span></a><a class="zc2" href="immergas-verona.html"><span class="zdot2"></span><span class="zname2">Immergas</span></a><a class="zc2" href="bosch-junkers-verona.html"><span class="zdot2"></span><span class="zname2">Bosch / Junkers</span></a><a class="zc2" href="riello-verona.html"><span class="zdot2"></span><span class="zname2">Riello</span></a><a class="zc2" href="ferroli-verona.html"><span class="zdot2"></span><span class="zname2">Ferroli</span></a></div>
+  <div class="zone2-grid zone2-c8"><a class="zc2" href="vaillant-verona.html"><span class="zdot2"></span><span class="zname2">Vaillant</span></a><a class="zc2" href="baxi-verona.html"><span class="zdot2"></span><span class="zname2">Baxi</span></a><a class="zc2" href="ariston-verona.html"><span class="zdot2"></span><span class="zname2">Ariston</span></a><a class="zc2" href="beretta-verona.html"><span class="zdot2"></span><span class="zname2">Beretta</span></a><a class="zc2" href="immergas-verona.html"><span class="zdot2"></span><span class="zname2">Immergas</span></a><a class="zc2" href="bosch-junkers-verona.html"><span class="zdot2"></span><span class="zname2">Bosch / Junkers</span></a><a class="zc2" href="riello-verona.html"><span class="zdot2"></span><span class="zname2">Riello</span></a><a class="zc2" href="ferroli-verona.html"><span class="zdot2"></span><span class="zname2">Ferroli</span></a></div>
 </section>
 
 <section class="section section-alt"><div class="container container-narrow">
