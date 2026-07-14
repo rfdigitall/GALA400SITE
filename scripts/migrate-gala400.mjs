@@ -23,8 +23,57 @@ const TRUST_LINE_RE = /^(chiami il numero|preventivo prima|tecnico in zona|inter
 const BROKEN_HTML_RE = /<\/(h[1-6]|svg|span|article|section|div)/i;
 const CALDAIA_ICO = `<svg class="sc2-ico" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="12" y="8" width="20" height="24" rx="2"/><path d="M16 16h12M16 22h12M16 28h8"/><circle cx="32" cy="12" r="3"/></svg>`;
 
-const COOKIE_CONSENT_HEAD = `  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css">
-  <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>`;
+const FONTS_URL = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@800&family=Inter:wght@400;600;700&display=swap';
+const FONTS_HEAD = `  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="${FONTS_URL}" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="${FONTS_URL}"></noscript>`;
+
+const COOKIE_CSS_URL = 'https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css';
+const COOKIE_JS_URL = 'https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js';
+
+const COOKIE_CONSENT_HEAD = `  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">`;
+
+const GTAG_BLOCK = `<script>
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent','default',{
+      'ad_storage':'denied',
+      'ad_user_data':'denied',
+      'ad_personalization':'denied',
+      'analytics_storage':'denied',
+      'wait_for_update':500
+    });
+    gtag('js',new Date());
+    gtag('set',{
+      'phone_conversion_number':'+393494208551',
+      'phone_conversion_ids':['AW-18106797178/tG61CLym4LocEPqY_7lD']
+    });
+    gtag('config','AW-18106797178',{
+      'phone_conversion_number':'+393494208551',
+      'conversion_linker':true
+    });
+    gtag('config','G-TLQ5WCBTJK',{'anonymize_ip':true});
+  </script>
+  <script>
+    (function(){
+      function gala400LoadGtag(){
+        if(window.__gala400GtagJs)return;
+        window.__gala400GtagJs=1;
+        var s=document.createElement('script');
+        s.async=true;
+        s.src='https://www.googletagmanager.com/gtag/js?id=AW-18106797178';
+        document.head.appendChild(s);
+      }
+      if('requestIdleCallback' in window){
+        requestIdleCallback(gala400LoadGtag,{timeout:3500});
+      }else{
+        window.addEventListener('load',function(){setTimeout(gala400LoadGtag,2000);});
+      }
+    })();
+  </script>`;
+
+const COOKIE_CONSENT_BODY = `  <script defer src="${COOKIE_JS_URL}"></script>`;
 
 const NETLIFY_FORM_DETECT = `<form name="richiamata" netlify netlify-honeypot="bot-field" hidden aria-hidden="true">
   <input type="hidden" name="form-name" value="richiamata">
@@ -615,15 +664,91 @@ function zoneNameFromFile(filename) {
 function stripCookieConsent(html) {
   return html
     .replace(/<link rel="stylesheet" href="https:\/\/cdn\.jsdelivr\.net\/gh\/orestbida\/cookieconsent[^"]*"[^>]*>\s*/gi, '')
+    .replace(/<link rel="preload" as="style" href="https:\/\/cdn\.jsdelivr\.net\/gh\/orestbida\/cookieconsent[^"]*"[^>]*>\s*/gi, '')
+    .replace(/<noscript>\s*<link rel="stylesheet" href="https:\/\/cdn\.jsdelivr\.net\/gh\/orestbida\/cookieconsent[^"]*"[^>]*>\s*<\/noscript>\s*/gi, '')
     .replace(/<script defer src="https:\/\/cdn\.jsdelivr\.net\/gh\/orestbida\/cookieconsent[^"]*"[^>]*><\/script>\s*/gi, '');
+}
+
+function ensureCookieConsentBody(html) {
+  let out = stripCookieConsent(html);
+  if (!out.includes('cookieconsent.umd.js')) {
+    out = out.replace(/<body([^>]*)>/, `<body$1>\n${COOKIE_CONSENT_BODY}`);
+  }
+  if (!out.includes(COOKIE_CSS_URL) && !out.includes('gala400LoadCookieCss')) {
+    out = out.replace(
+      /document\.addEventListener\('DOMContentLoaded', function\(\)\{/,
+      `function gala400LoadCookieCss(cb){
+  if(document.querySelector('link[data-cc-css]')){cb();return;}
+  var l=document.createElement('link');
+  l.rel='stylesheet';l.href='${COOKIE_CSS_URL}';l.setAttribute('data-cc-css','1');
+  l.onload=cb;l.onerror=cb;document.head.appendChild(l);
+}
+document.addEventListener('DOMContentLoaded', function(){`,
+    );
+    out = out.replace(
+      /document\.addEventListener\('DOMContentLoaded', function\(\)\{\s*\n\s*if \(typeof CookieConsent === 'undefined'\) return;/,
+      `document.addEventListener('DOMContentLoaded', function(){
+  gala400LoadCookieCss(function(){
+  if (typeof CookieConsent === 'undefined') return;`,
+    );
+    out = out.replace(
+      /(\s*onChange: onChangeHandler\s*\n\s*\}\);)\s*\n\}\);/,
+      `$1
+  });
+});`,
+    );
+  }
+  return out;
+}
+
+function applyPerformancePolish(html) {
+  let out = html;
+  out = out.replace(
+    /<link rel="preconnect" href="https:\/\/fonts\.googleapis\.com">\s*<link rel="preconnect" href="https:\/\/fonts\.gstatic\.com" crossorigin>\s*<link href="https:\/\/fonts\.googleapis\.com\/css2[^"]*" rel="stylesheet">/gi,
+    FONTS_HEAD.trim(),
+  );
+  out = out.replace(
+    /<script async src="https:\/\/www\.googletagmanager\.com\/gtag\/js\?id=AW-18106797178"><\/script>\s*/gi,
+    '',
+  );
+  if (!out.includes('gala400LoadGtag')) {
+    out = out.replace(
+      /<script>\s*\n\s*gtag\('js',new Date\(\)\);/g,
+      `<script>
+    (function(){
+      function gala400LoadGtag(){
+        if(window.__gala400GtagJs)return;
+        window.__gala400GtagJs=1;
+        var s=document.createElement('script');
+        s.async=true;
+        s.src='https://www.googletagmanager.com/gtag/js?id=AW-18106797178';
+        document.head.appendChild(s);
+      }
+      if('requestIdleCallback' in window){
+        requestIdleCallback(gala400LoadGtag,{timeout:3500});
+      }else{
+        window.addEventListener('load',function(){setTimeout(gala400LoadGtag,2000);});
+      }
+    })();
+  </script>
+  <script>
+    gtag('js',new Date());`,
+    );
+  }
+  out = out.replace(/<script src="(\.\.\/)*js\/gala400-tracking\.js"><\/script>/gi, '<script defer src="$1js/gala400-tracking.js"></script>');
+  out = ensureCookieConsentBody(out);
+  if (!out.includes('dns-prefetch" href="https://cdn.jsdelivr.net"')) {
+    out = out.replace('</head>', `${COOKIE_CONSENT_HEAD}\n</head>`);
+  }
+  return out;
 }
 
 function ensureSingleCookieConsent(html) {
   let out = stripCookieConsent(html);
-  if (!out.includes('cookieconsent.umd.js')) {
+  if (!out.includes('dns-prefetch" href="https://cdn.jsdelivr.net"')) {
     out = out.replace('</head>', `${COOKIE_CONSENT_HEAD}\n</head>`);
   }
-  return out;
+  return ensureCookieConsentBody(out);
 }
 
 function ensureNetlifyFormDetect(html) {
@@ -640,12 +765,7 @@ function loadTemplate() {
   const logoBase64 = logoMatch ? logoMatch[1] : '';
   const contact2 = extractBetween(html, /<section class="contact2"/, '</section>');
   const footerTail = html.slice(html.indexOf('<footer class="foot-pro">'));
-  const gtagStart = html.indexOf('<script>\n    window.dataLayer');
-  const ldIdx = html.indexOf('<script type="application/ld+json">');
-  let gtagBlock = gtagStart >= 0 && ldIdx > gtagStart
-    ? html.slice(gtagStart, ldIdx).trim()
-    : '';
-  gtagBlock = stripCookieConsent(gtagBlock);
+  const gtagBlock = GTAG_BLOCK;
   const faviconMatch = html.match(/<link rel="icon" href="(data:image[^"]+)"/);
   const favicon = faviconMatch ? faviconMatch[1] : '';
   return { style, logoBase64, contact2, footerTail, gtagBlock, favicon };
@@ -939,9 +1059,7 @@ function buildHead(meta, tpl, prefix) {
   <meta name="theme-color" content="#0d2038">
   <link rel="manifest" href="${p}site.webmanifest">
   <link rel="icon" href="${tpl.favicon}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">${keywords}
+${FONTS_HEAD}${keywords}
   ${tpl.style}
   ${SEO_ONLY_STYLE}
   ${tpl.gtagBlock}
@@ -1220,12 +1338,13 @@ function polishAllPages() {
   for (const file of files) {
     if (!file.endsWith('.html')) continue;
     let html = read(file);
+    html = applyPerformancePolish(html);
     html = ensureSingleCookieConsent(html);
     if (file.endsWith(`${path.sep}index.html`) && !file.includes(`${path.sep}servizi${path.sep}`) && !file.includes(`${path.sep}quartieri${path.sep}`) && !file.includes(`${path.sep}marche${path.sep}`)) {
       html = ensureNetlifyFormDetect(html);
     }
     if (html.includes('<form name="richiamata"') && !html.includes('gala400-tracking.js')) {
-      html = html.replace('</body>', '  <script src="js/gala400-tracking.js"></script>\n</body>');
+      html = html.replace('</body>', '  <script defer src="js/gala400-tracking.js"></script>\n</body>');
     }
     write(file, html);
   }
@@ -1339,6 +1458,12 @@ function updateIndex() {
 }
 
 async function main() {
+  if (process.argv.includes('--perf-only')) {
+    polishAllPages();
+    console.log('Performance polish applied to all HTML pages.');
+    return;
+  }
+
   console.log('Gala 400 migration — OLD → V2');
   console.log(`OLD ref: ${OLD_REF} (GitHub ${GITHUB_OLD})`);
   console.log(`NEW: ${NEW_ROOT}`);

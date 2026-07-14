@@ -25,7 +25,6 @@ window.dataLayer=window.dataLayer||[];
 function gtag(){dataLayer.push(arguments);}
 gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','analytics_storage':'denied','wait_for_update':500});
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18106797178"></script>
 <script>
 gtag('js', new Date());
 gtag('set', {
@@ -38,10 +37,10 @@ gtag('config', 'AW-18106797178', {
 });
 gtag('config', 'G-TLQ5WCBTJK', {'anonymize_ip': true});
 </script>
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css">
-  <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>
+                  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 </head>
 <body>
+  <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>
   <a class="back" href="/">← Torna al sito</a>
   <h1>Cookie Policy</h1>
   <p class="meta">Gala 400 Srls · P.IVA 05180000233 · Ultimo aggiornamento: luglio 2026</p>
@@ -82,7 +81,14 @@ function gala400UpdateConsent(analytics, ads){
     'ad_personalization': ads ? 'granted' : 'denied'
   });
 }
+function gala400LoadCookieCss(cb){
+  if(document.querySelector('link[data-cc-css]')){cb();return;}
+  var l=document.createElement('link');
+  l.rel='stylesheet';l.href='https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css';l.setAttribute('data-cc-css','1');
+  l.onload=cb;l.onerror=cb;document.head.appendChild(l);
+}
 document.addEventListener('DOMContentLoaded', function(){
+  gala400LoadCookieCss(function(){
   if (typeof CookieConsent === 'undefined') return;
   function onChangeHandler(){
     var accepted = CookieConsent.getUserPreferences().acceptedCategories || [];
@@ -119,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function(){
     onFirstConsent: onChangeHandler,
     onConsent: onChangeHandler,
     onChange: onChangeHandler
+  });
   });
 });
 </script>
