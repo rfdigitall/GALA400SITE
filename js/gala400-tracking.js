@@ -3,18 +3,37 @@
 
   var SEND_TO = 'AW-18106797178/tG61CLym4LocEPqY_7lD';
 
-  function hasAdsConsent() {
+  function acceptedCategories() {
     try {
-      if (typeof CookieConsent === 'undefined') return false;
-      var accepted = CookieConsent.getUserPreferences().acceptedCategories || [];
-      return accepted.indexOf('ads') !== -1;
+      if (typeof CookieConsent === 'undefined') return [];
+      return CookieConsent.getUserPreferences().acceptedCategories || [];
     } catch (e) {
-      return false;
+      return [];
     }
   }
 
+  function hasAdsConsent() {
+    return acceptedCategories().indexOf('ads') !== -1;
+  }
+
+  function hasAnalyticsConsent() {
+    return acceptedCategories().indexOf('analytics') !== -1;
+  }
+
   function trackPhoneClick() {
-    if (!hasAdsConsent() || typeof gtag !== 'function') return;
+    if (typeof gtag !== 'function') return;
+
+    // GA4-only event: fires with analytics consent, even if ads cookies are refused
+    if (hasAnalyticsConsent()) {
+      gtag('event', 'phone_click_ga4', {
+        event_category: 'engagement',
+        event_label: 'tel_click',
+        method: 'phone'
+      });
+    }
+
+    // Google Ads conversion + lead: still gated on ads consent (unchanged)
+    if (!hasAdsConsent()) return;
     gtag('event', 'conversion', { send_to: SEND_TO });
     gtag('event', 'generate_lead', { method: 'phone' });
   }
@@ -55,7 +74,12 @@
         else el.disabled = true;
       });
     }
-    var target = document.getElementById('contatti') || document.querySelector('.contact2');
+    var hash = (window.location.hash || '').replace(/^#/, '');
+    var target =
+      (hash && document.getElementById(hash)) ||
+      document.getElementById('richiamata') ||
+      document.getElementById('contatti') ||
+      document.querySelector('.contact2');
     if (target) {
       try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) { target.scrollIntoView(true); }
     }
@@ -79,7 +103,7 @@
     var orig = window.gala400UpdateConsent;
     window.gala400UpdateConsent = function (analytics, ads) {
       if (typeof orig === 'function') orig(analytics, ads);
-      if (ads) initTracking();
+      if (ads || analytics) initTracking();
     };
   });
 })();
