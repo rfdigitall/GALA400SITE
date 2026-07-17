@@ -489,6 +489,10 @@ footer.foot-pro{background:var(--ink2);padding:3rem 1.25rem 1.5rem;color:rgba(25
   --cc-toggle-on-bg: var(--copper);
 }
 
+/* Perf: defer offscreen work */
+.ticker-track{animation-play-state:paused}
+.ticker.is-on .ticker-track{animation-play-state:running}
+section.sec2,section.chi2,footer.foot-pro{content-visibility:auto;contain-intrinsic-size:1px 800px}
 </style>
   <style>.seo-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}</style>
   <script>
@@ -630,7 +634,7 @@ footer.foot-pro{background:var(--ink2);padding:3rem 1.25rem 1.5rem;color:rgba(25
   </div>
   <div class="ct2-r"><p class="form-title">Richiamata immediata</p>
     <p class="form-sub">Per urgenze chiama subito <a href="tel:+393494208551" class="link-accent link-tel" data-cta="richiamata-tel">349 420 8551</a>. Il form sotto è per richiamata non urgente.</p>
-    <form name="richiamata" method="POST" data-netlify="true" data-ads-track="richiamata" netlify-honeypot="bot-field" action="/?ok=1#richiamata" class="callback-form">
+    <form name="richiamata" method="POST" data-netlify="true" data-ads-track="richiamata" netlify-honeypot="bot-field" action="?ok=1#richiamata" class="callback-form">
       <input type="hidden" name="form-name" value="richiamata">
       <p class="sr-only"><label>Non compilare <input name="bot-field"></label></p>
       <label class="field-label" for="tel-cb">Telefono</label>
@@ -772,6 +776,13 @@ document.addEventListener('DOMContentLoaded', function(){
   });
   });
 });
+</script>
+<script>
+(function(){
+  function on(){var t=document.querySelector('.ticker');if(t)t.classList.add('is-on');}
+  if('requestIdleCallback' in window)requestIdleCallback(on,{timeout:2000});
+  else window.addEventListener('load',function(){setTimeout(on,800);});
+})();
 </script>
 <script defer src="../js/gala400-tracking.js"></script>
 </body>
