@@ -61,15 +61,15 @@ const GTAG_BLOCK = `<script>
       'phone_conversion_number': '349 420 8551',
       'phone_conversion_callback': function (formatted_number, mobile_number) {
         document.querySelectorAll('a[href^="tel:"]').forEach(function (a) {
-          var href = (a.getAttribute('href') || '').replace(/\\s+/g, '');
+          var href = (a.getAttribute('href') || '').replace(/\s+/g, '');
           if (
             href.indexOf('3494208551') === -1 &&
             href.indexOf('+393494208551') === -1 &&
             href.indexOf('393494208551') === -1
           ) return;
           a.setAttribute('href', 'tel:' + mobile_number);
-          if (/349[\\s.\\-]*420[\\s.\\-]*8551/.test(a.textContent)) {
-            a.textContent = a.textContent.replace(/349[\\s.\\-]*420[\\s.\\-]*8551/g, formatted_number);
+          if (/349[\s.\-]*420[\s.\-]*8551/.test(a.textContent)) {
+            a.textContent = a.textContent.replace(/349[\s.\-]*420[\s.\-]*8551/g, formatted_number);
           }
         });
       }
