@@ -44,61 +44,37 @@ const GTAG_BLOCK = `<script>
       'analytics_storage':'denied',
       'wait_for_update':500
     });
+    if(location.hash==='#google-wcc-debug'){
+      gtag('consent','update',{
+        'ad_storage':'granted',
+        'ad_user_data':'granted',
+        'ad_personalization':'granted',
+        'analytics_storage':'granted'
+      });
+    }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18106797178"></script>
+  <script>
     gtag('js',new Date());
-    gtag('set',{
-      'phone_conversion_number':'349 420 8551',
-      'phone_conversion_ids':['AW-18106797178/BHIeCLvLzdIcEPqY_7lD']
-    });
-    gtag('config','AW-18106797178',{
-      'conversion_linker':true
-    });
+    gtag('config','AW-18106797178',{'conversion_linker':true});
     gtag('config','G-TLQ5WCBTJK',{'anonymize_ip':true});
-  </script>
-  <script>
-    /* Google Ads — Call Forwarding / Chiamate dal sito */
-    gtag('config', 'AW-18106797178/BHIeCLvLzdIcEPqY_7lD', {
-      'phone_conversion_number': '349 420 8551',
-      'phone_conversion_callback': function (formatted_number, mobile_number) {
-        document.querySelectorAll('a[href^="tel:"]').forEach(function (a) {
-          var href = (a.getAttribute('href') || '').replace(/\s+/g, '');
-          if (
-            href.indexOf('3494208551') === -1 &&
-            href.indexOf('+393494208551') === -1 &&
-            href.indexOf('393494208551') === -1
-          ) return;
-          a.setAttribute('href', 'tel:' + mobile_number);
-          if (/349[\s.\-]*420[\s.\-]*8551/.test(a.textContent)) {
-            a.textContent = a.textContent.replace(/349[\s.\-]*420[\s.\-]*8551/g, formatted_number);
-          }
-        });
-      }
-    });
-    window._googWcmGet = window._googWcmGet || function (el) { return el; };
-  </script>
-  <script>
-    (function(){
-      function gala400LoadGtag(){
-        if(window.__gala400GtagJs)return;
-        window.__gala400GtagJs=1;
-        var s=document.createElement('script');
-        s.async=true;
-        s.src='https://www.googletagmanager.com/gtag/js?id=AW-18106797178';
-        document.head.appendChild(s);
-      }
-      if(location.hash==='#google-wcc-debug'){
-        gtag('consent','update',{
-          ad_storage:'granted',
-          analytics_storage:'granted',
-          ad_user_data:'granted',
-          ad_personalization:'granted'
-        });
-        gala400LoadGtag();
-      }else if('requestIdleCallback' in window){
-        requestIdleCallback(gala400LoadGtag,{timeout:3500});
-      }else{
-        window.addEventListener('load',function(){setTimeout(gala400LoadGtag,2000);});
-      }
-    })();
+    window.gala400ApplyCallFwd=function(){
+      gtag('config','AW-18106797178/BHIeCLvLzdIcEPqY_7lD',{
+        'phone_conversion_number':'349 420 8551',
+        'phone_conversion_callback':function(formatted_number,mobile_number){
+          document.querySelectorAll('a[href^="tel:"]').forEach(function(a){
+            var href=(a.getAttribute('href')||'').replace(/\\s+/g,'');
+            if(href.indexOf('3494208551')===-1 && href.indexOf('+393494208551')===-1 && href.indexOf('393494208551')===-1) return;
+            a.setAttribute('href','tel:'+mobile_number);
+            if(/349[\\s.\\-]*420[\\s.\\-]*8551/.test(a.textContent)){
+              a.textContent=a.textContent.replace(/349[\\s.\\-]*420[\\s.\\-]*8551/g,formatted_number);
+            }
+          });
+        }
+      });
+    };
+    window._googWcmGet=window._googWcmGet||function(el){return el;};
+    if(location.hash==='#google-wcc-debug'){ gala400ApplyCallFwd(); }
   </script>`;
 
 const COOKIE_CONSENT_BODY = `  <script defer src="${COOKIE_JS_URL}"></script>`;

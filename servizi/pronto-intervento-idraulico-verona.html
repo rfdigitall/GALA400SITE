@@ -495,7 +495,7 @@ footer.foot-pro{background:var(--ink2);padding:3rem 1.25rem 1.5rem;color:rgba(25
 section.sec2,section.chi2,footer.foot-pro{content-visibility:auto;contain-intrinsic-size:1px 800px}
 </style>
   <style>.seo-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}</style>
-  <script>
+    <script>
     window.dataLayer=window.dataLayer||[];
     function gtag(){dataLayer.push(arguments);}
     gtag('consent','default',{
@@ -505,63 +505,41 @@ section.sec2,section.chi2,footer.foot-pro{content-visibility:auto;contain-intrin
       'analytics_storage':'denied',
       'wait_for_update':500
     });
+    /* WCC debug needs ads consent before gtag.js boots */
+    if(location.hash==='#google-wcc-debug'){
+      gtag('consent','update',{
+        'ad_storage':'granted',
+        'ad_user_data':'granted',
+        'ad_personalization':'granted',
+        'analytics_storage':'granted'
+      });
+    }
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18106797178"></script>
+  <script>
     gtag('js',new Date());
-    gtag('set',{
-      'phone_conversion_number':'349 420 8551',
-      'phone_conversion_ids':['AW-18106797178/BHIeCLvLzdIcEPqY_7lD']
-    });
-    gtag('config','AW-18106797178',{
-      'conversion_linker':true
-    });
+    gtag('config','AW-18106797178',{'conversion_linker':true});
     gtag('config','G-TLQ5WCBTJK',{'anonymize_ip':true});
+    window.gala400ApplyCallFwd=function(){
+      gtag('config','AW-18106797178/BHIeCLvLzdIcEPqY_7lD',{
+        'phone_conversion_number':'349 420 8551',
+        'phone_conversion_callback':function(formatted_number,mobile_number){
+          document.querySelectorAll('a[href^="tel:"]').forEach(function(a){
+            var href=(a.getAttribute('href')||'').replace(/\s+/g,'');
+            if(href.indexOf('3494208551')===-1 && href.indexOf('+393494208551')===-1 && href.indexOf('393494208551')===-1) return;
+            a.setAttribute('href','tel:'+mobile_number);
+            if(/349[\s.\-]*420[\s.\-]*8551/.test(a.textContent)){
+              a.textContent=a.textContent.replace(/349[\s.\-]*420[\s.\-]*8551/g,formatted_number);
+            }
+          });
+        }
+      });
+    };
+    window._googWcmGet=window._googWcmGet||function(el){return el;};
+    /* Apply immediately for debug; otherwise wait for ads cookie consent */
+    if(location.hash==='#google-wcc-debug'){ gala400ApplyCallFwd(); }
   </script>
-  <script>
-    /* Google Ads — Call Forwarding / Chiamate dal sito: AW-18106797178/BHIeCLvLzdIcEPqY_7lD */
-    gtag('config', 'AW-18106797178/BHIeCLvLzdIcEPqY_7lD', {
-      'phone_conversion_number': '349 420 8551',
-      'phone_conversion_callback': function (formatted_number, mobile_number) {
-        document.querySelectorAll('a[href^="tel:"]').forEach(function (a) {
-          var href = (a.getAttribute('href') || '').replace(/\s+/g, '');
-          if (
-            href.indexOf('3494208551') === -1 &&
-            href.indexOf('+393494208551') === -1 &&
-            href.indexOf('393494208551') === -1
-          ) return;
-          a.setAttribute('href', 'tel:' + mobile_number);
-          if (/349[\s.\-]*420[\s.\-]*8551/.test(a.textContent)) {
-            a.textContent = a.textContent.replace(/349[\s.\-]*420[\s.\-]*8551/g, formatted_number);
-          }
-        });
-      }
-    });
-    /* Legacy WCM helper referenced by onclick on tel links (safe if gtag already swapped the number) */
-    window._googWcmGet = window._googWcmGet || function (el) { return el; };
-  </script>
-  <script>
-    (function(){
-      function gala400LoadGtag(){
-        if(window.__gala400GtagJs)return;
-        window.__gala400GtagJs=1;
-        var s=document.createElement('script');
-        s.async=true;
-        s.src='https://www.googletagmanager.com/gtag/js?id=AW-18106797178';
-        document.head.appendChild(s);
-      }
-      if(location.hash==='#google-wcc-debug'){
-        gtag('consent','update',{
-          ad_storage:'granted',
-          analytics_storage:'granted',
-          ad_user_data:'granted',
-          ad_personalization:'granted'
-        });
-        gala400LoadGtag();
-      }else if('requestIdleCallback' in window){
-        requestIdleCallback(gala400LoadGtag,{timeout:3500});
-      }else{
-        window.addEventListener('load',function(){setTimeout(gala400LoadGtag,2000);});
-      }
-    })();
-  </script>
+
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
   <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": ["Plumber", "LocalBusiness"], "@id": "https://gala400.it/#business", "name": "Gala 400 — Idraulico Verona", "legalName": "Gala 400 Srls", "taxID": "05180000233", "telephone": "+393494208551", "url": "https://gala400.it", "sameAs": ["https://share.google/IhkhBfXpcJHccJPsL"], "priceRange": "€€", "address": {"@type": "PostalAddress", "addressLocality": "Verona", "addressRegion": "VR", "postalCode": "37100", "addressCountry": "IT"}, "geo": {"@type": "GeoCoordinates", "latitude": 45.4384, "longitude": 10.9916}, "areaServed": [{"@type": "City", "name": "Verona"}, {"@type": "AdministrativeArea", "name": "Provincia di Verona"}], "openingHoursSpecification": {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"], "opens": "00:00", "closes": "23:59"}}, {"@type": "Service", "name": "Pronto Intervento Idraulico a Verona", "serviceType": "Pronto Intervento Idraulico a Verona", "provider": {"@id": "https://gala400.it/#business"}, "areaServed": {"@type": "City", "name": "Verona"}, "url": "https://gala400.it/servizi/pronto-intervento-idraulico-verona.html"}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item":"https://gala400.it/"}, {"@type": "ListItem", "position": 2, "name": "Servizi", "item": "https://gala400.it/index.html#servizi"}, {"@type": "ListItem", "position": 3, "name": "Pronto Intervento Idraulico a Verona", "item": "https://gala400.it/servizi/pronto-intervento-idraulico-verona.html"}]}, {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Quanto tempo impieghi ad arrivare?", "acceptedAnswer": {"@type": "Answer", "text": "In città il tempo medio è di circa 20 minuti per le urgenze. In provincia dipende dalla zona, te lo confermo al telefono."}}, {"@type": "Question", "name": "Lavori anche di notte e nei festivi?", "acceptedAnswer": {"@type": "Answer", "text": "Sì, rispondo 24 ore su 24, tutti i giorni, festivi inclusi."}}, {"@type": "Question", "name": "Quanto costa un intervento urgente?", "acceptedAnswer": {"@type": "Answer", "text": "Dipende dal tipo di guasto. Ti comunico il preventivo prima di iniziare qualsiasi lavoro, così decidi tu con tutte le informazioni."}}, {"@type": "Question", "name": "Copri tutta Verona o solo il centro città?", "acceptedAnswer": {"@type": "Answer", "text": "Intervengo in tutta Verona e provincia, centro e periferia comprese, senza costi aggiuntivi in base alla zona."}}]}]}</script>
 </head>
@@ -748,6 +726,7 @@ function gala400UpdateConsent(analytics, ads){
     'ad_user_data': ads ? 'granted' : 'denied',
     'ad_personalization': ads ? 'granted' : 'denied'
   });
+  if(ads && typeof gala400ApplyCallFwd==='function') gala400ApplyCallFwd();
 }
 function gala400LoadCookieCss(cb){
   if(document.querySelector('link[data-cc-css]')){cb();return;}
