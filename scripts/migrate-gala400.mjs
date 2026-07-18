@@ -47,10 +47,9 @@ const GTAG_BLOCK = `<script>
     gtag('js',new Date());
     gtag('set',{
       'phone_conversion_number':'349 420 8551',
-      'phone_conversion_ids':['AW-18106797178/BHIeCLvLzdIcEPqY_7lD','AW-18106797178/tG61CLym4LocEPqY_7lD']
+      'phone_conversion_ids':['AW-18106797178/BHIeCLvLzdIcEPqY_7lD']
     });
     gtag('config','AW-18106797178',{
-      'phone_conversion_number':'349 420 8551',
       'conversion_linker':true
     });
     gtag('config','G-TLQ5WCBTJK',{'anonymize_ip':true});
@@ -86,7 +85,15 @@ const GTAG_BLOCK = `<script>
         s.src='https://www.googletagmanager.com/gtag/js?id=AW-18106797178';
         document.head.appendChild(s);
       }
-      if('requestIdleCallback' in window){
+      if(location.hash==='#google-wcc-debug'){
+        gtag('consent','update',{
+          ad_storage:'granted',
+          analytics_storage:'granted',
+          ad_user_data:'granted',
+          ad_personalization:'granted'
+        });
+        gala400LoadGtag();
+      }else if('requestIdleCallback' in window){
         requestIdleCallback(gala400LoadGtag,{timeout:3500});
       }else{
         window.addEventListener('load',function(){setTimeout(gala400LoadGtag,2000);});
