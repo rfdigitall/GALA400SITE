@@ -46,14 +46,35 @@ const GTAG_BLOCK = `<script>
     });
     gtag('js',new Date());
     gtag('set',{
-      'phone_conversion_number':'+393494208551',
-      'phone_conversion_ids':['AW-18106797178/tG61CLym4LocEPqY_7lD']
+      'phone_conversion_number':'349 420 8551',
+      'phone_conversion_ids':['AW-18106797178/BHIeCLvLzdIcEPqY_7lD','AW-18106797178/tG61CLym4LocEPqY_7lD']
     });
     gtag('config','AW-18106797178',{
-      'phone_conversion_number':'+393494208551',
+      'phone_conversion_number':'349 420 8551',
       'conversion_linker':true
     });
     gtag('config','G-TLQ5WCBTJK',{'anonymize_ip':true});
+  </script>
+  <script>
+    /* Google Ads — Call Forwarding / Chiamate dal sito */
+    gtag('config', 'AW-18106797178/BHIeCLvLzdIcEPqY_7lD', {
+      'phone_conversion_number': '349 420 8551',
+      'phone_conversion_callback': function (formatted_number, mobile_number) {
+        document.querySelectorAll('a[href^="tel:"]').forEach(function (a) {
+          var href = (a.getAttribute('href') || '').replace(/\\s+/g, '');
+          if (
+            href.indexOf('3494208551') === -1 &&
+            href.indexOf('+393494208551') === -1 &&
+            href.indexOf('393494208551') === -1
+          ) return;
+          a.setAttribute('href', 'tel:' + mobile_number);
+          if (/349[\\s.\\-]*420[\\s.\\-]*8551/.test(a.textContent)) {
+            a.textContent = a.textContent.replace(/349[\\s.\\-]*420[\\s.\\-]*8551/g, formatted_number);
+          }
+        });
+      }
+    });
+    window._googWcmGet = window._googWcmGet || function (el) { return el; };
   </script>
   <script>
     (function(){
