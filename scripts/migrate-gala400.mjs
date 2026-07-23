@@ -770,9 +770,7 @@ function loadTemplate() {
   const contact2 = extractBetween(html, /<section class="contact2"/, '</section>');
   const footerTail = html.slice(html.indexOf('<footer class="foot-pro">'));
   const gtagBlock = GTAG_BLOCK;
-  const faviconMatch = html.match(/<link rel="icon" href="(data:image[^"]+)"/);
-  const favicon = faviconMatch ? faviconMatch[1] : '';
-  return { style, logoBase64, contact2, footerTail, gtagBlock, favicon };
+  return { style, logoBase64, contact2, footerTail, gtagBlock };
 }
 
 function buildTicker() {
@@ -1062,7 +1060,10 @@ function buildHead(meta, tpl, prefix) {
   <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0d2038">
   <link rel="manifest" href="${p}site.webmanifest">
-  <link rel="icon" href="${tpl.favicon}">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="/assets/favicon-32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/assets/favicon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/assets/favicon-180.png">
 ${FONTS_HEAD}${keywords}
   ${tpl.style}
   ${SEO_ONLY_STYLE}
