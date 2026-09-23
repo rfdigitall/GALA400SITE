@@ -32,10 +32,9 @@
       });
     }
 
-    // Google Ads conversion + lead: still gated on ads consent (unchanged)
-    if (!hasAdsConsent()) return;
-    gtag('event', 'conversion', { send_to: SEND_TO });
-    gtag('event', 'generate_lead', { method: 'phone' });
+    // 23/09: DO NOT send Ads "Click telefono" conversion on tel tap.
+    // Tap opens dialer ≠ spoken call. Real calls = LSA leads / call reporting.
+    // Keep GA4 phone_click_ga4 above for analytics only.
   }
 
   function trackLead(source) {
