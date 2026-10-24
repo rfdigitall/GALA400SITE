@@ -98,6 +98,8 @@ POLICY = [
     (r'Vedi il costo prima che inizi qualsiasi lavoro, sempre per iscritto\.', 'Ti comunico il costo prima di iniziare qualsiasi lavoro.'),
     (r'con tecnici qualificati Gala 400', 'con il tecnico Gala400'), (r'con tecnici qualificati', 'con il tecnico'),
     (r'con preventivo scritto prima di ogni lavoro', 'con costo di uscita e preventivo comunicati al telefono'),
+    (r'preventivo scritto prima di iniziare', 'preventivo comunicato prima di iniziare'),
+    (r"preventivo scritto prima dell'avvio", "preventivo comunicato prima dell'avvio"),
     (r'(https://wa\.me/[^"]*?)%20[Hh]24', r'\1'),
     (r"(?:H24|h24|24/7), tutti i giorni dell'anno", HL.lower()),
     (r'Sicurezza impianto gas', 'Controlli di sicurezza caldaia'),
