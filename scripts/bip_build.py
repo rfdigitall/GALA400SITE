@@ -12,11 +12,13 @@ SITE = 'https://gala400.it'
 CFG = json.loads(re.search(r'window\.GALA_CONFIG\s*=\s*(\{.*?\});', open('js/src/gala-config.js', encoding='utf-8').read(), re.S).group(1))
 CITY = json.loads(re.search(r'window\.GALA_CITY_DATA=(\{.*\});', open('js/src/gala-city-data.js', encoding='utf-8').read(), re.S).group(1))
 HS, HL = CFG['hoursShort'], CFG['hoursLong']
+HLP = CFG.get('hoursPhrase', HL.lower())
 SPAN_HS = f'<span data-hours="short">{HS}</span>'
 SPAN_HL = f'<span data-hours="long">{HL}</span>'
 PHONE = CFG['phoneDisplay']
 BRAND = 'Gala400'
 LEGAL = 'Gala 400 Srls'
+FONT_PRELOAD = '<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/barlow-condensed-800-latin.woff2" crossorigin>\n  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/inter-latin.woff2" crossorigin>'
 COSTO = 'Costo di uscita e preventivo comunicati al telefono prima dell\'intervento.'
 LOG = []
 
@@ -92,16 +94,16 @@ POLICY = [
     (r"Perdite d'acqua, caldaie, scarichi e emergenze gas", "Perdite d'acqua, spurgo, scarichi e caldaie"),
     (r'<div class="cn2-v">RC Prof\.</div><div class="cn2-l">[^<]*</div>', '<div class="cn2-v">Diretto</div><div class="cn2-l">Senza centralino</div>'),
     (r'<div class="gi2">(?:(?!<div class="gi2">).)*?Copertura assicurativa RC Professionale.*?</p></div></div>', ''),
-    (r'<details class="faq"><summary><span class="faq-ico" aria-hidden="true">(?:<svg.*?</svg>)?</span>Siete assicurati per eventuali danni durante l\'intervento\?</summary>.*?</details>', ''),
-    (r"ogni giorno dell'anno", HL.lower()),
-    (r'hanno priorità assoluta, a qualsiasi ora\.', 'hanno la precedenza, ' + HL.lower() + '.'),
+    (r'<details class="faq"><summary><span class="faq-ico" aria-hidden="true">(?:<svg(?:(?!</details>).)*?</svg>)?</span>Siete assicurati per eventuali danni durante l\'intervento\?</summary>.*?</details>', ''),
+    (r"ogni giorno dell'anno", HLP),
+    (r'hanno priorità assoluta, a qualsiasi ora\.', 'hanno la precedenza, ' + HLP + '.'),
     (r'Vedi il costo prima che inizi qualsiasi lavoro, sempre per iscritto\.', 'Ti comunico il costo prima di iniziare qualsiasi lavoro.'),
     (r'con tecnici qualificati Gala 400', 'con il tecnico Gala400'), (r'con tecnici qualificati', 'con il tecnico'),
     (r'con preventivo scritto prima di ogni lavoro', 'con costo di uscita e preventivo comunicati al telefono'),
     (r'preventivo scritto prima di iniziare', 'preventivo comunicato prima di iniziare'),
     (r"preventivo scritto prima dell'avvio", "preventivo comunicato prima dell'avvio"),
     (r'(https://wa\.me/[^"]*?)%20[Hh]24', r'\1'),
-    (r"(?:H24|h24|24/7), tutti i giorni dell'anno", HL.lower()),
+    (r"(?:H24|h24|24/7), tutti i giorni dell'anno", HLP),
     (r'Sicurezza impianto gas', 'Controlli di sicurezza caldaia'),
     (r'<li><span class="tick2">(?:(?!</li>).)*?</span>Scaldabagno a gas</li>', ''),
     (r'scaldabagni a Verona</strong> gas ed elettrici con collaudo e messa in servizio\.', 'scaldabagni a Verona</strong> con collaudo e messa in servizio. Per scaldabagni a gas chiedi al telefono.'),
@@ -109,20 +111,20 @@ POLICY = [
     # --- arrival-time / minute guarantees
     (r'Arrivo garantito in circa 20 minuti in città', 'Tecnico disponibile in zona, tempi comunicati al telefono'),
     (r'\s*In città arrivo medio ~20 minuti\.', ' Tecnico disponibile in zona.'),
-    (r'Pronto intervento attivo 24 ore su 24, arrivo medio ~20 minuti a Verona e provincia\.', 'Pronto intervento ' + HL.lower() + ', a Verona e provincia.'),
+    (r'Pronto intervento attivo 24 ore su 24, arrivo medio ~20 minuti a Verona e provincia\.', 'Pronto intervento ' + HLP + ', a Verona e provincia.'),
     (r'arrivo medio ~20 minuti a Verona e provincia', 'tecnico disponibile in zona a Verona e provincia'),
     (r'Arrivo medio ~20 minuti\.', 'Intervento rapido, tempi comunicati al telefono.'),
     (r'Arrivo in ~20 minuti, preventivo gratuito\.', 'Intervento rapido. ' + COSTO),
     (r'Arrivo ~20 min\.', 'Intervento rapido.'),
     (r'Tecnico in zona, arrivo medio ~…', 'Tecnico disponibile in zona.'),
-    (r'Linea diretta h24 a Verona — arrivo medio ~20 minuti, preventivo comunicato prima di iniziare\.', 'Rispondiamo ' + HL.lower() + ' — ' + COSTO[0].lower() + COSTO[1:]),
+    (r'Linea diretta h24 a Verona — arrivo medio ~20 minuti, preventivo comunicato prima di iniziare\.', 'Rispondiamo ' + HLP + ' — ' + COSTO[0].lower() + COSTO[1:]),
     (r'guasta di notte o nel weekend\?', 'guasta, anche nel weekend?'),
-    (r'Per urgenze arrivo medio ~20 minuti a Verona, h24 inclusi festivi\.', 'Dipende dalla zona e dal traffico: al telefono ti comunichiamo un orario di arrivo realistico. Rispondiamo ' + HL.lower() + '.'),
+    (r'Per urgenze arrivo medio ~20 minuti a Verona, h24 inclusi festivi\.', 'Dipende dalla zona e dal traffico: al telefono ti comunichiamo un orario di arrivo realistico. Rispondiamo ' + HLP + '.'),
     (r'Il tempo medio è di circa 20 minuti in città per le urgenze, h24 inclusi festivi\.', 'Dipende dalla zona e dal traffico: al telefono ti comunichiamo un orario di arrivo realistico.'),
     (r'In città il tempo medio è di circa 20 minuti per le urgenze\.', 'Dipende dalla zona e dal traffico.'),
     (r'Per le urgenze sì, tempo medio di arrivo circa 20 minuti in città\.', 'Sì, per le urgenze ti comunichiamo al telefono un orario di arrivo realistico.'),
     (r"Tempo medio ~20 minuti in città, con l'attrezzatura", "Al telefono ti diciamo i tempi reali per la tua zona; arriviamo con l'attrezzatura"),
-    (r'Disponibile ora · ', 'Tutti i giorni ' + HS + ' · '),
+    (r'Disponibile ora · ', 'Aperti 7/7 · '),
     (r'Mi racconti il problema in 2 minuti\.', 'Mi racconti il problema in poche parole.'),
     (r'mi racconti il problema in 2 minuti\.', 'mi racconti il problema in poche parole.'),
     (r'Mi racconti il guasto in 2 minuti — rispondiamo subito\.', 'Mi racconti il guasto — rispondiamo noi, senza centralino.'),
@@ -139,10 +141,10 @@ POLICY = [
     (r'In genere 45–70 minuti secondo traffico e stagione\.', 'Dipende da traffico e stagione.'),
     (r'<div class="cn2-v">~?\d+(?:[–-]\d+)? min</div><div class="cn2-l">(?:Arrivo medio|Arrivo tipico)</div>', '<div class="cn2-v">In zona</div><div class="cn2-l">Tecnico disponibile</div>'),
     (r'<div class="cn2-v">100%</div><div class="cn2-l">Preventivo (?:prima|comunicato prima)</div>', '<div class="cn2-v">Chiaro</div><div class="cn2-l">Uscita e preventivo al telefono</div>'),
-    (r'<div class="cn2-v">H24</div><div class="cn2-l">(?:Reperibilità|Pronto intervento)</div>', '<div class="cn2-v">' + SPAN_HS + '</div><div class="cn2-l">Tutti i giorni</div>'),
+    (r'<div class="cn2-v">(?:H24|8–24)</div><div class="cn2-l">(?:Reperibilità|Pronto intervento|Ogni giorno)</div>', '<div class="cn2-v">7/7</div><div class="cn2-l">Aperti anche sabato e domenica</div>'),
     (r'<div class="cn2-l">Marca assistita</div>', '<div class="cn2-l">Marca trattata</div>'),
     # --- free quote / call-out (client charges a call-out fee)
-    (r'<summary><span class="faq-ico" aria-hidden="true">(?:<svg.*?</svg>)?</span>Il preventivo è (?:davvero )?gratuito\?</summary><div class="faq-a"><p>[^<]*</p>',
+    (r'<summary><span class="faq-ico" aria-hidden="true">(?:<svg(?:(?!</details>).)*?</svg>)?</span>Il preventivo è (?:davvero )?gratuito\?</summary><div class="faq-a"><p>[^<]*</p>',
      '<summary><span class="faq-ico" aria-hidden="true"></span>Quanto costa l’uscita?</summary><div class="faq-a"><p>L’uscita ha un costo. ' + COSTO + ' Nessun costo nascosto.</p>'),
     (r'Preventivo gratuito e scritto prima di ogni lavoro', 'Uscita e preventivo comunicati prima dell’intervento'),
     (r'[Pp]reventivo gratuito prima dei lavori\.', COSTO),
@@ -153,28 +155,29 @@ POLICY = [
     (r'Intervento Immediato', 'Intervento Rapido'), (r'Intervento immediato', 'Intervento rapido'), (r'intervento immediato', 'intervento rapido'),
     (r'Richiamata immediata', 'Richiedi una richiamata'),
     (r'Intervengo subito, anche nei casi più difficili\.', 'Intervengo in tempi rapidi, anche nei casi complessi.'),
-    (r'Reperibilità reale, anche di notte e nei festivi', 'Rispondiamo ' + HL.lower()),
+    (r'Reperibilità reale, anche di notte e nei festivi', 'Rispondiamo ' + HLP),
     (r'rispondiamo subito', 'rispondiamo noi'),
     (r'Preferiamo intervento immediato', 'Preferiamo intervenire rapidamente'),
     (r'<h2>Verona, dal 2010\.</h2>', '<h2>Idraulico a Verona e provincia.</h2>'),
     (r'Tecnici qualificati\.', 'Tecnico indipendente.'),
     # --- night / 24h claims
-    (r'Disotturazione urgente a Verona, anche di notte\.', 'Disotturazione urgente a Verona, ' + HL.lower() + '.'),
-    (r'Sì, reperibilità H24\. Di notte e nei weekend rispondiamo sullo stesso numero 349 420 8551', 'Rispondiamo ' + HL.lower() + ' sullo stesso numero 349 420 8551'),
+    (r'Disotturazione urgente a Verona, anche di notte\.', 'Disotturazione urgente a Verona, ' + HLP + '.'),
+    (r'Sì, reperibilità H24\. Di notte e nei weekend rispondiamo sullo stesso numero 349 420 8551', 'Rispondiamo ' + HLP + ' sullo stesso numero 349 420 8551'),
     (r'Intervieni anche di notte per un allagamento\?', 'In che orari intervieni per un allagamento?'),
     (r'H24, tutti i giorni, festivi inclusi\. Se chiami, rispondiamo noi — senza centralino\.', HL + '. Se chiami, rispondiamo noi — senza centralino.'),
-    (r'Sì, rispondo tutti i giorni, festivi compresi\.', 'Sì: ' + HL.lower() + '.'),
-    (r'H24, festivi inclusi', HL), (r'h24 inclusi festivi', HL.lower()), (r'h24 anche festivi', HL.lower()),
-    (r'rispondiamo noi, H24, festivi inclusi', 'rispondiamo noi, ' + HL.lower()),
+    (r'Sì, rispondo tutti i giorni, festivi compresi\.', 'Sì: ' + HLP + '.'),
+    (r'H24, festivi inclusi', HL), (r'h24 inclusi festivi', HLP), (r'h24 anche festivi', HLP),
+    (r'rispondiamo noi, H24, festivi inclusi', 'rispondiamo noi, ' + HLP),
     (r'Attivo 24/7 · Tutti i giorni', SPAN_HL), (r'Pronto Intervento 24/7', 'Pronto Intervento ' + HS),
-    (r'24 ore su 24', HL.lower()),
+    (r'24 ore su 24', HLP),
     (r'tecnico reperibile h24 con intervento prioritario', 'tecnico disponibile ' + HS),
-    (r'(?i)\bdi notte\b', 'in orario serale (fino alle 24)'),
+    (r'(?i)\bdi notte\b', 'in orario serale'),
 ]
 H24_TEXT = [  # applied to visible text + attributes after POLICY
     (r'Disponibile H24', 'Disponibile ' + SPAN_HS),
     (r'\b[Hh]24\b', HS),
     (r'\b24/7\b', HS),
+    (r'(?<![\d:])8\s?[–-]\s?24(?![\d:])', HS),  # t38u: no visible clock hours
 ]
 BRAND_FIX = [
     (r'Gala 400 Srls(?! — P\.IVA 05180000233 — REA)', BRAND),
@@ -289,9 +292,33 @@ def town_facts(f):
 GAS_SAFETY = """<div class="safety-box" role="note"><strong>Senti odore di gas?</strong> Non accendere luci o interruttori, non usare fiamme, apri le finestre, chiudi il rubinetto del contatore se raggiungibile ed esci. Poi chiama subito il <a href="tel:112">112</a> (Numero Unico di Emergenza) oppure il <strong>pronto intervento gas del tuo distributore</strong> (numero verde indicato in bolletta). """ + BRAND + """ <strong>non offre un servizio di emergenza gas</strong>.</div>"""
 
 def brand_disclaimer(brand):
-    return f'<p class="note-box"><strong>{BRAND} è un tecnico indipendente</strong>: non siamo un centro assistenza autorizzato {html.escape(brand)} e non siamo affiliati al marchio. Interveniamo su caldaie di tutte le marche; per riparazioni in garanzia del produttore rivolgiti al centro assistenza ufficiale.</p>'
+    return f'<p class="hero-disc">Tecnico indipendente, non centro assistenza autorizzato {html.escape(brand)}.</p>'
 
-GENERIC_DISCLAIMER = f'<p class="note-box"><strong>{BRAND} è un tecnico indipendente</strong>, non un centro assistenza autorizzato di alcun marchio. Interveniamo su caldaie di tutte le marche; per riparazioni in garanzia del produttore rivolgiti al centro assistenza ufficiale.</p>'
+GENERIC_DISCLAIMER = '<p class="hero-disc">Tecnico indipendente, non centro assistenza autorizzato. Caldaie di tutte le marche.</p>'
+
+TAGLINES = {  # t40u: short, punchy hero copy (cost line lives in the badge under the CTA)
+ 'index.html': "Perdite d'acqua, scarichi bloccati, spurgo con autospurgo, caldaie ferme — intervengo a Verona e provincia. Risponde il tecnico, senza centralino.",
+ 'servizi/pronto-intervento-idraulico-verona.html': "Tubo rotto, perdita d'acqua, WC intasato? Pronto intervento idraulico a Verona e provincia. Tocca e chiama: risponde il tecnico.",
+ 'servizi/perdite-acqua-urgenti-verona.html': "Perdita d'acqua o tubo rotto a Verona e provincia? Chiudi la valvola e chiama 349 420 8551: risponde il tecnico.",
+ 'servizi/spurgo-urgente-verona.html': "Spurgo urgente a Verona e provincia con autospurgo: fognature, pozzi neri, scarichi bloccati. Chiama 349 420 8551.",
+ 'servizi/wc-intasato-urgente-verona.html': "WC intasato o scarico otturato a Verona e provincia? Tocca e chiama 349 420 8551: risponde il tecnico, senza centralino.",
+ 'servizi/riparazione-caldaia-verona.html': "Caldaia rotta o in blocco a Verona e provincia? Riparazione urgente, caldaie di tutte le marche. Chiama 349 420 8551.",
+ 'servizi/assistenza-caldaia-verona.html': "Caldaia spenta o senza acqua calda a Verona e provincia? Assistenza caldaie di tutte le marche. Chiama 349 420 8551.",
+}
+
+def town_stat(f, s):
+    """t40u: full town name in the stat box (was truncated to 8 chars / last word)"""
+    ts = town_slug(f)
+    if not ts: return s
+    if ts in TOWN_PAGES: name = TOWN_PAGES[ts][0]
+    else: name = h1_text(s).replace('Idraulico urgente ', '').strip() or ts.replace('-', ' ').title()
+    def rep(m):
+        lbl = m.group(1)
+        if lbl != 'Zona lago':
+            lbl = 'Frazione di Sona' if ts == 'palazzolo' else ('Comune' if ts in TOWN_PAGES and ts != 'verona-centro' else 'Quartiere')
+        cls = 'cn2-v cn2-name' + (' cn2-long' if len(name) > 12 else '')
+        return f'<div class="{cls}">{html.escape(name)}</div><div class="cn2-l">{lbl}</div>'
+    return re.sub(r'<div class="cn2-v">[^<]*</div><div class="cn2-l">(Quartiere|Zona lago)</div>', rep, s, count=1)
 
 # ---------------------------------------------------------------- JSON-LD
 def area_served():
@@ -388,7 +415,7 @@ def city_spans(f, s):
             t = t2
         return m.group(1) + t + m.group(3)
     hero = re.sub(r'(<h1 class="hero2-h1">)(.*?)(</h1>)', h1fix, hero, count=1, flags=re.S)
-    hero = re.sub(r'(<div class="hero2-badge"><span class="live-dot" aria-hidden="true"></span>)[^<]*', lambda m: m.group(1) + 'Tutti i giorni ' + HS + ' · ' + N, hero, count=1)
+    hero = re.sub(r'(<div class="hero2-badge"><span class="live-dot" aria-hidden="true"></span>)[^<]*', lambda m: m.group(1) + '<span>Aperti 7/7 · ' + N + '</span>', hero, count=1)
     def tag(m):
         p = m.group(0)
         p = re.sub(r'\ba Verona e sulla sponda veronese del lago di Garda\b', A, p)
@@ -410,10 +437,12 @@ def transform(f, s, css_href, core_href):
         s, n = re.subn(r'<style>.*?</style>', f'<link rel="stylesheet" href="{css_href}">', s, count=1, flags=re.S)
         assert n == 1, f
     # ---- CLS: web fonts only if ready in time (no late swap of the hero)
-    s = s.replace('&display=swap', '&display=optional')
+    s = re.sub(r'\s*<link rel="preconnect" href="https://fonts\.g(?:oogleapis|static)\.com"[^>]*>', '', s)
+    s = re.sub(r'\s*<link rel="(?:preload|stylesheet)"[^>]*href="https://fonts\.googleapis\.com/[^"]*"[^>]*>', '', s)
+    s = re.sub(r'\s*<noscript><link[^>]*fonts\.googleapis\.com[^>]*></noscript>', '', s)
+    s = s.replace('<meta name="viewport"', FONT_PRELOAD + '\n  <meta name="viewport"', 1)
     # ---- preload logo
-    s = s.replace('<link rel="preconnect" href="https://fonts.googleapis.com">',
-                  '<link rel="preload" as="image" href="/assets/img/logo-160.webp" type="image/webp" fetchpriority="high">\n  <link rel="preconnect" href="https://fonts.googleapis.com">', 1)
+    s = s.replace('<meta name="viewport"', '<link rel="preload" as="image" href="/assets/img/logo-160.webp" type="image/webp" fetchpriority="high">\n  <meta name="viewport"', 1)
     # ---- logos base64 -> webp file
     imgs = list(re.finditer(r'<img src="data:image/png;base64,[A-Za-z0-9+/=]+"', s))
     for i, m in reversed(list(enumerate(imgs))):
@@ -460,10 +489,7 @@ def transform(f, s, css_href, core_href):
     s = s.replace('caldaia o gas: chiama', 'caldaia: chiama')
     # ---- hidden SEO text: show useful prose, drop hidden duplicate grids
     s = re.sub(r'<section class="seo-only" aria-hidden="true">.*?</section>\s*', '', s, flags=re.S)  # short duplicate prose, replaced by "In breve" 
-    if k == 'home':
-        s = s.replace('<section class="sec2 seo-only" id="zone" aria-hidden="true">', '<section class="sec2" id="zone">')
-    else:
-        s = re.sub(r'<section class="sec2 seo-only"[^>]*>.*?</section>\s*', '', s, flags=re.S)
+    s = re.sub(r'<section class="sec2 seo-only"[^>]*>.*?</section>\s*', '', s, flags=re.S)  # t40u: no hidden text, no long town grid
     # ---- nav: header phone on every page + Spurgo link
     if 'class="nav2-phone"' not in s:
         s = s.replace('<nav class="nav2">', '<nav class="nav2">\n  <a href="tel:+393494208551" class="nav2-phone" data-cta="nav2-phone">' + PHONE + '</a>', 1)
@@ -471,13 +497,16 @@ def transform(f, s, css_href, core_href):
     s = s.replace('<a href="/marche/">Caldaie</a>\n  <a href="tel:', '<a href="/servizi/spurgo-urgente-verona.html">Spurgo</a>\n  <a href="/marche/">Caldaie</a>\n  <a href="tel:', 1)
     # ---- above-the-fold CTA wording
     s = re.sub(r'(<a href="tel:\+393494208551" class="hbtn hbtn-solid" data-cta="hero2-call">\s*(?:<svg.*?</svg>)?\s*)349 420 8551(\s*</a>)', r'\1Chiama ora · 349 420 8551\2', s, count=1, flags=re.S)
-    s = s.replace('<p class="hc-meta">' + BRAND + ' · P.IVA 05180000233 · ' + HS + '</p>', '<p class="hc-meta">' + BRAND + ' · P.IVA 05180000233 · ' + SPAN_HS + '</p>')
+    s = re.sub(r'<p class="hc-meta">[^<]*P\.IVA[^<]*</p>', '<p class="hc-meta">Risponde il tecnico · ' + SPAN_HS + '</p>', s)
+    s = re.sub(r'<div class="ct2-row"><div class="ct2-rlbl">[^<]*</div><span class="ct2-rval"[^>]*>P\.IVA[^<]*</span></div>\s*', '', s)
     # ---- page-type specific
+    if f in TAGLINES:
+        s = re.sub(r'(<p class="hero2-tagline"[^>]*>).*?(</p>)', lambda m: m.group(1) + TAGLINES[f] + m.group(2), s, count=1, flags=re.S)
+    s = re.sub(r'(<p class="hero2-tagline"[^>]*>)(.*?)(</p>)', lambda m: m.group(1) + m.group(2).replace(' ' + COSTO, '').replace(COSTO + ' ', '').replace(', con costo di uscita e preventivo comunicati al telefono.', '.') + m.group(3), s, count=1, flags=re.S)
     if k in ('home', 'service'):
         s = city_spans(f, s)
-        _tg = re.search(r'<p class="hero2-tagline">.*?</p>', s, re.S)
-        _note = SPAN_HL + '.' + ('' if (_tg and 'Costo di uscita' in _tg.group(0)) else ' ' + COSTO)
-        s = s.replace('</div>\n    <div class="hero2-contact">', '  <p class="hero-cta-note">' + _note + '</p>\n    </div>\n    <div class="hero2-contact">', 1)
+    if k in ('home', 'service', 'town', 'brand') and f not in OUT_OF_AREA:
+        s = s.replace('</div>\n    <div class="hero2-contact">', '  <p class="hero-cta-note"><span class="cost-badge">' + COSTO.rstrip('.') + '</span></p>\n    </div>\n    <div class="hero2-contact">', 1)
     if k == 'home':
         s = s.replace('Perdite d\'acqua, scarichi bloccati, caldaie ferme, allagamenti — intervengo',
                       'Perdite d\'acqua, scarichi bloccati, spurgo con autospurgo, caldaie ferme, allagamenti — intervengo', 1)
@@ -494,7 +523,7 @@ def transform(f, s, css_href, core_href):
     if k == 'gas':
         s = gas_page(f, s)
     if f in OUT_OF_AREA:
-        s = re.sub(r'(<p class="hero2-tagline">.*?</p>)', lambda m: m.group(1) + '\n      <p class="note-box">Sirmione è in provincia di <strong>Brescia</strong>, fuori dalla nostra zona principale (provincia di Verona). Chiama per verificare la disponibilità.</p>', s, count=1, flags=re.S)
+        s = re.sub(r'(<p class="hero2-tagline">.*?</p>)', lambda m: m.group(1) + '\n      <p class="hero-disc">Sirmione è in provincia di Brescia, fuori dalla nostra zona principale: chiama per verificare.</p>', s, count=1, flags=re.S)
     s = s.replace('<span class="sticky-call-label">Emergenza idraulica Verona</span>', '<span class="sticky-call-label">Chiama il tecnico</span>')
     # ---- service pages titles/meta: province-generic
     if k in ('service', 'home'):
@@ -509,18 +538,8 @@ def transform(f, s, css_href, core_href):
     if main_end < 0: main_end = s.find('</main>')
     faq_pos = s.find('<section class="section section-alt"><div class="container container-narrow">')
     insert_at = faq_pos if 0 < faq_pos < main_end else main_end
-    add = ''
-    if k in ('home', 'service'): add += in_breve(f)
-    if k == 'service' or k == 'brand': add += zones_block(f)
-    if k == 'town' and f not in OUT_OF_AREA:
-        ts = town_slug(f); tn = TOWN_PAGES.get(ts, (h1_text(s).replace('Idraulico urgente ', ''), None))[0]
-        add += town_facts(f) + services_block(f, tn)
-    if add and insert_at > 0: s = s[:insert_at] + add + s[insert_at:]
-    # ---- visible breadcrumbs (after hero)
-    if k not in ('home', 'legal'):
-        vc = visible_crumbs(f, s)
-        he = s.find('</section>', s.find('<section class="hero2"'))
-        if he > 0: s = s[:he + 10] + '\n' + vc + s[he + 10:]
+    # t40u: no visible 'In breve' / info blocks (facts stay in JSON-LD + llms.txt); breadcrumbs only in JSON-LD
+    if kind(f) == 'town': s = town_stat(f, s)
     # ---- robots meta
     if not indexable(f):
         s = re.sub(r'<meta name="robots" content="[^"]*">', '<meta name="robots" content="noindex, follow">', s, count=1)
@@ -588,7 +607,7 @@ def gas_page(f, s):
     <li>Esci dall’abitazione e telefona da fuori: <a href="tel:112">112</a> oppure il pronto intervento gas del distributore (numero verde in bolletta).</li>
     <li>Non rientrare finché i tecnici del distributore o i Vigili del Fuoco non hanno messo in sicurezza l’impianto.</li>
   </ol>
-  <p style="margin-top:1rem;max-width:42rem">{BRAND} è un’impresa idraulica: <strong>non gestiamo emergenze gas</strong>. Per problemi idraulici (perdite d’acqua, scarichi, caldaie, scaldabagni) chiama {PHONE}, {HL.lower()}.</p>
+  <p style="margin-top:1rem;max-width:42rem">{BRAND} è un’impresa idraulica: <strong>non gestiamo emergenze gas</strong>. Per problemi idraulici (perdite d’acqua, scarichi, caldaie, scaldabagni) chiama {PHONE}, {HLP}.</p>
   <p style="margin-top:1rem"><a class="link-more" href="/servizi/riparazione-caldaia-verona.html">Riparazione caldaia →</a> · <a class="link-more" href="/servizi/pronto-intervento-idraulico-verona.html">Pronto intervento idraulico →</a></p>
 </section>
 """
@@ -622,7 +641,6 @@ def main():
     src = {f: open(f, encoding='utf-8').read() for f in files}
     make_images(src['index.html'])
     extra = open('css/gala-extra.css', encoding='utf-8').read()
-    extra += '\n.crumbs{max-width:72rem;margin:0 auto;padding:.7rem 1.25rem;font-size:.8rem}.crumbs ol{list-style:none;display:flex;flex-wrap:wrap;gap:.35rem;margin:0;padding:0}.crumbs li+li:before{content:"›";margin-right:.35rem;opacity:.6}.crumbs a{text-decoration:underline}\n.facts{display:grid;grid-template-columns:max-content 1fr;gap:.45rem 1rem;margin-top:1.2rem;max-width:48rem;font-size:.95rem;line-height:1.55}.facts dt{font-weight:700}.facts dd{margin:0}@media(max-width:520px){.facts{grid-template-columns:1fr}.facts dt{margin-top:.5rem}}\n'
     # CSS variants -> hashed external files
     variants = {}
     for f in files:

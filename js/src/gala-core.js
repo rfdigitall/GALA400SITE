@@ -156,14 +156,14 @@
       hideFromBots: false, /* same banner for users, crawlers and reviewers */
       cookie: { name: 'cc_cookie', expiresAfterDays: 182 },
       guiOptions: {
-        consentModal: { layout: 'box', position: 'bottom left', flipButtons: false, equalWeightButtons: true },
+        consentModal: { layout: 'bar inline', position: 'bottom', flipButtons: false, equalWeightButtons: true },
         preferencesModal: { layout: 'box', position: 'right', flipButtons: false, equalWeightButtons: true }
       },
       categories: { necessary: { readOnly: true, enabled: true }, analytics: {}, ads: {} },
       language: { default: 'it', translations: { it: {
         consentModal: {
           title: 'Utilizziamo i cookie',
-          description: 'Usiamo cookie tecnici necessari e, solo con il tuo consenso, cookie di analisi (Google Analytics) e di misurazione pubblicitaria (Google Ads). Senza consenso Google riceve solo segnali anonimi senza cookie (Consent Mode). Puoi cambiare scelta in ogni momento da "Preferenze cookie" in fondo alla pagina.',
+          description: 'Cookie tecnici necessari e, solo con il tuo consenso, cookie di analisi e pubblicitari di Google. Puoi cambiare scelta da "Preferenze cookie" in fondo alla pagina.',
           acceptAllBtn: 'Accetta tutti', acceptNecessaryBtn: 'Rifiuta tutti', showPreferencesBtn: 'Gestisci preferenze',
           footer: '<a href="/privacy-policy.html">Privacy Policy</a><a href="/cookie-policy.html">Cookie Policy</a>'
         },

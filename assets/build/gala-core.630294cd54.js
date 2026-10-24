@@ -3,11 +3,13 @@
    scripts/bip_build.py reads this file and writes the same values into
    the static HTML (visible text + schema.org), then the browser keeps
    [data-hours] spans in sync. Change here -> re-run the build.
-   Hours confirmed by client via RF DIGITAL on 24/10/2026: 08-24 daily.
+   Hours confirmed by client via RF DIGITAL on 24/10/2026: 08:00-24:00 daily (schema/GBP).
+   Visible wording (t38u, 24/10/2026): "Aperti 7 giorni su 7" - no visible clock hours.
    =================================================================== */
 window.GALA_CONFIG = {
-  "hoursShort": "8–24",
-  "hoursLong": "Tutti i giorni 8–24, anche sabato e domenica",
+  "hoursShort": "7 giorni su 7",
+  "hoursLong": "Aperti 7 giorni su 7, anche sabato e domenica",
+  "hoursPhrase": "7 giorni su 7, anche sabato e domenica",
   "opens": "08:00",
   "closes": "23:59",
   "phoneDisplay": "349 420 8551",
@@ -181,14 +183,14 @@ window.GALA_CITY_DATA={"n":{"affi":"Affi","albaredo-d-adige":"Albaredo d'Adige",
       hideFromBots: false, /* same banner for users, crawlers and reviewers */
       cookie: { name: 'cc_cookie', expiresAfterDays: 182 },
       guiOptions: {
-        consentModal: { layout: 'box', position: 'bottom left', flipButtons: false, equalWeightButtons: true },
+        consentModal: { layout: 'bar inline', position: 'bottom', flipButtons: false, equalWeightButtons: true },
         preferencesModal: { layout: 'box', position: 'right', flipButtons: false, equalWeightButtons: true }
       },
       categories: { necessary: { readOnly: true, enabled: true }, analytics: {}, ads: {} },
       language: { default: 'it', translations: { it: {
         consentModal: {
           title: 'Utilizziamo i cookie',
-          description: 'Usiamo cookie tecnici necessari e, solo con il tuo consenso, cookie di analisi (Google Analytics) e di misurazione pubblicitaria (Google Ads). Senza consenso Google riceve solo segnali anonimi senza cookie (Consent Mode). Puoi cambiare scelta in ogni momento da "Preferenze cookie" in fondo alla pagina.',
+          description: 'Cookie tecnici necessari e, solo con il tuo consenso, cookie di analisi e pubblicitari di Google. Puoi cambiare scelta da "Preferenze cookie" in fondo alla pagina.',
           acceptAllBtn: 'Accetta tutti', acceptNecessaryBtn: 'Rifiuta tutti', showPreferencesBtn: 'Gestisci preferenze',
           footer: '<a href="/privacy-policy.html">Privacy Policy</a><a href="/cookie-policy.html">Cookie Policy</a>'
         },
