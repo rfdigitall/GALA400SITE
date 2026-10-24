@@ -1,0 +1,26 @@
+/* ===== BIP fix 24/10/2026 — shared additions (appended to every page CSS by scripts/bip_build.py) ===== */
+.seo-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+/* header phone always visible on mobile (desktop shows .nav2-cta) */
+.nav2-phone{display:inline-flex;align-items:center;gap:.35rem;background:var(--copper,#1259b0);color:#fff!important;padding:.5rem .8rem;border-radius:4px;font-size:.78rem;font-weight:700;letter-spacing:.04em;flex-shrink:0;position:relative;z-index:2;white-space:nowrap}
+@media(min-width:681px){.nav2-phone{display:none}}
+@media(max-width:380px){.nav2-logo span{display:none}}
+/* above-the-fold CTA note */
+.hero-cta-note{margin-top:.8rem;font-size:.9rem;color:rgba(255,255,255,.82);line-height:1.5}
+.hero-cta-note strong{color:#fff}
+/* trust / disclaimer / safety boxes */
+.note-box{margin:1rem 0 0;padding:.85rem 1rem;border-radius:8px;font-size:.88rem;line-height:1.55;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.9);max-width:40rem}
+.note-box strong{color:#fff}
+.safety-box{margin:1.2rem 0;padding:1rem 1.1rem;border-radius:8px;background:#fff4e5;border:2px solid #d97706;color:#3b2300;font-size:.95rem;line-height:1.6;max-width:44rem}
+.safety-box strong{color:#7c2d12}
+.safety-box a{color:#7c2d12;font-weight:700;text-decoration:underline}
+.hero2 .safety-box{color:#3b2300}
+.sticky-call-label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+body.home-v2{padding-bottom:84px}
+@media(min-width:681px){body.home-v2{padding-bottom:0}}
+.btn-cc-prefs{background:none;border:0;padding:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer}
+picture{display:contents}
+
+/* CLS: metric-matched fallback fonts so the hero does not jump when web fonts swap in */
+@font-face{font-family:"Inter Fallback";src:local("Arial"),local("Liberation Sans"),local("Helvetica");size-adjust:107.4%;ascent-override:90.2%;descent-override:22.5%;line-gap-override:0%}
+@font-face{font-family:"Barlow Condensed Fallback";src:local("Arial Narrow"),local("Liberation Sans Narrow"),local("Arial");size-adjust:78%;ascent-override:118%;descent-override:30%;line-gap-override:0%}
+:root{--font-body:'Inter','Inter Fallback',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;--font-head:'Barlow Condensed','Barlow Condensed Fallback',sans-serif}

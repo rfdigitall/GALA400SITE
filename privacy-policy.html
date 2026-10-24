@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Privacy Policy | Gala 400 Srls — Idraulico Verona</title>
+<title>Privacy Policy | Gala400 — Idraulico Verona</title>
 <meta name="robots" content="noindex, follow">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png" sizes="32x32">
@@ -18,36 +18,27 @@
     a{color:#1259b0}
     .back{display:inline-block;margin-bottom:1.5rem;font-weight:700;color:#0a2540}
     .meta{font-size:.8rem;color:#94a3b8;margin-bottom:1.5rem}
+.sticky-mobile-lite{position:fixed;left:0;right:0;bottom:0;padding:.6rem;background:#fff;border-top:1px solid #e2e8f0}.sticky-mobile-lite a{display:block;text-align:center;background:#1259b0;color:#fff;font-weight:700;padding:.8rem;border-radius:10px;text-decoration:none}@media(min-width:681px){.sticky-mobile-lite{display:none}}body{padding-bottom:5rem}.btn-cc-prefs{background:none;border:0;color:#1259b0;text-decoration:underline;cursor:pointer;font:inherit;padding:0}
 </style>
   <script>
     window.dataLayer=window.dataLayer||[];
     function gtag(){dataLayer.push(arguments);}
-    gtag('consent','default',{
-      'ad_storage':'denied',
-      'ad_user_data':'denied',
-      'ad_personalization':'denied',
-      'analytics_storage':'denied',
-      'wait_for_update':500
-    });
-    /* WCC debug needs ads consent before gtag.js boots */
-    if(location.hash==='#google-wcc-debug'){
-      gtag('consent','update',{
-        'ad_storage':'granted',
-        'ad_user_data':'granted',
-        'ad_personalization':'granted',
-        'analytics_storage':'granted'
-      });
-    }
+    /* Consent Mode v2 — advanced: everything denied by default, cookieless pings allowed */
+    gtag('consent','default',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','analytics_storage':'denied','wait_for_update':500});
+    gtag('set','ads_data_redaction',true);
+    gtag('set','url_passthrough',true);
+    /* returning visitor: restore saved choice (cookieconsent v3 cookie) before tags fire */
+    (function(){try{var m=document.cookie.match(/(?:^|; )cc_cookie=([^;]*)/);if(!m)return;var c=JSON.parse(decodeURIComponent(m[1])).categories||[];var a=c.indexOf('ads')>-1,n=c.indexOf('analytics')>-1;gtag('consent','update',{'analytics_storage':n?'granted':'denied','ad_storage':a?'granted':'denied','ad_user_data':a?'granted':'denied','ad_personalization':a?'granted':'denied'});}catch(e){}})();
+    /* Google call-tracking debug only (#google-wcc-debug in URL, used by the advertiser to test) */
+    if(location.hash==='#google-wcc-debug'){gtag('consent','update',{'ad_storage':'granted','ad_user_data':'granted','ad_personalization':'granted','analytics_storage':'granted'});}
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18106797178"></script>
   <script>
     gtag('js',new Date());
-    gtag('config','AW-18106797178',{'conversion_linker':true});
-    gtag('config','G-TLQ5WCBTJK',{'anonymize_ip':true});
-    window.gala400ApplyCallFwd=function(){ /* DNI OFF 26/08/2026: dial direct 349 */ };
-    window._googWcmGet=function(el){return el;}; /* DNI OFF */
-    /* Apply immediately for debug; otherwise wait for ads cookie consent */
-    if(location.hash==='#google-wcc-debug'){ gala400ApplyCallFwd(); }
+    gtag('config','AW-18106797178');
+    gtag('config','G-TLQ5WCBTJK');
+    /* Website call conversion "Chiamata (349 420 8551)": Google forwarding number swap on all tel: links + visible numbers */
+    gtag('config','AW-18106797178/BHIeCLvLzdIcEPqY_7lD',{'phone_conversion_number':'349 420 8551'});
   </script>
 </head>
 <body>
@@ -62,7 +53,7 @@
   <h2>2. Dati raccolti</h2>
   <p>Attraverso questo sito possono essere trattati i seguenti dati:</p>
   <ul>
-    <li>dati di navigazione (indirizzo IP, tipo di browser, pagine visitate), raccolti solo se l'utente presta consenso ai cookie di analisi;</li>
+    <li>dati di navigazione (indirizzo IP, tipo di browser, pagine visitate): con il consenso ai cookie di analisi tramite Google Analytics; senza consenso solo segnali anonimi senza cookie (Consent Mode avanzato);</li>
     <li>dati forniti volontariamente tramite telefono, WhatsApp o il modulo di richiamata per richiedere un intervento idraulico;</li>
     <li>preferenze relative ai cookie, memorizzate tramite il banner di consenso (vedi Cookie Policy).</li>
   </ul>
@@ -83,10 +74,13 @@
   <p>I dati sono conservati per il tempo necessario alle finalità indicate e secondo i termini di legge applicabili. Il consenso ai cookie è conservato per un massimo di 12 mesi, trascorsi i quali viene richiesto nuovamente.</p>
 
   <h2>6. Diritti dell'interessato</h2>
-  <p>In conformità al Regolamento UE 2016/679 (GDPR), l'interessato può richiedere accesso, rettifica, cancellazione, limitazione, opposizione e portabilità dei dati scrivendo al titolare o chiamando il 349 420 8551. È possibile revocare il consenso ai cookie in qualsiasi momento dal link "Preferenze cookie" in fondo al sito, e proporre reclamo al Garante per la Protezione dei Dati Personali.</p>
+  <p>In conformità al Regolamento UE 2016/679 (GDPR), l'interessato può richiedere accesso, rettifica, cancellazione, limitazione, opposizione e portabilità dei dati scrivendo al titolare o chiamando il 349 420 8551. È possibile revocare il consenso ai cookie in qualsiasi momento dal pulsante "Preferenze cookie" in fondo a ogni pagina, e proporre reclamo al Garante per la Protezione dei Dati Personali.</p>
 
   <h2>7. Google Analytics, Google Ads e Consent Mode</h2>
-  <p>Questo sito utilizza Google Tag (gtag.js), fornito da Google Ireland Limited, per Google Analytics 4 (misurazione del traffico, con IP anonimizzato) e Google Ads (misurazione delle conversioni pubblicitarie). In conformità al Google Consent Mode v2, tutti i cookie di analisi e pubblicitari sono impostati su "negato" di default: vengono attivati solo dopo che l'utente presta consenso esplicito tramite il banner cookie. L'utente può revocare il consenso in qualsiasi momento. Google può trattare questi dati secondo la propria informativa, disponibile su <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">policies.google.com/privacy</a>.</p>
+  <p>Questo sito utilizza Google Tag (gtag.js), fornito da Google Ireland Limited, per Google Analytics 4 (misurazione del traffico, con IP anonimizzato) e Google Ads (misurazione delle conversioni pubblicitarie). In conformità al Google Consent Mode v2, tutti i cookie di analisi e pubblicitari sono impostati su "negato" di default: vengono attivati solo dopo che l'utente presta consenso esplicito tramite il banner cookie. Senza consenso, i tag Google possono inviare segnali anonimi senza cookie (cookieless ping) usati da Google in forma aggregata. L'utente può revocare il consenso in qualsiasi momento. Google può trattare questi dati secondo la propria informativa, disponibile su <a href="https://policies.google.com/privacy" rel="noopener" target="_blank">policies.google.com/privacy</a>.</p>
+
+  <h2>7-bis. Misurazione delle chiamate (Google Ads)</h2>
+  <p>Quando arrivi su questo sito da un annuncio Google, il numero di telefono mostrato può essere sostituito da un <strong>numero di inoltro Google</strong> che inoltra la chiamata al nostro numero 349 420 8551. Google registra data e ora, durata, esito (risposta/persa) e prefisso del chiamante, per misurare le chiamate generate dagli annunci. Il contenuto della chiamata non viene registrato. In assenza di consenso ai cookie pubblicitari, Google Consent Mode può inviare segnali anonimi senza cookie.</p>
 
   <h2>8. Comunicazione a terzi</h2>
   <p>I dati non sono ceduti a terzi salvo obblighi di legge o fornitori tecnici strettamente necessari al funzionamento del sito, tra cui Google (Analytics e Ads, solo previo consenso) e il fornitore di hosting.</p>
@@ -94,6 +88,8 @@
   <h2>9. Contatti</h2>
   <p>Per ogni richiesta relativa alla privacy: Gala 400 Srls — Verona (VR) — Tel. 349 420 8551.</p>
 
-  <p style="margin-top:2rem"><a href="cookie-policy.html">Cookie Policy</a> · <a href="/">Home</a></p>
+  <p style="margin-top:2rem"><a href="cookie-policy.html">Cookie Policy</a> · <a href="/">Home</a> · <button type="button" class="btn-cc-prefs" data-cc-open>Preferenze cookie</button></p>
+<div class="sticky-mobile-lite"><a href="tel:+393494208551" data-cta="sticky-call">Chiama 349 420 8551</a></div>
+<script defer src="/assets/build/gala-core.9c991719a9.js"></script>
 </body>
 </html>
