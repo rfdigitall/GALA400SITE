@@ -179,6 +179,7 @@ H24_TEXT = [  # applied to visible text + attributes after POLICY
 BRAND_FIX = [
     (r'Gala 400 Srls(?! — P\.IVA 05180000233 — REA)', BRAND),
     (r'GALA 400', BRAND), (r'Gala 400(?! Srls)', BRAND),
+    (r'Gala400 Srls?\b', BRAND),
 ]
 
 def text_only(s, fn):
