@@ -178,6 +178,7 @@ window.GALA_CITY_DATA={"n":{"affi":"Affi","albaredo-d-adige":"Albaredo d'Adige",
     }
     CC.run({
       revision: 1,
+      hideFromBots: false, /* same banner for users, crawlers and reviewers */
       cookie: { name: 'cc_cookie', expiresAfterDays: 182 },
       guiOptions: {
         consentModal: { layout: 'box', position: 'bottom left', flipButtons: false, equalWeightButtons: true },
