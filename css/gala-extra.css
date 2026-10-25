@@ -48,13 +48,12 @@ picture{display:contents}
 :root{--text-soft:#557089}
 .t-item{color:rgba(255,255,255,.5)}
 
-/* 25/10/2026: cookie bar compatta su mobile, SOPRA la barra "Chiama" (sempre visibile alla prima visita) */
+/* 25/10/2026: cookie bar compatta su mobile, in alto sotto il menu: barra "Chiama" e bottoni chiamata nell'hero liberi (sempre visibile alla prima visita) */
 #cc-main .cm--bar .cm__footer{display:none!important}
 #cc-main .cm--bar .cm__desc a{color:inherit;text-decoration:underline}
 @media(max-width:680px){
-#cc-main .cm--bar.cm--bottom{bottom:0!important;border-radius:12px 12px 0 0!important;box-shadow:0 -6px 24px rgba(10,25,45,.16)!important}
-body:has(.sticky-mobile) #cc-main .cm--bar.cm--bottom{bottom:92px!important}
-body:has(.sticky-mobile-lite) #cc-main .cm--bar.cm--bottom{bottom:70px!important}
+#cc-main .cm--bar.cm--bottom{top:72px!important;bottom:auto!important;border-radius:0 0 12px 12px!important;box-shadow:0 8px 24px rgba(10,25,45,.22)!important}
+body:not(:has(.nav2)) #cc-main .cm--bar.cm--bottom{top:0!important}
 #cc-main .cm--bar .cm__body{flex-direction:column!important}
 #cc-main .cm--bar .cm__texts{padding:.55rem .85rem 0!important}
 #cc-main .cm--bar .cm__title{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;padding:0!important;margin:0!important;white-space:nowrap}

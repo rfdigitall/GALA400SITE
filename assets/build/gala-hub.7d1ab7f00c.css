@@ -250,7 +250,6 @@ body.home-v2{padding-top:72px}
 .nav2-links{display:none;align-items:center;gap:1.8rem;list-style:none}
 .nav2-links a{font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)}
 .nav2-cta{background:var(--copper);color:#fff!important;padding:.5rem 1.1rem;border-radius:2px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.nav2-phone{display:inline-flex;align-items:center;background:var(--copper);color:#fff!important;padding:.5rem 1.1rem;border-radius:2px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0;position:relative;z-index:2}
 .hbg2{display:flex;flex-direction:column;gap:5px;background:none;border:0;padding:6px;cursor:pointer}
 .hbg2 span{display:block;width:22px;height:2px;background:rgba(255,255,255,.85)}
 .nav2-mobile{display:none;position:fixed;top:72px;left:0;right:0;background:rgba(5,12,24,.98);padding:1.2rem 1.25rem;flex-direction:column;gap:1rem;z-index:499;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -371,8 +370,7 @@ section.contact2{background:var(--ink)}
 
 @media(min-width:681px){
   .nav2-links{display:flex}
-    .nav2-phone{display:none}
-.hbg2{display:none}
+  .hbg2{display:none}
   .hero2-content{padding:2.5rem 5vw 4vw;flex-direction:row;align-items:flex-end;justify-content:space-between;gap:3vw}
   .hero2-left{max-width:640px}
   .srv2-grid{grid-template-columns:1fr 1fr}
@@ -491,13 +489,12 @@ picture{display:contents}
 :root{--text-soft:#557089}
 .t-item{color:rgba(255,255,255,.5)}
 
-/* 25/10/2026: cookie bar compatta su mobile, SOPRA la barra "Chiama" (sempre visibile alla prima visita) */
+/* 25/10/2026: cookie bar compatta su mobile, in alto sotto il menu: barra "Chiama" e bottoni chiamata nell'hero liberi (sempre visibile alla prima visita) */
 #cc-main .cm--bar .cm__footer{display:none!important}
 #cc-main .cm--bar .cm__desc a{color:inherit;text-decoration:underline}
 @media(max-width:680px){
-#cc-main .cm--bar.cm--bottom{bottom:0!important;border-radius:12px 12px 0 0!important;box-shadow:0 -6px 24px rgba(10,25,45,.16)!important}
-body:has(.sticky-mobile) #cc-main .cm--bar.cm--bottom{bottom:92px!important}
-body:has(.sticky-mobile-lite) #cc-main .cm--bar.cm--bottom{bottom:70px!important}
+#cc-main .cm--bar.cm--bottom{top:72px!important;bottom:auto!important;border-radius:0 0 12px 12px!important;box-shadow:0 8px 24px rgba(10,25,45,.22)!important}
+body:not(:has(.nav2)) #cc-main .cm--bar.cm--bottom{top:0!important}
 #cc-main .cm--bar .cm__body{flex-direction:column!important}
 #cc-main .cm--bar .cm__texts{padding:.55rem .85rem 0!important}
 #cc-main .cm--bar .cm__title{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;padding:0!important;margin:0!important;white-space:nowrap}

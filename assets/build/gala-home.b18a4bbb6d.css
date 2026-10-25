@@ -291,11 +291,11 @@ section.sec2 > *{max-width:1120px;margin-left:auto;margin-right:auto}
 .lbl2::before{content:'';width:16px;height:1.5px;background:var(--copper)}
 .srv2-top p{color:var(--text-soft);font-size:.9rem;line-height:1.8;max-width:38rem}
 .srv2-grid{display:grid;grid-template-columns:1fr;gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
-.sc2{background:#fff;padding:1.8rem 1.5rem;position:relative;display:flex;flex-direction:column;height:100%}
+.sc2{background:#fff;padding:1.8rem 1.5rem;position:relative}
 .sc2-num{font-family:var(--font-head);font-size:2.6rem;font-weight:900;color:rgba(18,89,176,.08);line-height:1;margin-bottom:.4rem}
-.sc2-ico{width:38px;height:38px;color:var(--ink);margin-bottom:.9rem;flex-shrink:0}
+.sc2-ico{width:38px;height:38px;color:var(--ink);margin-bottom:.9rem}
 .sc2-title{font-family:var(--font-head);font-size:1.05rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink);margin-bottom:.4rem}
-.sc2-desc{font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-bottom:.9rem;flex:1}
+.sc2-desc{font-size:.82rem;color:var(--text-soft);line-height:1.7;margin-bottom:.9rem}
 .sc2-link{font-size:.72rem;font-weight:700;color:var(--copper);text-transform:uppercase;letter-spacing:.05em}
 
 .proc-grid{display:grid;grid-template-columns:1fr;border:1px solid var(--line);margin-top:1.8rem}
@@ -324,16 +324,8 @@ section.chi2{background:var(--ink2)}
 .cn2-l{font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45)}
 .cn2:first-child .cn2-l{color:rgba(255,255,255,.75)}
 
-.zone2-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
-.zone2-grid.zone2-c1{grid-template-columns:1fr}
-.zone2-grid.zone2-c3{grid-template-columns:repeat(3,1fr)}
-.zone2-grid.zone2-c4{grid-template-columns:repeat(2,1fr)}
-.zone2-grid.zone2-c6{grid-template-columns:repeat(2,1fr)}
-.zone2-grid.zone2-c8{grid-template-columns:repeat(2,1fr)}
-.zone2-grid.zone2-c9{grid-template-columns:repeat(3,1fr)}
-.zone2-grid.zone2-c12{grid-template-columns:repeat(2,1fr)}
-.zone2-grid.zone2-c16{grid-template-columns:repeat(2,1fr)}
-.zc2{background:#fff;padding:1.1rem 1rem;display:flex;align-items:center;gap:.7rem;min-height:100%}
+.zone2-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5px;background:var(--line);margin-top:1.8rem;border:1px solid var(--line)}
+.zc2{background:#fff;padding:1.1rem 1rem;display:flex;align-items:center;gap:.7rem}
 .zdot2{width:7px;height:7px;border-radius:50%;background:var(--copper);flex-shrink:0}
 .zname2{font-family:var(--font-head);font-size:.92rem;font-weight:800;text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
 
@@ -387,12 +379,7 @@ section.contact2{background:var(--ink)}
   .proc-grid{grid-template-columns:repeat(3,1fr)}
   .ps2{border-top:none;border-left:1px solid var(--line)}
   .ps2:first-child{border-left:none}
-  .zone2-grid.zone2-c4{grid-template-columns:repeat(2,1fr)}
-  .zone2-grid.zone2-c6{grid-template-columns:repeat(3,1fr)}
-  .zone2-grid.zone2-c8{grid-template-columns:repeat(4,1fr)}
-  .zone2-grid.zone2-c9{grid-template-columns:repeat(3,1fr)}
-  .zone2-grid.zone2-c12{grid-template-columns:repeat(4,1fr)}
-  .zone2-grid.zone2-c16{grid-template-columns:repeat(4,1fr)}
+  .zone2-grid{grid-template-columns:repeat(4,1fr)}
   .gar2-grid{grid-template-columns:repeat(3,1fr)}
   .chi2-inner{display:grid;grid-template-columns:1fr 1fr;padding:0}
   .chi2-l{padding:3.4rem 2.5rem;border-right:1px solid rgba(255,255,255,.08)}
@@ -454,11 +441,6 @@ footer.foot-pro{background:var(--ink2);padding:3rem 1.25rem 1.5rem;color:rgba(25
   --cc-text: var(--ink);
   --cc-toggle-on-bg: var(--copper);
 }
-
-/* Perf: defer offscreen work */
-.ticker-track{animation-play-state:paused}
-.ticker.is-on .ticker-track{animation-play-state:running}
-section.sec2,section.chi2,footer.foot-pro{content-visibility:auto;contain-intrinsic-size:1px 800px}
 /* ===== BIP fix 24/10/2026 — shared additions (appended to every page CSS by scripts/bip_build.py) ===== */
 .seo-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 /* header phone always visible on mobile (desktop shows .nav2-cta) */
@@ -509,13 +491,12 @@ picture{display:contents}
 :root{--text-soft:#557089}
 .t-item{color:rgba(255,255,255,.5)}
 
-/* 25/10/2026: cookie bar compatta su mobile, SOPRA la barra "Chiama" (sempre visibile alla prima visita) */
+/* 25/10/2026: cookie bar compatta su mobile, in alto sotto il menu: barra "Chiama" e bottoni chiamata nell'hero liberi (sempre visibile alla prima visita) */
 #cc-main .cm--bar .cm__footer{display:none!important}
 #cc-main .cm--bar .cm__desc a{color:inherit;text-decoration:underline}
 @media(max-width:680px){
-#cc-main .cm--bar.cm--bottom{bottom:0!important;border-radius:12px 12px 0 0!important;box-shadow:0 -6px 24px rgba(10,25,45,.16)!important}
-body:has(.sticky-mobile) #cc-main .cm--bar.cm--bottom{bottom:92px!important}
-body:has(.sticky-mobile-lite) #cc-main .cm--bar.cm--bottom{bottom:70px!important}
+#cc-main .cm--bar.cm--bottom{top:72px!important;bottom:auto!important;border-radius:0 0 12px 12px!important;box-shadow:0 8px 24px rgba(10,25,45,.22)!important}
+body:not(:has(.nav2)) #cc-main .cm--bar.cm--bottom{top:0!important}
 #cc-main .cm--bar .cm__body{flex-direction:column!important}
 #cc-main .cm--bar .cm__texts{padding:.55rem .85rem 0!important}
 #cc-main .cm--bar .cm__title{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;padding:0!important;margin:0!important;white-space:nowrap}
