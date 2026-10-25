@@ -107,7 +107,55 @@
     var where = a.getAttribute('data-cta') || 'tel_link';
     /* Backup signal (SECONDARY action "Click telefono"): a tap opens the dialer, it is not a call. */
     g('event', 'conversion', { send_to: C.telClickConversion, transport_type: 'beacon' });
-    g('event', 'phone_click_ga4', { event_category: 'engagement', event_label: where, method: 'phone', transport_type: 'beacon' });
+    g('event', 'phone_click_ga4', { send_to: C.ga4Id || 'G-TLQ5WCBTJK', event_category: 'engagement', event_label: where, method: 'phone', transport_type: 'beacon' });
+    tapLog(a, where);
+  }
+
+  /* ---------- first-party anonymous tap log (RF DIGITAL statistics) ----------
+     Works without cookies/consent: no IP, no cookie, no fingerprint, no click IDs stored.
+     sendBeacon is fire-and-forget: the tel: navigation is never delayed. */
+  var ADK = 'gala400_adv';
+  function adVisit() {
+    var q, v = null;
+    try { q = new URLSearchParams(location.search); } catch (e) { return null; }
+    var id = ['gclid', 'gbraid', 'wbraid'].filter(function (k) { return q.has(k); })[0];
+    try {
+      if (id) {
+        v = { id: id, c: (q.get('utm_campaign') || q.get('campaign') || '').slice(0, 60), lp: location.pathname.slice(0, 160) };
+        sessionStorage.setItem(ADK, JSON.stringify(v));
+      } else v = JSON.parse(sessionStorage.getItem(ADK) || 'null');
+      if (/[?&]taptest=1\b/.test(location.search)) sessionStorage.setItem('gala400_tt', '1');
+    } catch (e) {}
+    return v;
+  }
+  function btnKind(where) {
+    if (/^nav2/.test(where)) return 'header';
+    if (/^hero/.test(where)) return 'hero';
+    if (/^sticky/.test(where)) return 'sticky';
+    if (/^float/.test(where)) return 'float';
+    if (/^richiamata/.test(where)) return 'form';
+    return 'other';
+  }
+  function devKind() {
+    var ua = navigator.userAgent || '';
+    if (/iPad|Tablet|PlayBook|Silk|(Android(?!.*Mobile))/i.test(ua)) return 'tablet';
+    return /Mobi|iPhone|iPod|Android/i.test(ua) ? 'mobile' : 'desktop';
+  }
+  function tapLog(a, where) {
+    try {
+      var v = adVisit(), test = false, ref = '';
+      try { test = sessionStorage.getItem('gala400_tt') === '1'; } catch (e) {}
+      try { ref = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) {}
+      var body = JSON.stringify({
+        path: location.pathname, btn: btnKind(where), cta: where,
+        num: (a.getAttribute('href') || '').replace(/[^\d+]/g, '').slice(0, 16),
+        ads: !!v, ads_id: v ? v.id : '', campaign: v ? v.c : '', landing: v ? v.lp : '',
+        dev: devKind(), ref: ref, test: test
+      });
+      var url = '/api/ev';
+      if (navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: 'text/plain' }))) return;
+      if (window.fetch) fetch(url, { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }).catch(function () {});
+    } catch (e) {}
   }
   function bindForms() {
     document.querySelectorAll('form[data-ads-track]').forEach(function (form) {
@@ -144,9 +192,16 @@
     l.rel = 'stylesheet'; l.href = 'https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.css';
     l.setAttribute('data-cc-css', '1'); l.onload = cb; l.onerror = cb; document.head.appendChild(l);
   }
+  /* cookie bar sits directly above the sticky "Chiama" bar: expose its real height to CSS */
+  function syncSticky() {
+    var s = document.querySelector('.sticky-mobile, .sticky-mobile-lite'), h = 0;
+    if (s && getComputedStyle(s).display !== 'none') h = Math.round(s.getBoundingClientRect().height);
+    document.documentElement.style.setProperty('--gala-sticky-h', h + 'px');
+  }
   function runBanner() {
     if (typeof window.CookieConsent === 'undefined') return;
     var CC = window.CookieConsent;
+    var small = !!(window.matchMedia && window.matchMedia('(max-width: 680px)').matches);
     function onChange() {
       var acc = (CC.getUserPreferences().acceptedCategories) || [];
       updateConsent(acc.indexOf('analytics') !== -1, acc.indexOf('ads') !== -1);
@@ -163,8 +218,10 @@
       language: { default: 'it', translations: { it: {
         consentModal: {
           title: 'Utilizziamo i cookie',
-          description: 'Cookie tecnici sempre attivi; analisi e pubblicità Google solo se accetti. <a href="/privacy-policy.html">Privacy</a> · <a href="/cookie-policy.html">Cookie policy</a>',
-          acceptAllBtn: 'Accetta tutti', acceptNecessaryBtn: 'Rifiuta tutti', showPreferencesBtn: 'Preferenze',
+          description: small
+            ? 'Cookie Google di analisi e annunci solo se accetti. <a href="/privacy-policy.html">Privacy</a>'
+            : 'Cookie tecnici sempre attivi; analisi e pubblicità Google solo se accetti. <a href="/privacy-policy.html">Privacy</a> · <a href="/cookie-policy.html">Cookie policy</a>',
+          acceptAllBtn: small ? 'Accetta' : 'Accetta tutti', acceptNecessaryBtn: small ? 'Rifiuta' : 'Rifiuta tutti', showPreferencesBtn: 'Preferenze',
           footer: '<a href="/privacy-policy.html">Privacy Policy</a><a href="/cookie-policy.html">Cookie Policy</a>'
         },
         preferencesModal: {
@@ -199,10 +256,13 @@
   function init() {
     applyHours();
     applyCity();
+    adVisit();
     document.addEventListener('click', onTelClick, true);
     bindForms();
     showFormSuccess();
     ui();
+    syncSticky();
+    window.addEventListener('resize', syncSticky, { passive: true });
     loadCookieCss(runBanner);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

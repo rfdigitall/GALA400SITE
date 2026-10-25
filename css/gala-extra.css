@@ -48,22 +48,20 @@ picture{display:contents}
 :root{--text-soft:#557089}
 .t-item{color:rgba(255,255,255,.5)}
 
-/* 25/10/2026: cookie bar compatta su mobile, in alto sotto il menu: barra "Chiama" e bottoni chiamata nell'hero liberi (sempre visibile alla prima visita) */
+/* 25/10/2026: cookie bar compatta */
 #cc-main .cm--bar .cm__footer{display:none!important}
 #cc-main .cm--bar .cm__desc a{color:inherit;text-decoration:underline}
 @media(max-width:680px){
-#cc-main .cm--bar.cm--bottom{top:72px!important;bottom:auto!important;border-radius:0 0 12px 12px!important;box-shadow:0 8px 24px rgba(10,25,45,.22)!important}
-body:not(:has(.nav2)) #cc-main .cm--bar.cm--bottom{top:0!important}
-#cc-main .cm--bar .cm__body{flex-direction:column!important}
-#cc-main .cm--bar .cm__texts{padding:.55rem .85rem 0!important}
+/* 25/10/2026 (2): barra compatta IN BASSO, appoggiata subito SOPRA la barra "Chiama" (altezza reale via --gala-sticky-h), mai sopra i bottoni chiamata */
+:root{--gala-sticky-h:0px}
+:root:has(.sticky-mobile){--gala-sticky-h:76px}
+#cc-main .cm--bar.cm--bottom{top:auto!important;bottom:calc(var(--gala-sticky-h) + 6px)!important;left:8px!important;right:8px!important;width:auto!important;max-width:none!important;border-radius:12px!important;box-shadow:0 6px 22px rgba(10,25,45,.22)!important;border:1px solid rgba(10,25,45,.08)!important}
+#cc-main .cm--bar .cm__body{flex-direction:row!important;align-items:center!important;max-width:none!important}
+#cc-main .cm--bar .cm__texts{flex:1 1 auto!important;min-width:0;padding:.45rem .2rem .45rem .75rem!important}
 #cc-main .cm--bar .cm__title{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;padding:0!important;margin:0!important;white-space:nowrap}
-#cc-main .cm--bar .cm__desc{font-size:.74rem!important;line-height:1.35!important;padding:0!important}
-#cc-main .cm--bar .cm__btns{display:flex!important;flex-direction:row!important;align-items:center;gap:.4rem;padding:.45rem .85rem .55rem!important}
-#cc-main .cm--bar .cm__btn-group{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:.4rem}
-#cc-main .cm--bar .cm__btn-group .cm__btn{margin:0!important}
-#cc-main .cm--bar .cm__btns{border-top:0!important}
-#cc-main .cm--bar .cm__btn-group:first-child{flex:1 1 auto}
-#cc-main .cm--bar .cm__btn-group+.cm__btn-group{margin:0!important}
-#cc-main .cm--bar .cm__btn{flex:1 1 0;min-height:38px;padding:.4rem .5rem!important;font-size:.78rem!important}
-#cc-main .cm--bar .cm__btn--secondary{flex:0 0 auto;background:none!important;border:0!important;color:inherit!important;text-decoration:underline;padding:.4rem .15rem!important}
+#cc-main .cm--bar .cm__desc{font-size:.7rem!important;line-height:1.3!important;padding:0!important;max-height:none!important}
+#cc-main .cm--bar .cm__btns{flex:0 0 auto!important;display:flex!important;flex-direction:row!important;align-items:center;padding:.4rem .5rem!important;border-top:0!important;border-left:0!important;width:auto!important;max-width:none!important}
+#cc-main .cm--bar .cm__btn-group{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:.35rem}
+#cc-main .cm--bar .cm__btn-group+.cm__btn-group{display:none!important}
+#cc-main .cm--bar .cm__btn{margin:0!important;min-width:4.6rem!important;width:auto!important;min-height:34px;padding:.3rem .6rem!important;font-size:.74rem!important;border-radius:8px!important}
 }

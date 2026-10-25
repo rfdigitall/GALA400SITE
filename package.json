@@ -1,0 +1,8 @@
+{
+  "name": "gala400-site",
+  "private": true,
+  "description": "Static site; dependencies only for Netlify Functions (tap log).",
+  "dependencies": {
+    "@netlify/blobs": "^8.2.0"
+  }
+}
