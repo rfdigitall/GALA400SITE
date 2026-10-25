@@ -163,8 +163,8 @@
       language: { default: 'it', translations: { it: {
         consentModal: {
           title: 'Utilizziamo i cookie',
-          description: 'Cookie tecnici necessari e, solo con il tuo consenso, cookie di analisi e pubblicitari di Google. Puoi cambiare scelta da "Preferenze cookie" in fondo alla pagina.',
-          acceptAllBtn: 'Accetta tutti', acceptNecessaryBtn: 'Rifiuta tutti', showPreferencesBtn: 'Gestisci preferenze',
+          description: 'Cookie tecnici sempre attivi; analisi e pubblicità Google solo se accetti. <a href="/privacy-policy.html">Privacy</a> · <a href="/cookie-policy.html">Cookie policy</a>',
+          acceptAllBtn: 'Accetta tutti', acceptNecessaryBtn: 'Rifiuta tutti', showPreferencesBtn: 'Preferenze',
           footer: '<a href="/privacy-policy.html">Privacy Policy</a><a href="/cookie-policy.html">Cookie Policy</a>'
         },
         preferencesModal: {

@@ -44,6 +44,28 @@
     /* Website call conversion "Chiamata (349 420 8551)": Google forwarding number swap on all tel: links + visible numbers */
     gtag('config','AW-18106797178/BHIeCLvLzdIcEPqY_7lD',{'phone_conversion_number':'349 420 8551'});
   </script>
+<style>
+/* 25/10/2026: cookie bar compatta su mobile, SOPRA la barra "Chiama" (sempre visibile alla prima visita) */
+#cc-main .cm--bar .cm__footer{display:none!important}
+#cc-main .cm--bar .cm__desc a{color:inherit;text-decoration:underline}
+@media(max-width:680px){
+#cc-main .cm--bar.cm--bottom{bottom:0!important;border-radius:12px 12px 0 0!important;box-shadow:0 -6px 24px rgba(10,25,45,.16)!important}
+body:has(.sticky-mobile) #cc-main .cm--bar.cm--bottom{bottom:92px!important}
+body:has(.sticky-mobile-lite) #cc-main .cm--bar.cm--bottom{bottom:70px!important}
+#cc-main .cm--bar .cm__body{flex-direction:column!important}
+#cc-main .cm--bar .cm__texts{padding:.55rem .85rem 0!important}
+#cc-main .cm--bar .cm__title{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;padding:0!important;margin:0!important;white-space:nowrap}
+#cc-main .cm--bar .cm__desc{font-size:.74rem!important;line-height:1.35!important;padding:0!important}
+#cc-main .cm--bar .cm__btns{display:flex!important;flex-direction:row!important;align-items:center;gap:.4rem;padding:.45rem .85rem .55rem!important}
+#cc-main .cm--bar .cm__btn-group{display:flex!important;flex-direction:row!important;align-items:stretch!important;gap:.4rem}
+#cc-main .cm--bar .cm__btn-group .cm__btn{margin:0!important}
+#cc-main .cm--bar .cm__btns{border-top:0!important}
+#cc-main .cm--bar .cm__btn-group:first-child{flex:1 1 auto}
+#cc-main .cm--bar .cm__btn-group+.cm__btn-group{margin:0!important}
+#cc-main .cm--bar .cm__btn{flex:1 1 0;min-height:38px;padding:.4rem .5rem!important;font-size:.78rem!important}
+#cc-main .cm--bar .cm__btn--secondary{flex:0 0 auto;background:none!important;border:0!important;color:inherit!important;text-decoration:underline;padding:.4rem .15rem!important}
+}
+</style>
 </head>
 <body>
   <script defer src="https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js"></script>
@@ -137,6 +159,6 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 <div class="sticky-mobile-lite"><a href="tel:+393494208551" data-cta="sticky-call">Chiama 349 420 8551</a></div>
-<script defer src="/assets/build/gala-core.630294cd54.js"></script>
+<script defer src="/assets/build/gala-core.a16358a485.js"></script>
 </body>
 </html>
