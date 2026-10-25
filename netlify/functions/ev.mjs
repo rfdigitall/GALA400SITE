@@ -70,8 +70,11 @@ export default async (req, context) => {
     test: b.test === true,
   };
   const key = `${ev.day}/${r.time.replace(/:/g, '')}-${now.getMilliseconds().toString().padStart(3, '0')}-${Math.random().toString(36).slice(2, 8)}${ev.test ? '-test' : ''}`;
-  try { await store.setJSON(key, ev); } catch (e) { console.error('taplog store error', String(e).slice(0, 200)); }
-  return ok();
+  try { await store.setJSON(key, ev); } catch (e) {
+    console.error('taplog store error', String(e).slice(0, 200));
+    return new Response(null, { status: 202, headers: { 'Cache-Control': 'no-store' } });  // 202 = received, not stored
+  }
+  return ok();  // 204 = stored
 };
 
 export const config = { path: '/api/ev' };
