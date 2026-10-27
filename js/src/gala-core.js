@@ -183,7 +183,21 @@
       ad_user_data: ads ? 'granted' : 'denied',
       ad_personalization: ads ? 'granted' : 'denied'
     });
-    if (ads) applyCallForwarding();
+    if (ads) { applyCallForwarding(); loadRfPixel(); }
+    else { try { sessionStorage.removeItem('rf_g'); } catch (e) {} }
+  }
+  /* RF Protect pixel (click-fraud monitor + call/tap log): loaded ONLY after the Ads-cookie consent, once per page.
+     It does not touch /api/ev (own tap log) or the design; failures are silent. */
+  var rfPixelLoaded = false;
+  function loadRfPixel() {
+    if (rfPixelLoaded) return;
+    rfPixelLoaded = true;
+    try {
+      var sc = document.createElement('script');
+      sc.async = true; sc.src = 'https://rf-digital-protect.rfdigital05.workers.dev/pixel.js';
+      sc.setAttribute('data-rf-protect', '1');
+      document.head.appendChild(sc);
+    } catch (e) {}
   }
   window.gala400UpdateConsent = updateConsent;
   function loadCookieCss(cb) {
